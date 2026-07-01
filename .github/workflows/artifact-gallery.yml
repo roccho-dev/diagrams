@@ -1,0 +1,38 @@
+name: Diagram artifact gallery
+
+on:
+  pull_request:
+    branches:
+      - proposals
+  push:
+    branches:
+      - proposals
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  artifact-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Build artifact gallery
+        run: python tools/build_ci_artifact_gallery.py --root . --out ci-artifacts/diagram-gallery
+
+      - name: Upload diagram artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagram-artifact-gallery
+          path: ci-artifacts/diagram-gallery
+          if-no-files-found: error
