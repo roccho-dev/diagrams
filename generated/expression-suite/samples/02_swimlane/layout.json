@@ -1,0 +1,50 @@
+{
+  "available": true,
+  "engine": "deterministic",
+  "fallbackUsed": true,
+  "layoutOnly": true,
+  "nodes": {
+    "check": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 96
+    },
+    "draft": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 96
+    },
+    "merge": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 200
+    },
+    "normalize": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 96
+    },
+    "release": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 200
+    },
+    "render": {
+      "h": 56,
+      "w": 138,
+      "x": 622,
+      "y": 96
+    },
+    "review": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 200
+    }
+  }
+}

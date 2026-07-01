@@ -1,0 +1,4 @@
+{"id": "wt-011-drawio-image-mode-renderer", "purpose": "SVG完全見た目用drawio image modeを出す", "status": "complete", "title": "drawio image mode renderer", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_011_drawio_image_mode_renderer.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-011-drawio-image-mode-renderer"}
+{"evidence": ["src/jsonl_diagram_core/drawio_image_mode.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-011-drawio-image-mode-renderer"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-011-drawio-image-mode-renderer"}

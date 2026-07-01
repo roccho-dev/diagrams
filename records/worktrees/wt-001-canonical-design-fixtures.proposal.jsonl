@@ -1,0 +1,4 @@
+{"id": "wt-001-canonical-design-fixtures", "purpose": "既存デザインを検査可能なfixtureにする", "status": "complete", "title": "canonical design fixtures", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_001_canonical_design_fixtures.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-001-canonical-design-fixtures"}
+{"evidence": ["src/jsonl_diagram_core/canonical_fixtures.py", "canonical/fixtures/manifest.seed.json"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-001-canonical-design-fixtures"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-001-canonical-design-fixtures"}

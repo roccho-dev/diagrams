@@ -1,2 +1,0 @@
-{"type":"baseline","id":"jsonl-diagram-quality-complete.260701-164418","role":"main-baseline","source_package":"jsonl-diagram-quality-complete.260701-164418.zip","local_final_commit":"c78ca87","status":"quality-gated-local","svg_quality":"13/13 PASS","drawio_native_quality":"13/13 PASS","drawio_image_exact_quality":"13/13 PASS","unittest":"39 PASS","authority":"jsonl-only","ci":"future"}
-{"type":"future_work","id":"ci-artifact-gallery","title":"Generate and upload directly viewable SVG/drawio/HTML artifacts from CI","scope":"github-actions","status":"planned"}

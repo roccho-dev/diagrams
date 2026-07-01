@@ -1,0 +1,4 @@
+{"id": "wt-013-embedded-html-preview", "purpose": "websandbox不要HTMLを生成する", "status": "complete", "title": "embedded HTML preview", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_013_embedded_html_preview.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-013-embedded-html-preview"}
+{"evidence": ["src/jsonl_diagram_core/embedded_preview.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-013-embedded-html-preview"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-013-embedded-html-preview"}

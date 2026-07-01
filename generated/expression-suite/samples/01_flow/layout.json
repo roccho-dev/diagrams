@@ -1,0 +1,50 @@
+{
+  "available": true,
+  "engine": "deterministic",
+  "fallbackUsed": true,
+  "layoutOnly": true,
+  "nodes": {
+    "proof": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 200
+    },
+    "reduce": {
+      "h": 56,
+      "w": 138,
+      "x": 622,
+      "y": 96
+    },
+    "render": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 200
+    },
+    "schema": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 96
+    },
+    "start": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 96
+    },
+    "stop": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 200
+    },
+    "tokenize": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 96
+    }
+  }
+}

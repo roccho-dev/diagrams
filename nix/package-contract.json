@@ -1,0 +1,28 @@
+{
+  "adapters": "fixtures/examples only",
+  "authority": "events.jsonl for fixtures; core library has no generated SVG authority",
+  "canonicalSurfacePolicy": "explicit-output-only-no-default",
+  "contains": [
+    "src/jsonl_diagram_core",
+    "src/jsonl_diagram_core/schemas/diagram-event.v1.schema.json"
+  ],
+  "defaultOutputExposed": false,
+  "excludes": [
+    "examples/adapters",
+    "examples/expression_suite",
+    "generated",
+    "*.html"
+  ],
+  "externalCiRequired": [
+    "nix build .#jsonl-diagram-core",
+    "nix flake check"
+  ],
+  "nixEvaluation": {
+    "evaluatedHere": false,
+    "reason": "nix binary is not installed in this execution container",
+    "requiredCommand": "nix build .#jsonl-diagram-core"
+  },
+  "output": "packages.<system>.jsonl-diagram-core",
+  "package": "jsonl-diagram-core",
+  "schema": "NixPackageOutputContract.v2"
+}

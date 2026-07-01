@@ -1,0 +1,6 @@
+{
+  "authority": "events.jsonl",
+  "generatedAuthority": false,
+  "schema": "CanonicalFixturePolicy.v1",
+  "snapshot": "computed-by-test"
+}

@@ -1,0 +1,4 @@
+{"id": "wt-016-no-generated-authority-rule", "purpose": "generatedを正本にしない規約を機械検査する", "status": "complete", "title": "no generated authority rule", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_016_no_generated_authority_rule.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-016-no-generated-authority-rule"}
+{"evidence": ["src/jsonl_diagram_core/authority.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-016-no-generated-authority-rule"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-016-no-generated-authority-rule"}

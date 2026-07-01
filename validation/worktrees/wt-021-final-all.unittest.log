@@ -1,0 +1,6 @@
+.......................................
+----------------------------------------------------------------------
+Ran 39 tests in 3.532s
+
+OK
+{"artifacts": {"drawio": "bb09eeb5023e505ffb79bbf51839bc48ec9e825151daf807379406276c2f879f", "svg": "ebcc6296589afdddec8052f5b7d3a232259a1c1ae2048a6545cff38af8278200"}, "dvmHash": "729b3234b90b5b16a3641d06bfa4894d4656c4bac6355e9ef00c8971c5d3549d", "schema": "OneShotCompileReport.v1", "source": "/tmp/tmppcyo8yze/events.jsonl", "sourceSha256": "77c125d711639c5b739b101bc200cfd65187c2ee7f8e6b3915296bed18cc4a81"}

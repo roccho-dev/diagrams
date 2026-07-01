@@ -1,0 +1,18 @@
+{"op":"diagram.init","payload":{"id":"swimlane","kind":"swimlane","label":"Swimlane: Proposal → Diagram Release","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"group.upsert","payload":{"id":"agent","kind":"lane","label":"Agent","op":"group.upsert","order":0},"seq":1,"type":"group"}
+{"op":"group.upsert","payload":{"id":"ci","kind":"lane","label":"CI / Gate","op":"group.upsert","order":1},"seq":2,"type":"group"}
+{"op":"group.upsert","payload":{"id":"owner","kind":"lane","label":"Owner","op":"group.upsert","order":2},"seq":3,"type":"group"}
+{"op":"group.upsert","payload":{"id":"runtime","kind":"lane","label":"Runtime","op":"group.upsert","order":3},"seq":4,"type":"group"}
+{"op":"node.upsert","payload":{"id":"draft","kind":"task","label":"Append proposal events","lane":"agent","op":"node.upsert","order":0},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"normalize","kind":"task","label":"Normalize diagram tokens","lane":"agent","op":"node.upsert","order":1},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"check","kind":"task","label":"Schema + proof check","lane":"ci","op":"node.upsert","order":2},"seq":7,"type":"node"}
+{"op":"node.upsert","payload":{"id":"render","kind":"task","label":"Build SVG artifact","lane":"runtime","op":"node.upsert","order":3},"seq":8,"type":"node"}
+{"op":"node.upsert","payload":{"id":"review","kind":"task","label":"Review SVG preview","lane":"owner","op":"node.upsert","order":4},"seq":9,"type":"node"}
+{"op":"node.upsert","payload":{"id":"merge","kind":"task","label":"Approve merge","lane":"owner","op":"node.upsert","order":5},"seq":10,"type":"node"}
+{"op":"node.upsert","payload":{"id":"release","kind":"task","label":"Publish generated SVG","lane":"runtime","op":"node.upsert","order":6},"seq":11,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"s0","kind":"flow","label":"","op":"edge.upsert","source":"draft","target":"normalize"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"s1","kind":"flow","label":"","op":"edge.upsert","source":"normalize","target":"check"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"s2","kind":"flow","label":"green","op":"edge.upsert","source":"check","target":"render"},"seq":14,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"s3","kind":"flow","label":"","op":"edge.upsert","source":"render","target":"review"},"seq":15,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"s4","kind":"flow","label":"ok","op":"edge.upsert","source":"review","target":"merge"},"seq":16,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"s5","kind":"flow","label":"","op":"edge.upsert","source":"merge","target":"release"},"seq":17,"type":"edge"}

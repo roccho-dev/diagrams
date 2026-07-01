@@ -1,0 +1,323 @@
+{
+  "diagram": {
+    "id": "dense_dependency",
+    "kind": "dense",
+    "label": "Dense Dependency: Agent Factory Modules",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "d0",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "events",
+      "target": "schema"
+    },
+    {
+      "id": "d1",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "schema",
+      "target": "tokenizer"
+    },
+    {
+      "id": "d2",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "tokenizer",
+      "target": "reducer"
+    },
+    {
+      "id": "d3",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "reducer",
+      "target": "dvm"
+    },
+    {
+      "id": "d4",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "d2"
+    },
+    {
+      "id": "d5",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "graphviz"
+    },
+    {
+      "id": "d6",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "elk"
+    },
+    {
+      "id": "d7",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "d2",
+      "target": "svg"
+    },
+    {
+      "id": "d8",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "graphviz",
+      "target": "svg"
+    },
+    {
+      "id": "d9",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "elk",
+      "target": "svg"
+    },
+    {
+      "id": "d10",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "svg",
+      "target": "proof"
+    },
+    {
+      "id": "d11",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "proof",
+      "target": "preview"
+    },
+    {
+      "id": "d12",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "events"
+    },
+    {
+      "id": "d13",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "ci",
+      "target": "proof"
+    },
+    {
+      "id": "d14",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "registry",
+      "target": "schema"
+    },
+    {
+      "id": "d15",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "registry",
+      "target": "agent"
+    },
+    {
+      "id": "d16",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "schema",
+      "target": "proof"
+    },
+    {
+      "id": "d17",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "proof"
+    },
+    {
+      "id": "d18",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "events",
+      "target": "ci"
+    },
+    {
+      "id": "d19",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "preview",
+      "target": "agent"
+    },
+    {
+      "id": "d20",
+      "kind": "dependency",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "ci"
+    }
+  ],
+  "groups": [],
+  "hash": "8a1e3c353e5733287ac7795276ff3e32bb531504ce7b3030f3af3dde31e2328e",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "events",
+      "kind": "module",
+      "label": "Events",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "schema",
+      "kind": "module",
+      "label": "Schema",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "tokenizer",
+      "kind": "module",
+      "label": "Tokenizer",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "reducer",
+      "kind": "module",
+      "label": "Reducer",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "dvm",
+      "kind": "module",
+      "label": "Dvm",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "d2",
+      "kind": "module",
+      "label": "D2",
+      "meta": {},
+      "order": 5
+    },
+    {
+      "group": null,
+      "id": "graphviz",
+      "kind": "module",
+      "label": "Graphviz",
+      "meta": {},
+      "order": 6
+    },
+    {
+      "group": null,
+      "id": "elk",
+      "kind": "module",
+      "label": "Elk",
+      "meta": {},
+      "order": 7
+    },
+    {
+      "group": null,
+      "id": "svg",
+      "kind": "module",
+      "label": "Svg",
+      "meta": {},
+      "order": 8
+    },
+    {
+      "group": null,
+      "id": "proof",
+      "kind": "module",
+      "label": "Proof",
+      "meta": {},
+      "order": 9
+    },
+    {
+      "group": null,
+      "id": "preview",
+      "kind": "module",
+      "label": "Preview",
+      "meta": {},
+      "order": 10
+    },
+    {
+      "group": null,
+      "id": "agent",
+      "kind": "module",
+      "label": "Agent",
+      "meta": {},
+      "order": 11
+    },
+    {
+      "group": null,
+      "id": "ci",
+      "kind": "module",
+      "label": "Ci",
+      "meta": {},
+      "order": 12
+    },
+    {
+      "group": null,
+      "id": "registry",
+      "kind": "module",
+      "label": "Registry",
+      "meta": {},
+      "order": 13
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

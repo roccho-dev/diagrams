@@ -1,0 +1,15 @@
+{"op":"diagram.init","payload":{"id":"sequence","kind":"sequence","label":"Sequence: Agent Builds Diagram","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"node.upsert","payload":{"id":"agent","kind":"participant","label":"Agent","op":"node.upsert","order":0},"seq":1,"type":"node"}
+{"op":"node.upsert","payload":{"id":"repo","kind":"participant","label":"JSONL Repo","op":"node.upsert","order":1},"seq":2,"type":"node"}
+{"op":"node.upsert","payload":{"id":"compiler","kind":"participant","label":"f(jsonl)","op":"node.upsert","order":2},"seq":3,"type":"node"}
+{"op":"node.upsert","payload":{"id":"layout","kind":"participant","label":"Layout Solver","op":"node.upsert","order":3},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"svg","kind":"participant","label":"SVG Renderer","op":"node.upsert","order":4},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"gate","kind":"participant","label":"Proof Gate","op":"node.upsert","order":5},"seq":6,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"m0","kind":"message","label":"append events","op":"edge.upsert","order":0,"source":"agent","target":"repo"},"seq":7,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m1","kind":"message","label":"read events","op":"edge.upsert","order":1,"source":"repo","target":"compiler"},"seq":8,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m2","kind":"message","label":"tokenize + reduce","op":"edge.upsert","order":2,"source":"compiler","target":"compiler"},"seq":9,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m3","kind":"message","label":"layout request","op":"edge.upsert","order":3,"source":"compiler","target":"layout"},"seq":10,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m4","kind":"message","label":"coords","op":"edge.upsert","order":4,"source":"layout","target":"compiler"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m5","kind":"message","label":"DVM + tokens","op":"edge.upsert","order":5,"source":"compiler","target":"svg"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m6","kind":"message","label":"generated SVG","op":"edge.upsert","order":6,"source":"svg","target":"gate"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"m7","kind":"message","label":"proof OK","op":"edge.upsert","order":7,"source":"gate","target":"agent"},"seq":14,"type":"edge"}

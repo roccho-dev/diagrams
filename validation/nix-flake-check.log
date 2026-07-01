@@ -1,0 +1,1 @@
+nix: not installed in this sandbox; external CI required for nix flake check and nix build .#jsonl-diagram-core

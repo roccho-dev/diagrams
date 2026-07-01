@@ -1,0 +1,11 @@
+WARNING: The directory '/home/oai/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Looking in indexes: https://reader:****@packages.applied-caas-gateway1.internal.api.openai.org/artifactory/api/pypi/pypi-public/simple
+Processing /mnt/data/work_submit/jsonl_src/jsonl-diagram-integrated-worktree
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: jsonl-diagram-core
+  Building wheel for jsonl-diagram-core (pyproject.toml): started
+  Building wheel for jsonl-diagram-core (pyproject.toml): finished with status 'done'
+  Created wheel for jsonl-diagram-core: filename=jsonl_diagram_core-0.1.0-py3-none-any.whl size=13240 sha256=00b8a610694b2417cc12175383ecc6d065f6bfa6eed38d78a4cbe4f31b04bead
+  Stored in directory: /tmp/pip-ephem-wheel-cache-4gqktrm2/wheels/3f/e5/47/4a52f053b68f9911633eae8d3e96b3ca4cfcb1e67ee4480c75
+Successfully built jsonl-diagram-core

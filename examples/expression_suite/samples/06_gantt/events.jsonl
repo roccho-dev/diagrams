@@ -1,0 +1,24 @@
+{"op":"diagram.init","id":"gantt","kind":"gantt","label":"Gantt: MVP Workplan"}
+{"op":"group.upsert","id":"core","kind":"lane","label":"Core","order":0}
+{"op":"group.upsert","id":"render","kind":"lane","label":"Rendering","order":1}
+{"op":"group.upsert","id":"qa","kind":"lane","label":"QA","order":2}
+{"op":"group.upsert","id":"release","kind":"lane","label":"Release","order":3}
+{"op":"task.upsert","id":"schema","kind":"task","lane":"core","label":"Schema","start":1,"end":2,"order":0}
+{"op":"task.upsert","id":"tokenizer","kind":"task","lane":"core","label":"Tokenizer","start":2,"end":4,"order":1}
+{"op":"task.upsert","id":"reducer","kind":"task","lane":"core","label":"Reducer","start":3,"end":5,"order":2}
+{"op":"task.upsert","id":"dvm","kind":"task","lane":"core","label":"DVM","start":5,"end":6,"order":3}
+{"op":"task.upsert","id":"d2","kind":"task","lane":"render","label":"D2 target","start":4,"end":6,"order":4}
+{"op":"task.upsert","id":"tokens","kind":"task","lane":"render","label":"Design tokens","start":5,"end":7,"order":5}
+{"op":"task.upsert","id":"svg","kind":"task","lane":"render","label":"Single SVG","start":7,"end":9,"order":6}
+{"op":"task.upsert","id":"graphviz","kind":"task","lane":"qa","label":"Graphviz dense","start":6,"end":8,"order":7}
+{"op":"task.upsert","id":"elk","kind":"task","lane":"qa","label":"ELK nested","start":8,"end":10,"order":8}
+{"op":"task.upsert","id":"proof","kind":"task","lane":"qa","label":"Proof gate","start":9,"end":11,"order":9}
+{"op":"task.upsert","id":"preview","kind":"task","lane":"release","label":"Preview only","start":10,"end":11,"order":10}
+{"op":"task.upsert","id":"publish","kind":"task","lane":"release","label":"Publish SVG","start":11,"end":12,"order":11}
+{"op":"edge.upsert","id":"g0","source":"schema","target":"tokenizer","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g1","source":"tokenizer","target":"reducer","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g2","source":"reducer","target":"dvm","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g3","source":"dvm","target":"d2","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g4","source":"tokens","target":"svg","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g5","source":"svg","target":"proof","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g6","source":"proof","target":"publish","kind":"dependency","label":""}

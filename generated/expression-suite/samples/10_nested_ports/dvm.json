@@ -1,0 +1,187 @@
+{
+  "diagram": {
+    "id": "nested_ports",
+    "kind": "nested_ports",
+    "label": "Nested / Ports: Trust Boundary",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "p0",
+      "kind": "port_edge",
+      "label": "request",
+      "meta": {},
+      "order": 10000,
+      "source": "browser",
+      "target": "gateway"
+    },
+    {
+      "id": "p1",
+      "kind": "port_edge",
+      "label": "job",
+      "meta": {},
+      "order": 10000,
+      "source": "gateway",
+      "target": "agent"
+    },
+    {
+      "id": "p2",
+      "kind": "port_edge",
+      "label": "append",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "store"
+    },
+    {
+      "id": "p3",
+      "kind": "port_edge",
+      "label": "build",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "compiler"
+    },
+    {
+      "id": "p4",
+      "kind": "port_edge",
+      "label": "read",
+      "meta": {},
+      "order": 10000,
+      "source": "compiler",
+      "target": "store"
+    },
+    {
+      "id": "p5",
+      "kind": "port_edge",
+      "label": "write hash",
+      "meta": {},
+      "order": 10000,
+      "source": "compiler",
+      "target": "proof"
+    },
+    {
+      "id": "p6",
+      "kind": "port_edge",
+      "label": "status",
+      "meta": {},
+      "order": 10000,
+      "source": "proof",
+      "target": "gateway"
+    }
+  ],
+  "groups": [
+    {
+      "group": null,
+      "id": "public",
+      "kind": "boundary",
+      "label": "Public Zone",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "private",
+      "kind": "boundary",
+      "label": "Private Zone",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "data",
+      "kind": "boundary",
+      "label": "Data Zone",
+      "meta": {},
+      "order": 2
+    }
+  ],
+  "hash": "faef3cf2025175efe8e093e2db6d87752eb07a9a7dfce51678f0299899b646c9",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": "public",
+      "id": "browser",
+      "kind": "service",
+      "label": "Browser",
+      "meta": {
+        "ports": [
+          "https"
+        ]
+      },
+      "order": 0
+    },
+    {
+      "group": "public",
+      "id": "gateway",
+      "kind": "service",
+      "label": "API Gateway",
+      "meta": {
+        "ports": [
+          "443",
+          "auth"
+        ]
+      },
+      "order": 1
+    },
+    {
+      "group": "private",
+      "id": "agent",
+      "kind": "service",
+      "label": "Agent Worker",
+      "meta": {
+        "ports": [
+          "jobs",
+          "events"
+        ]
+      },
+      "order": 2
+    },
+    {
+      "group": "private",
+      "id": "compiler",
+      "kind": "service",
+      "label": "Diagram Compiler",
+      "meta": {
+        "ports": [
+          "jsonl",
+          "dvm",
+          "svg"
+        ]
+      },
+      "order": 3
+    },
+    {
+      "group": "data",
+      "id": "store",
+      "kind": "service",
+      "label": "JSONL Store",
+      "meta": {
+        "ports": [
+          "append",
+          "read"
+        ]
+      },
+      "order": 4
+    },
+    {
+      "group": "data",
+      "id": "proof",
+      "kind": "service",
+      "label": "Proof Registry",
+      "meta": {
+        "ports": [
+          "hash"
+        ]
+      },
+      "order": 5
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

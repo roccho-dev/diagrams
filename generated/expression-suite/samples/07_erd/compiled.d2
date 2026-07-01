@@ -1,0 +1,38 @@
+# generated-from: jsonl
+# diagram-id: erd
+# diagram-kind: erd
+direction: right
+
+# nodes
+n_diagram__2c20a6b064ee: {
+  label: "Diagram"
+  shape: sql_table
+  # source-id: diagram
+}
+n_event__b8e1f80bd70a: {
+  label: "Event"
+  shape: sql_table
+  # source-id: event
+}
+n_node__545ea5384610: {
+  label: "Node"
+  shape: sql_table
+  # source-id: node
+}
+n_edge__a1cb100f57e9: {
+  label: "Edge"
+  shape: sql_table
+  # source-id: edge
+}
+n_proof__c1cda2636282: {
+  label: "Proof"
+  shape: sql_table
+  # source-id: proof
+}
+
+# edges
+n_diagram__2c20a6b064ee -> n_event__b8e1f80bd70a: "1:N"
+n_diagram__2c20a6b064ee -> n_node__545ea5384610: "1:N"
+n_node__545ea5384610 -> n_edge__a1cb100f57e9: "1:N source"
+n_node__545ea5384610 -> n_edge__a1cb100f57e9: "1:N target"
+n_diagram__2c20a6b064ee -> n_proof__c1cda2636282: "1:1"

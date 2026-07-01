@@ -1,0 +1,4 @@
+{"id": "wt-018-integration-smoke-main", "purpose": "全worktreeを統合前にsmokeする", "status": "complete", "title": "integration smoke main", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_018_integration_smoke_main.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-018-integration-smoke-main"}
+{"evidence": ["tools/integration_smoke.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-018-integration-smoke-main"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-018-integration-smoke-main"}

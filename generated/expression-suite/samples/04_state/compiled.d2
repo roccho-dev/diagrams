@@ -1,0 +1,51 @@
+# generated-from: jsonl
+# diagram-id: state
+# diagram-kind: state
+direction: right
+
+# nodes
+n_draft__7743ce348d92: {
+  label: "Draft JSONL"
+  shape: rectangle
+  # source-id: draft
+}
+n_tokenized__ba7d56163590: {
+  label: "Tokenized"
+  shape: rectangle
+  # source-id: tokenized
+}
+n_reduced__c454a455918b: {
+  label: "DVM Ready"
+  shape: rectangle
+  # source-id: reduced
+}
+n_rendered__69d0044d65bc: {
+  label: "SVG Rendered"
+  shape: rectangle
+  # source-id: rendered
+}
+n_verified__1c34f88707b5: {
+  label: "Proof Verified"
+  shape: rectangle
+  # source-id: verified
+}
+n_published__b04e5ea201bb: {
+  label: "Published"
+  shape: rectangle
+  # source-id: published
+}
+n_rejected__20cd938a2ea6: {
+  label: "Rejected"
+  shape: rectangle
+  # source-id: rejected
+}
+
+# edges
+n_draft__7743ce348d92 -> n_tokenized__ba7d56163590: "append"
+n_tokenized__ba7d56163590 -> n_reduced__c454a455918b: "schema ok"
+n_reduced__c454a455918b -> n_rendered__69d0044d65bc: "compile"
+n_rendered__69d0044d65bc -> n_verified__1c34f88707b5: "hash ok"
+n_verified__1c34f88707b5 -> n_published__b04e5ea201bb: "green"
+n_tokenized__ba7d56163590 -> n_rejected__20cd938a2ea6: "schema fail"
+n_rendered__69d0044d65bc -> n_rejected__20cd938a2ea6: "loss > 0"
+n_rejected__20cd938a2ea6 -> n_draft__7743ce348d92: "fix JSONL"

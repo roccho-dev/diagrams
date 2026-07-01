@@ -1,0 +1,29 @@
+test_manifest_is_events_jsonl_authority_only (test_001_canonical_design_fixtures.CanonicalDesignFixturesTest.test_manifest_is_events_jsonl_authority_only) ... ok
+test_no_html_source_fixtures_are_promoted_to_authority (test_001_canonical_design_fixtures.CanonicalDesignFixturesTest.test_no_html_source_fixtures_are_promoted_to_authority) ... ok
+test_accepts_semantic_records_without_coordinates (test_002_jsonl_meaning_model.MeaningModelTest.test_accepts_semantic_records_without_coordinates) ... ok
+test_rejects_coordinates_in_top_level_or_meta (test_002_jsonl_meaning_model.MeaningModelTest.test_rejects_coordinates_in_top_level_or_meta) ... ok
+test_explicit_engine_is_reported_as_explicit (test_003_layout_router_contract.LayoutRouterContractTest.test_explicit_engine_is_reported_as_explicit) ... ok
+test_routes_by_diagram_kind_without_core_engine_pollution (test_003_layout_router_contract.LayoutRouterContractTest.test_routes_by_diagram_kind_without_core_engine_pollution) ... ok
+test_swimlane_slots_are_stable_and_overlay_is_separate (test_004_grid_free_layout_layer.GridFreeLayoutLayerTest.test_swimlane_slots_are_stable_and_overlay_is_separate) ... ok
+test_three_set_overlap_is_deterministic_and_not_graph_layout (test_005_venn_set_overlap_adapter.VennSetOverlapAdapterTest.test_three_set_overlap_is_deterministic_and_not_graph_layout) ... ok
+test_elk_contract_has_no_fixed_coordinates (test_006_elk_graph_layout_adapter.ElkGraphLayoutAdapterTest.test_elk_contract_has_no_fixed_coordinates) ... ok
+test_mesh_network_reports_feedback_candidates_instead_of_hiding_them (test_007_network_projection_adapter.NetworkProjectionAdapterTest.test_mesh_network_reports_feedback_candidates_instead_of_hiding_them) ... ok
+test_tree_like_network_can_be_projected_to_dag (test_007_network_projection_adapter.NetworkProjectionAdapterTest.test_tree_like_network_can_be_projected_to_dag) ... ok
+test_rejects_unknown_shape (test_008_render_ast_contract.RenderAstContractTest.test_rejects_unknown_shape) ... ok
+test_validates_and_sorts_by_z (test_008_render_ast_contract.RenderAstContractTest.test_validates_and_sorts_by_z) ... ok
+test_svg_from_render_ast_is_parseable (test_009_svg_renderer.SvgRendererTest.test_svg_from_render_ast_is_parseable) ... ok
+test_drawio_has_root_layer_and_editable_cells (test_010_drawio_native_renderer.DrawioNativeRendererTest.test_drawio_has_root_layer_and_editable_cells) ... ok
+test_wraps_svg_as_image_cell_for_visual_exact_mode (test_011_drawio_image_mode_renderer.DrawioImageModeRendererTest.test_wraps_svg_as_image_cell_for_visual_exact_mode) ... ok
+test_compile_one_shot_writes_svg_drawio_and_report (test_012_one_shot_compiler_cli.OneShotCompilerCliTest.test_compile_one_shot_writes_svg_drawio_and_report) ... ok
+test_preview_is_self_contained_without_websandbox (test_013_embedded_html_preview.EmbeddedHtmlPreviewTest.test_preview_is_self_contained_without_websandbox) ... ok
+test_hashes_source_layout_and_artifacts (test_014_provenance_reporting.ProvenanceReportingTest.test_hashes_source_layout_and_artifacts) ... ok
+test_reports_missing_added_and_changed_hashes (test_015_golden_regression_suite.GoldenRegressionSuiteTest.test_reports_missing_added_and_changed_hashes) ... ok
+test_generated_artifacts_cannot_live_under_records_authority (test_016_no_generated_authority_rule.NoGeneratedAuthorityRuleTest.test_generated_artifacts_cannot_live_under_records_authority) ... ok
+test_template_requires_tests_and_evidence (test_017_worktree_proposal_template.WorktreeProposalTemplateTest.test_template_requires_tests_and_evidence) ... ok
+test_final_pipeline_smoke_generates_all_expected_files (test_018_integration_smoke_main.IntegrationSmokeMainTest.test_final_pipeline_smoke_generates_all_expected_files) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.012s
+
+OK
+{"artifacts": {"drawio": "bb09eeb5023e505ffb79bbf51839bc48ec9e825151daf807379406276c2f879f", "svg": "ebcc6296589afdddec8052f5b7d3a232259a1c1ae2048a6545cff38af8278200"}, "dvmHash": "729b3234b90b5b16a3641d06bfa4894d4656c4bac6355e9ef00c8971c5d3549d", "schema": "OneShotCompileReport.v1", "source": "/tmp/tmpyga0qfr_/events.jsonl", "sourceSha256": "77c125d711639c5b739b101bc200cfd65187c2ee7f8e6b3915296bed18cc4a81"}

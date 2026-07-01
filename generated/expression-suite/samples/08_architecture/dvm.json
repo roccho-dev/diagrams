@@ -1,0 +1,234 @@
+{
+  "diagram": {
+    "id": "architecture",
+    "kind": "architecture",
+    "label": "Architecture: JSONL Diagram Factory",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "a0",
+      "kind": "depends",
+      "label": "validate",
+      "meta": {},
+      "order": 10000,
+      "source": "events",
+      "target": "schema"
+    },
+    {
+      "id": "a1",
+      "kind": "depends",
+      "label": "tokens",
+      "meta": {},
+      "order": 10000,
+      "source": "schema",
+      "target": "tokenizer"
+    },
+    {
+      "id": "a2",
+      "kind": "depends",
+      "label": "stream",
+      "meta": {},
+      "order": 10000,
+      "source": "tokenizer",
+      "target": "reducer"
+    },
+    {
+      "id": "a3",
+      "kind": "depends",
+      "label": "current",
+      "meta": {},
+      "order": 10000,
+      "source": "reducer",
+      "target": "dvm"
+    },
+    {
+      "id": "a4",
+      "kind": "depends",
+      "label": "compile",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "d2"
+    },
+    {
+      "id": "a5",
+      "kind": "depends",
+      "label": "dense",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "gv"
+    },
+    {
+      "id": "a6",
+      "kind": "depends",
+      "label": "complex",
+      "meta": {},
+      "order": 10000,
+      "source": "dvm",
+      "target": "elk"
+    },
+    {
+      "id": "a7",
+      "kind": "depends",
+      "label": "target",
+      "meta": {},
+      "order": 10000,
+      "source": "d2",
+      "target": "renderer"
+    },
+    {
+      "id": "a8",
+      "kind": "depends",
+      "label": "coords",
+      "meta": {},
+      "order": 10000,
+      "source": "gv",
+      "target": "renderer"
+    },
+    {
+      "id": "a9",
+      "kind": "depends",
+      "label": "coords",
+      "meta": {},
+      "order": 10000,
+      "source": "elk",
+      "target": "renderer"
+    },
+    {
+      "id": "a10",
+      "kind": "depends",
+      "label": "hash",
+      "meta": {},
+      "order": 10000,
+      "source": "renderer",
+      "target": "proof"
+    }
+  ],
+  "groups": [
+    {
+      "group": null,
+      "id": "input",
+      "kind": "container",
+      "label": "Input / Authority",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "core",
+      "kind": "container",
+      "label": "Core",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "adapters",
+      "kind": "container",
+      "label": "Adapters",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "artifact",
+      "kind": "container",
+      "label": "Generated Artifacts",
+      "meta": {},
+      "order": 3
+    }
+  ],
+  "hash": "f014153ed1645b245af1db1ba7c213bcc3ee88874e2fb57ff8c3ac6a64eb1bc6",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": "input",
+      "id": "events",
+      "kind": "component",
+      "label": "events.jsonl",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": "input",
+      "id": "schema",
+      "kind": "component",
+      "label": "schema gate",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": "core",
+      "id": "tokenizer",
+      "kind": "component",
+      "label": "tokenizer",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": "core",
+      "id": "reducer",
+      "kind": "component",
+      "label": "reducer",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": "core",
+      "id": "dvm",
+      "kind": "component",
+      "label": "DiagramViewModel",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": "adapters",
+      "id": "d2",
+      "kind": "component",
+      "label": "D2 target",
+      "meta": {},
+      "order": 5
+    },
+    {
+      "group": "adapters",
+      "id": "gv",
+      "kind": "component",
+      "label": "Graphviz layout",
+      "meta": {},
+      "order": 6
+    },
+    {
+      "group": "adapters",
+      "id": "elk",
+      "kind": "component",
+      "label": "ELK layout",
+      "meta": {},
+      "order": 7
+    },
+    {
+      "group": "artifact",
+      "id": "renderer",
+      "kind": "component",
+      "label": "single SVG renderer",
+      "meta": {},
+      "order": 8
+    },
+    {
+      "group": "artifact",
+      "id": "proof",
+      "kind": "component",
+      "label": "proof gate",
+      "meta": {},
+      "order": 9
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

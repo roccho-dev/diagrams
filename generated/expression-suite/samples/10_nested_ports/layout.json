@@ -1,0 +1,331 @@
+{
+  "available": true,
+  "engine": "elkjs",
+  "fallbackUsed": false,
+  "layoutOnly": true,
+  "nodes": {
+    "agent": {
+      "h": 58,
+      "w": 132,
+      "x": 666,
+      "y": 203
+    },
+    "browser": {
+      "h": 58,
+      "w": 132,
+      "x": 262,
+      "y": 222
+    },
+    "compiler": {
+      "h": 58,
+      "w": 132,
+      "x": 60,
+      "y": 108
+    },
+    "gateway": {
+      "h": 58,
+      "w": 132,
+      "x": 464,
+      "y": 212
+    },
+    "proof": {
+      "h": 58,
+      "w": 132,
+      "x": 262,
+      "y": 122
+    },
+    "store": {
+      "h": 58,
+      "w": 132,
+      "x": 868,
+      "y": 193
+    }
+  },
+  "raw": {
+    "$H": 13,
+    "children": [
+      {
+        "$H": 277,
+        "height": 58,
+        "id": "browser",
+        "width": 132,
+        "x": 214,
+        "y": 134
+      },
+      {
+        "$H": 279,
+        "height": 58,
+        "id": "gateway",
+        "width": 132,
+        "x": 416,
+        "y": 124.33333333333333
+      },
+      {
+        "$H": 281,
+        "height": 58,
+        "id": "agent",
+        "width": 132,
+        "x": 618,
+        "y": 114.66666666666666
+      },
+      {
+        "$H": 283,
+        "height": 58,
+        "id": "compiler",
+        "width": 132,
+        "x": 12,
+        "y": 19.5
+      },
+      {
+        "$H": 285,
+        "height": 58,
+        "id": "store",
+        "width": 132,
+        "x": 820,
+        "y": 104.99999999999999
+      },
+      {
+        "$H": 287,
+        "height": 58,
+        "id": "proof",
+        "width": 132,
+        "x": 214,
+        "y": 34
+      }
+    ],
+    "edges": [
+      {
+        "container": "root",
+        "id": "p0",
+        "sections": [
+          {
+            "endPoint": {
+              "x": 416,
+              "y": 163
+            },
+            "id": "p0_s0",
+            "incomingShape": "browser",
+            "outgoingShape": "gateway",
+            "startPoint": {
+              "x": 346,
+              "y": 163
+            }
+          }
+        ],
+        "sources": [
+          "browser"
+        ],
+        "targets": [
+          "gateway"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p1",
+        "sections": [
+          {
+            "endPoint": {
+              "x": 618,
+              "y": 153.33333333333331
+            },
+            "id": "p1_s0",
+            "incomingShape": "gateway",
+            "outgoingShape": "agent",
+            "startPoint": {
+              "x": 548,
+              "y": 153.33333333333331
+            }
+          }
+        ],
+        "sources": [
+          "gateway"
+        ],
+        "targets": [
+          "agent"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p2",
+        "sections": [
+          {
+            "endPoint": {
+              "x": 820,
+              "y": 143.66666666666666
+            },
+            "id": "p2_s0",
+            "incomingShape": "agent",
+            "outgoingShape": "store",
+            "startPoint": {
+              "x": 750,
+              "y": 143.66666666666666
+            }
+          }
+        ],
+        "sources": [
+          "agent"
+        ],
+        "targets": [
+          "store"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p3",
+        "sections": [
+          {
+            "bendPoints": [
+              {
+                "x": 558,
+                "y": 134
+              },
+              {
+                "x": 558,
+                "y": 23
+              },
+              {
+                "x": 164,
+                "y": 23
+              },
+              {
+                "x": 164,
+                "y": 48.5
+              }
+            ],
+            "endPoint": {
+              "x": 144,
+              "y": 48.5
+            },
+            "id": "p3_s0",
+            "incomingShape": "agent",
+            "outgoingShape": "compiler",
+            "startPoint": {
+              "x": 618,
+              "y": 134
+            }
+          }
+        ],
+        "sources": [
+          "agent"
+        ],
+        "targets": [
+          "compiler"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p4",
+        "sections": [
+          {
+            "bendPoints": [
+              {
+                "x": 154,
+                "y": 34
+              },
+              {
+                "x": 154,
+                "y": 12
+              },
+              {
+                "x": 760,
+                "y": 12
+              },
+              {
+                "x": 760,
+                "y": 124.33333333333331
+              }
+            ],
+            "endPoint": {
+              "x": 820,
+              "y": 124.33333333333331
+            },
+            "id": "p4_s0",
+            "incomingShape": "compiler",
+            "outgoingShape": "store",
+            "startPoint": {
+              "x": 144,
+              "y": 34
+            }
+          }
+        ],
+        "sources": [
+          "compiler"
+        ],
+        "targets": [
+          "store"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p5",
+        "sections": [
+          {
+            "endPoint": {
+              "x": 214,
+              "y": 63
+            },
+            "id": "p5_s0",
+            "incomingShape": "compiler",
+            "outgoingShape": "proof",
+            "startPoint": {
+              "x": 144,
+              "y": 63
+            }
+          }
+        ],
+        "sources": [
+          "compiler"
+        ],
+        "targets": [
+          "proof"
+        ]
+      },
+      {
+        "container": "root",
+        "id": "p6",
+        "sections": [
+          {
+            "bendPoints": [
+              {
+                "x": 356,
+                "y": 63
+              },
+              {
+                "x": 356,
+                "y": 143.66666666666666
+              }
+            ],
+            "endPoint": {
+              "x": 416,
+              "y": 143.66666666666666
+            },
+            "id": "p6_s0",
+            "incomingShape": "proof",
+            "outgoingShape": "gateway",
+            "startPoint": {
+              "x": 346,
+              "y": 63
+            }
+          }
+        ],
+        "sources": [
+          "proof"
+        ],
+        "targets": [
+          "gateway"
+        ]
+      }
+    ],
+    "height": 204,
+    "id": "root",
+    "layoutOptions": {
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "70",
+      "elk.spacing.nodeNode": "42"
+    },
+    "width": 964,
+    "x": 0,
+    "y": 0
+  }
+}

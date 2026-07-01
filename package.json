@@ -1,0 +1,12 @@
+{
+  "name": "jsonl-diagram-adapter-fixtures",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke:d2-elk": "node examples/expression_suite/tools/d2_elk_smoke.mjs generated/expression-suite"
+  },
+  "dependencies": {
+    "@terrastruct/d2": "^0.1.33",
+    "elkjs": "^0.11.1"
+  }
+}

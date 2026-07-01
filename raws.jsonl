@@ -1,0 +1,18 @@
+{"done": true, "generation": 0, "purpose": "JSONL appendだけで図を作る", "type": "purpose.meta"}
+{"done": true, "generation": 1, "purpose": "runtime validatorをJSON Schema契約に寄せる", "type": "purpose.meta"}
+{"done": true, "generation": 2, "purpose": "reducerでDVM参照整合性を保証する", "type": "purpose.meta"}
+{"done": true, "generation": 3, "purpose": "adapter fixtureのID mapping衝突を消す", "type": "purpose.meta"}
+{"done": true, "generation": 4, "purpose": "rebuild-compare proof gateで再生成証明に近づける", "type": "purpose.meta"}
+{"done": true, "generation": 5, "purpose": "core+port as libをNix package output前提で保つ", "type": "purpose.meta"}
+{"done": true, "generation": 6, "purpose": "adapterはlibではなくe2e fixture + exampleとして残す", "type": "purpose.meta"}
+{"done": true, "generation": 7, "purpose": "HTMLはZIP外のSVG preview専用にする", "type": "purpose.meta"}
+{"done": true, "generation": 8, "purpose": "Visual CIとして破綻を検出する", "type": "purpose.meta"}
+{"done": true, "generation": 9, "purpose": "高価値法人の検証資産にする", "type": "purpose.meta"}
+{"done": true, "generation": 10, "purpose": "法人売却時に買収者が再生成・検証できる資産にする", "type": "purpose.meta"}
+{"items": ["runtime validator strictness", "DVM semantic validation", "injective adapter ids", "rebuild compare gate", "test discovery fix", "schema package data", "HTML excluded from ZIP"], "phase": "hardening-to-core-alpha", "type": "phase.complete"}
+{"adapters": "examples/adapters and tests/e2e/fixtures/adapters only", "core": ["io", "schema", "tokenizer", "reducer", "proof", "ports"], "dependency_rule": "core imports zero D2/Graphviz/ELK/SVG adapter code", "ports": "src/jsonl_diagram_core/ports.py", "type": "architecture"}
+{"flakeLock": "not fabricated", "output": "packages.<system>.jsonl-diagram-core", "reason": "nix binary unavailable", "status": "contract present; not evaluated here", "type": "nix"}
+{"d2ElkSmoke": true, "filesCompared": 87, "gate": "rebuild_compare", "requireEngines": true, "result": "ok", "type": "proof"}
+{"svgGate": "12 generated SVG OK", "type": "tests", "unittest": "9 tests OK", "wheelSchemaInclusion": "OK"}
+{"done": true, "items": ["13_venn fixture", "render_venn adapter example", "HTML preview external only", "core unchanged"], "phase": "venn-expression-coverage", "type": "phase.complete"}
+{"adapter": "examples/adapters/svg_renderer.py render_venn", "authority": "events.jsonl", "coreChange": "none", "source": "groups kind=set + nodes kind=region + meta.members", "type": "venn.contract"}

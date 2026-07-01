@@ -1,0 +1,20 @@
+{"op":"diagram.init","payload":{"id":"mindmap","kind":"mindmap","label":"Mindmap: Diagram Asset Value","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"node.upsert","payload":{"id":"root","kind":"root","label":"Diagram Asset","op":"node.upsert","order":0},"seq":1,"type":"node"}
+{"op":"node.upsert","payload":{"id":"jsonl","kind":"branch","label":"JSONL Authority","op":"node.upsert","order":1},"seq":2,"type":"node"}
+{"op":"node.upsert","payload":{"id":"repro","kind":"branch","label":"Reproducible","op":"node.upsert","order":2},"seq":3,"type":"node"}
+{"op":"node.upsert","payload":{"id":"agent","kind":"branch","label":"Agent Friendly","op":"node.upsert","order":3},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"dd","kind":"branch","label":"DD Asset","op":"node.upsert","order":4},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"schema","kind":"leaf","label":"schema","op":"node.upsert","order":5},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"proof","kind":"leaf","label":"proof","op":"node.upsert","order":6},"seq":7,"type":"node"}
+{"op":"node.upsert","payload":{"id":"svg","kind":"leaf","label":"single SVG","op":"node.upsert","order":7},"seq":8,"type":"node"}
+{"op":"node.upsert","payload":{"id":"ci","kind":"leaf","label":"visual CI","op":"node.upsert","order":8},"seq":9,"type":"node"}
+{"op":"node.upsert","payload":{"id":"buyer","kind":"leaf","label":"buyer review","op":"node.upsert","order":9},"seq":10,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"mm0","kind":"tree","label":"","op":"edge.upsert","source":"root","target":"jsonl"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm1","kind":"tree","label":"","op":"edge.upsert","source":"root","target":"repro"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm2","kind":"tree","label":"","op":"edge.upsert","source":"root","target":"agent"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm3","kind":"tree","label":"","op":"edge.upsert","source":"root","target":"dd"},"seq":14,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm4","kind":"tree","label":"","op":"edge.upsert","source":"jsonl","target":"schema"},"seq":15,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm5","kind":"tree","label":"","op":"edge.upsert","source":"repro","target":"proof"},"seq":16,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm6","kind":"tree","label":"","op":"edge.upsert","source":"agent","target":"svg"},"seq":17,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm7","kind":"tree","label":"","op":"edge.upsert","source":"agent","target":"ci"},"seq":18,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"mm8","kind":"tree","label":"","op":"edge.upsert","source":"dd","target":"buyer"},"seq":19,"type":"edge"}

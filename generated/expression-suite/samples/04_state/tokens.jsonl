@@ -1,0 +1,16 @@
+{"op":"diagram.init","payload":{"id":"state","kind":"state","label":"State: Diagram Artifact Lifecycle","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"node.upsert","payload":{"id":"draft","kind":"state","label":"Draft JSONL","op":"node.upsert","order":0},"seq":1,"type":"node"}
+{"op":"node.upsert","payload":{"id":"tokenized","kind":"state","label":"Tokenized","op":"node.upsert","order":1},"seq":2,"type":"node"}
+{"op":"node.upsert","payload":{"id":"reduced","kind":"state","label":"DVM Ready","op":"node.upsert","order":2},"seq":3,"type":"node"}
+{"op":"node.upsert","payload":{"id":"rendered","kind":"state","label":"SVG Rendered","op":"node.upsert","order":3},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"verified","kind":"state","label":"Proof Verified","op":"node.upsert","order":4},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"published","kind":"state","label":"Published","op":"node.upsert","order":5},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"rejected","kind":"state","label":"Rejected","op":"node.upsert","order":6},"seq":7,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"t0","kind":"transition","label":"append","op":"edge.upsert","source":"draft","target":"tokenized"},"seq":8,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t1","kind":"transition","label":"schema ok","op":"edge.upsert","source":"tokenized","target":"reduced"},"seq":9,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t2","kind":"transition","label":"compile","op":"edge.upsert","source":"reduced","target":"rendered"},"seq":10,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t3","kind":"transition","label":"hash ok","op":"edge.upsert","source":"rendered","target":"verified"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t4","kind":"transition","label":"green","op":"edge.upsert","source":"verified","target":"published"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t5","kind":"transition","label":"schema fail","op":"edge.upsert","source":"tokenized","target":"rejected"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t6","kind":"transition","label":"loss > 0","op":"edge.upsert","source":"rendered","target":"rejected"},"seq":14,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"t7","kind":"transition","label":"fix JSONL","op":"edge.upsert","source":"rejected","target":"draft"},"seq":15,"type":"edge"}

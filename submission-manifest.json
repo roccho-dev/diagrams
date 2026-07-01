@@ -1,0 +1,29 @@
+{
+  "schema": "jsonl-diagram.canonical-submission-manifest.v1",
+  "id": "MP-JSONL-DIAGRAM-CORE-VENN-260614",
+  "status": "submit-ready-for-canonical-merge-proposal-review",
+  "authority": "events.jsonl",
+  "generatedIsAuthority": false,
+  "semanticRegressionPolicy": "no degradation permitted",
+  "includedEvidence": [
+    "records/canonical-merge-proposal.jsonl",
+    "MERGE_PROPOSAL.md",
+    "proposal-evidence/legacy-semantic-compare.json",
+    "proposal-evidence/semantic-no-regression-summary.md",
+    "validation/VALIDATION_SUMMARY.md",
+    "validation/*.json",
+    "validation/*.log",
+    "generated/expression-suite"
+  ],
+  "excludedFromSubmissionZip": [
+    "node_modules",
+    "build",
+    "*.egg-info",
+    "__pycache__",
+    "*.pyc"
+  ],
+  "externalRequiredGates": [
+    "nix build .#jsonl-diagram-core",
+    "nix flake check"
+  ]
+}

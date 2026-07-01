@@ -1,0 +1,15 @@
+{"op":"diagram.init","id":"flow","kind":"flow","label":"Flow: JSONL Build Gate"}
+{"op":"node.upsert","id":"start","kind":"start","label":"append JSONL"}
+{"op":"node.upsert","id":"tokenize","kind":"process","label":"tokenize"}
+{"op":"node.upsert","id":"schema","kind":"decision","label":"schema ok?"}
+{"op":"node.upsert","id":"reduce","kind":"process","label":"reduce to DVM"}
+{"op":"node.upsert","id":"render","kind":"process","label":"render SVG"}
+{"op":"node.upsert","id":"proof","kind":"process","label":"proof gate"}
+{"op":"node.upsert","id":"stop","kind":"end","label":"publish artifact"}
+{"op":"edge.upsert","id":"e0","source":"start","target":"tokenize","kind":"flow","label":""}
+{"op":"edge.upsert","id":"e1","source":"tokenize","target":"schema","kind":"flow","label":""}
+{"op":"edge.upsert","id":"e2","source":"schema","target":"reduce","kind":"flow","label":"yes"}
+{"op":"edge.upsert","id":"e3","source":"reduce","target":"render","kind":"flow","label":""}
+{"op":"edge.upsert","id":"e4","source":"render","target":"proof","kind":"flow","label":""}
+{"op":"edge.upsert","id":"e5","source":"proof","target":"stop","kind":"flow","label":"green"}
+{"op":"edge.upsert","id":"e_bad","source":"schema","target":"start","kind":"flow","label":"fix"}

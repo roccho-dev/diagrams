@@ -1,0 +1,7 @@
+{
+  "canonicalSurfacePolicy": "explicit-output-only-no-default",
+  "coreAdapterImports": [],
+  "defaultOutputExposed": false,
+  "flakeHasDefaultOutput": false,
+  "ok": true
+}

@@ -1,0 +1,101 @@
+{
+  "diagram": {
+    "id": "timeline",
+    "kind": "timeline",
+    "label": "Timeline: Diagram Compiler Evolution",
+    "meta": {}
+  },
+  "edges": [],
+  "groups": [],
+  "hash": "d888f19be1449383d91d02b69c099ea10829621138153e163f6c4b3bf053d339",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "p0",
+      "kind": "milestone",
+      "label": "JSONL events",
+      "meta": {
+        "when": "P0"
+      },
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "p1",
+      "kind": "milestone",
+      "label": "Tokenizer",
+      "meta": {
+        "when": "P1"
+      },
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "p2",
+      "kind": "milestone",
+      "label": "Reducer / DVM",
+      "meta": {
+        "when": "P2"
+      },
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "p3",
+      "kind": "milestone",
+      "label": "D2 target",
+      "meta": {
+        "when": "P3"
+      },
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "p4",
+      "kind": "milestone",
+      "label": "Graphviz / ELK layout",
+      "meta": {
+        "when": "P4"
+      },
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "p5",
+      "kind": "milestone",
+      "label": "Single SVG",
+      "meta": {
+        "when": "P5"
+      },
+      "order": 5
+    },
+    {
+      "group": null,
+      "id": "p6",
+      "kind": "milestone",
+      "label": "Visual CI",
+      "meta": {
+        "when": "P6"
+      },
+      "order": 6
+    },
+    {
+      "group": null,
+      "id": "p7",
+      "kind": "milestone",
+      "label": "DD asset",
+      "meta": {
+        "when": "P7"
+      },
+      "order": 7
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

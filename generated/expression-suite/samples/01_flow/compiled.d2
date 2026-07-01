@@ -1,0 +1,50 @@
+# generated-from: jsonl
+# diagram-id: flow
+# diagram-kind: flow
+direction: right
+
+# nodes
+n_start__cced28c6dc3f: {
+  label: "append JSONL"
+  shape: circle
+  # source-id: start
+}
+n_tokenize__92c0befbb914: {
+  label: "tokenize"
+  shape: rectangle
+  # source-id: tokenize
+}
+n_schema__df0ad6e43880: {
+  label: "schema ok?"
+  shape: diamond
+  # source-id: schema
+}
+n_reduce__4c7e98bfa0c7: {
+  label: "reduce to DVM"
+  shape: rectangle
+  # source-id: reduce
+}
+n_render__887270d0cbc5: {
+  label: "render SVG"
+  shape: rectangle
+  # source-id: render
+}
+n_proof__c1cda2636282: {
+  label: "proof gate"
+  shape: rectangle
+  # source-id: proof
+}
+n_stop__6c45cb72a36e: {
+  label: "publish artifact"
+  shape: circle
+  # source-id: stop
+}
+
+# edges
+n_start__cced28c6dc3f -> n_tokenize__92c0befbb914
+n_tokenize__92c0befbb914 -> n_schema__df0ad6e43880
+n_schema__df0ad6e43880 -> n_reduce__4c7e98bfa0c7: "yes"
+n_reduce__4c7e98bfa0c7 -> n_render__887270d0cbc5
+n_render__887270d0cbc5 -> n_proof__c1cda2636282
+n_proof__c1cda2636282 -> n_stop__6c45cb72a36e: "green"
+n_schema__df0ad6e43880 -> n_start__cced28c6dc3f: "fix"

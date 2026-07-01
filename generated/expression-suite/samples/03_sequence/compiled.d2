@@ -1,0 +1,46 @@
+# generated-from: jsonl
+# diagram-id: sequence
+# diagram-kind: sequence
+direction: right
+
+# nodes
+n_agent__d4f0bc5a29de: {
+  label: "Agent"
+  shape: rectangle
+  # source-id: agent
+}
+n_repo__071ca2227754: {
+  label: "JSONL Repo"
+  shape: rectangle
+  # source-id: repo
+}
+n_compiler__e996bb0ea465: {
+  label: "f(jsonl)"
+  shape: rectangle
+  # source-id: compiler
+}
+n_layout__1dc5ae5b6817: {
+  label: "Layout Solver"
+  shape: rectangle
+  # source-id: layout
+}
+n_svg__acdb1373d176: {
+  label: "SVG Renderer"
+  shape: rectangle
+  # source-id: svg
+}
+n_gate__c974e17b8e73: {
+  label: "Proof Gate"
+  shape: rectangle
+  # source-id: gate
+}
+
+# edges
+n_agent__d4f0bc5a29de -> n_repo__071ca2227754: "append events"
+n_repo__071ca2227754 -> n_compiler__e996bb0ea465: "read events"
+n_compiler__e996bb0ea465 -> n_compiler__e996bb0ea465: "tokenize + reduce"
+n_compiler__e996bb0ea465 -> n_layout__1dc5ae5b6817: "layout request"
+n_layout__1dc5ae5b6817 -> n_compiler__e996bb0ea465: "coords"
+n_compiler__e996bb0ea465 -> n_svg__acdb1373d176: "DVM + tokens"
+n_svg__acdb1373d176 -> n_gate__c974e17b8e73: "generated SVG"
+n_gate__c974e17b8e73 -> n_agent__d4f0bc5a29de: "proof OK"

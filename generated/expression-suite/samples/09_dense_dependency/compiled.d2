@@ -1,0 +1,99 @@
+# generated-from: jsonl
+# diagram-id: dense_dependency
+# diagram-kind: dense
+direction: right
+
+# nodes
+n_events__862417b9e7c3: {
+  label: "Events"
+  shape: rectangle
+  # source-id: events
+}
+n_schema__df0ad6e43880: {
+  label: "Schema"
+  shape: rectangle
+  # source-id: schema
+}
+n_tokenizer__5f97e3774c51: {
+  label: "Tokenizer"
+  shape: rectangle
+  # source-id: tokenizer
+}
+n_reducer__d5bb10afb694: {
+  label: "Reducer"
+  shape: rectangle
+  # source-id: reducer
+}
+n_dvm__ebc2b222ef02: {
+  label: "Dvm"
+  shape: rectangle
+  # source-id: dvm
+}
+n_d2__e788103ee153: {
+  label: "D2"
+  shape: rectangle
+  # source-id: d2
+}
+n_graphviz__74a87c2b6b9c: {
+  label: "Graphviz"
+  shape: rectangle
+  # source-id: graphviz
+}
+n_elk__2f60f61a3424: {
+  label: "Elk"
+  shape: rectangle
+  # source-id: elk
+}
+n_svg__acdb1373d176: {
+  label: "Svg"
+  shape: rectangle
+  # source-id: svg
+}
+n_proof__c1cda2636282: {
+  label: "Proof"
+  shape: rectangle
+  # source-id: proof
+}
+n_preview__5975cf1bba43: {
+  label: "Preview"
+  shape: rectangle
+  # source-id: preview
+}
+n_agent__d4f0bc5a29de: {
+  label: "Agent"
+  shape: rectangle
+  # source-id: agent
+}
+n_ci__1b158839f8aa: {
+  label: "Ci"
+  shape: rectangle
+  # source-id: ci
+}
+n_registry__872491a30d60: {
+  label: "Registry"
+  shape: rectangle
+  # source-id: registry
+}
+
+# edges
+n_events__862417b9e7c3 -> n_schema__df0ad6e43880
+n_schema__df0ad6e43880 -> n_tokenizer__5f97e3774c51
+n_tokenizer__5f97e3774c51 -> n_reducer__d5bb10afb694
+n_reducer__d5bb10afb694 -> n_dvm__ebc2b222ef02
+n_dvm__ebc2b222ef02 -> n_d2__e788103ee153
+n_dvm__ebc2b222ef02 -> n_graphviz__74a87c2b6b9c
+n_dvm__ebc2b222ef02 -> n_elk__2f60f61a3424
+n_d2__e788103ee153 -> n_svg__acdb1373d176
+n_graphviz__74a87c2b6b9c -> n_svg__acdb1373d176
+n_elk__2f60f61a3424 -> n_svg__acdb1373d176
+n_svg__acdb1373d176 -> n_proof__c1cda2636282
+n_proof__c1cda2636282 -> n_preview__5975cf1bba43
+n_agent__d4f0bc5a29de -> n_events__862417b9e7c3
+n_ci__1b158839f8aa -> n_proof__c1cda2636282
+n_registry__872491a30d60 -> n_schema__df0ad6e43880
+n_registry__872491a30d60 -> n_agent__d4f0bc5a29de
+n_schema__df0ad6e43880 -> n_proof__c1cda2636282
+n_dvm__ebc2b222ef02 -> n_proof__c1cda2636282
+n_events__862417b9e7c3 -> n_ci__1b158839f8aa
+n_preview__5975cf1bba43 -> n_agent__d4f0bc5a29de
+n_agent__d4f0bc5a29de -> n_ci__1b158839f8aa

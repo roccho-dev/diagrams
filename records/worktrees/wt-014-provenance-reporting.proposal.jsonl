@@ -1,0 +1,4 @@
+{"id": "wt-014-provenance-reporting", "purpose": "source/layout/render由来をhashで残す", "status": "complete", "title": "provenance reporting", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_014_provenance_reporting.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-014-provenance-reporting"}
+{"evidence": ["src/jsonl_diagram_core/provenance.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-014-provenance-reporting"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-014-provenance-reporting"}

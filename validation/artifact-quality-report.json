@@ -1,0 +1,465 @@
+{
+  "drawioImageExactCount": 13,
+  "drawioNativeCount": 13,
+  "sampleCount": 13,
+  "samples": [
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 18,
+        "edgeCount": 7,
+        "jsonlEdgeCount": 7,
+        "jsonlNodeCount": 7,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 9
+      },
+      "edges": 7,
+      "kind": "flow",
+      "nodes": 7,
+      "sample": "01_flow",
+      "svg": {
+        "dvmSha256": "979838ecb460fbf4bd14b251a75ed46c3974ee679708eaef467eb0cb36ced419",
+        "edgeCount": 7,
+        "eventsSha256": "fedeac6eced66294e5ef0b6d212d9ced104af005bb61e0dcb7417ceda9e4a9db",
+        "groupCount": 0,
+        "height": "328",
+        "nodeCount": 7,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 28,
+        "width": "832"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 21,
+        "edgeCount": 6,
+        "jsonlEdgeCount": 6,
+        "jsonlNodeCount": 7,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 13
+      },
+      "edges": 6,
+      "kind": "swimlane",
+      "nodes": 7,
+      "sample": "02_swimlane",
+      "svg": {
+        "dvmSha256": "4cc62d6803cf517844a77d71acc76c0fcc27c61ac05db77bbffe6e1d478110c7",
+        "edgeCount": 6,
+        "eventsSha256": "44d91eb149d66e2569c061a65d4e3f03503b7b65e165f8c81682d3f892c4f60e",
+        "groupCount": 4,
+        "height": "542",
+        "nodeCount": 7,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 34,
+        "width": "980"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 18,
+        "edgeCount": 8,
+        "jsonlEdgeCount": 8,
+        "jsonlNodeCount": 6,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 8
+      },
+      "edges": 8,
+      "kind": "sequence",
+      "nodes": 6,
+      "sample": "03_sequence",
+      "svg": {
+        "dvmSha256": "50a0b234078e6b4f26fb2fc819a43b06ba92abcc09fef3c98b782ec19e22b052",
+        "edgeCount": 8,
+        "eventsSha256": "74bc8ce029ee6c2c4e9c9f5b30016e4c4510b0c520e9463feee890ec412283f5",
+        "groupCount": 0,
+        "height": "538",
+        "nodeCount": 6,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 37,
+        "width": "1040"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 19,
+        "edgeCount": 8,
+        "jsonlEdgeCount": 8,
+        "jsonlNodeCount": 7,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 9
+      },
+      "edges": 8,
+      "kind": "state",
+      "nodes": 7,
+      "sample": "04_state",
+      "svg": {
+        "dvmSha256": "2609dda0c4226589dc8364b9c09d0ce97f2623282a433b22370af3ceaca4d699",
+        "edgeCount": 8,
+        "eventsSha256": "7a85f7fcea02d4000c85def88e2c4a292e20462c41bdc9289ca34e8da84b0d2e",
+        "groupCount": 0,
+        "height": "328",
+        "nodeCount": 7,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 34,
+        "width": "832"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 12,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 8,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 10
+      },
+      "edges": 0,
+      "kind": "timeline",
+      "nodes": 8,
+      "sample": "05_timeline",
+      "svg": {
+        "dvmSha256": "d3fd663e8adbb2e52622f8ce960d1376653f36bbcef7b33023ed76bcd3f9b577",
+        "edgeCount": 0,
+        "eventsSha256": "7dde81218d02eb25790ebc42ca572f51fcfb030dc9d6082dba98f8a701f7f842",
+        "groupCount": 0,
+        "height": "280",
+        "nodeCount": 8,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 29,
+        "width": "1080"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 27,
+        "edgeCount": 7,
+        "jsonlEdgeCount": 7,
+        "jsonlNodeCount": 12,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 18
+      },
+      "edges": 7,
+      "kind": "gantt",
+      "nodes": 12,
+      "sample": "06_gantt",
+      "svg": {
+        "dvmSha256": "32f335604fc109457a40f03748c67103733464d3ce4c29dcad771e23ad72abc2",
+        "edgeCount": 7,
+        "eventsSha256": "130310972ab3013fb278da6f97e36799da6f10f64c7d069f06d892bf9d40a691",
+        "groupCount": 4,
+        "height": "417",
+        "nodeCount": 12,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 59,
+        "width": "880"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 14,
+        "edgeCount": 5,
+        "jsonlEdgeCount": 5,
+        "jsonlNodeCount": 5,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 7
+      },
+      "edges": 5,
+      "kind": "erd",
+      "nodes": 5,
+      "sample": "07_erd",
+      "svg": {
+        "dvmSha256": "ecc426f7c91e50894c14ccc4f57ad4ee2aeed4c8d0cbec24e7047fdcccae54db",
+        "edgeCount": 5,
+        "eventsSha256": "c2e59993cfa3303766ada1302a77036f9b598976c4f0c0300f042777c7185143",
+        "groupCount": 0,
+        "height": "328",
+        "nodeCount": 5,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 44,
+        "width": "832"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 25,
+        "edgeCount": 11,
+        "jsonlEdgeCount": 11,
+        "jsonlNodeCount": 10,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 12
+      },
+      "edges": 11,
+      "kind": "architecture",
+      "nodes": 10,
+      "sample": "08_architecture",
+      "svg": {
+        "dvmSha256": "9bd5a284c7ca07541dd824546d4743cd16c640de6c93f50bf297f7c05c1a1688",
+        "edgeCount": 11,
+        "eventsSha256": "89c9aa6f86e7b8f475fab4764ebaa884950bf2b5a041054e11c914329438415e",
+        "groupCount": 4,
+        "height": "430",
+        "nodeCount": 10,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 46,
+        "width": "1678"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 39,
+        "edgeCount": 21,
+        "jsonlEdgeCount": 21,
+        "jsonlNodeCount": 14,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 16
+      },
+      "edges": 21,
+      "kind": "dense",
+      "nodes": 14,
+      "sample": "09_dense_dependency",
+      "svg": {
+        "dvmSha256": "09aee0c5d6b3e241f5d12db4711212e71345eed1fbc2f2f501d0f076e04c12c4",
+        "edgeCount": 21,
+        "eventsSha256": "86c3c3b49e0519825c2ad54146936f66ab70567c02736aa4a552eeeba8b1c3ff",
+        "groupCount": 0,
+        "height": "526",
+        "nodeCount": 14,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 53,
+        "width": "1801"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 17,
+        "edgeCount": 7,
+        "jsonlEdgeCount": 7,
+        "jsonlNodeCount": 6,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 8
+      },
+      "edges": 7,
+      "kind": "nested_ports",
+      "nodes": 6,
+      "sample": "10_nested_ports",
+      "svg": {
+        "dvmSha256": "92fe82947688d153af61c9f2a7e29b8785e54373c06df07757e865f99cae48e4",
+        "edgeCount": 7,
+        "eventsSha256": "b74543852685292f4d2fb405eca8014e3973ebb1404b4a60d107f3283c33bb08",
+        "groupCount": 3,
+        "height": "352",
+        "nodeCount": 6,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 30,
+        "width": "1072"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 18,
+        "edgeCount": 7,
+        "jsonlEdgeCount": 7,
+        "jsonlNodeCount": 7,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 9
+      },
+      "edges": 7,
+      "kind": "bpmn",
+      "nodes": 7,
+      "sample": "11_bpmn",
+      "svg": {
+        "dvmSha256": "25d1d9ec927b1e5a7409d499d25ca8773971a795998056cf00b89f8b1ab2332e",
+        "edgeCount": 7,
+        "eventsSha256": "c86b94aab79bb70784fa6c5748cfbf8346ee20c1873325763faeabaee54e067e",
+        "groupCount": 0,
+        "height": "328",
+        "nodeCount": 7,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 28,
+        "width": "832"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 23,
+        "edgeCount": 9,
+        "jsonlEdgeCount": 9,
+        "jsonlNodeCount": 10,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 12
+      },
+      "edges": 9,
+      "kind": "mindmap",
+      "nodes": 10,
+      "sample": "12_mindmap",
+      "svg": {
+        "dvmSha256": "1532981cb0dbf05cac0e32e99f760f1edea8053908858a9c4723db8539a7ad7b",
+        "edgeCount": 9,
+        "eventsSha256": "9226cae6a37f33a1371b364337d15b18b9d4a33222b7c9e0b41c08a0033d4cef",
+        "groupCount": 0,
+        "height": "545",
+        "nodeCount": 10,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 33,
+        "width": "827"
+      }
+    },
+    {
+      "drawioImageExact": {
+        "cellCount": 3,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 0,
+        "mode": "image",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 1
+      },
+      "drawioNative": {
+        "cellCount": 14,
+        "edgeCount": 0,
+        "jsonlEdgeCount": 0,
+        "jsonlNodeCount": 7,
+        "mode": "native",
+        "schema": "DrawioQualityResult.v1",
+        "vertexCount": 12
+      },
+      "edges": 0,
+      "kind": "venn",
+      "nodes": 7,
+      "sample": "13_venn",
+      "svg": {
+        "dvmSha256": "dd0fdbaa9fc3ae89947de2ae9384241acb63c90626b73577aaa5144e264d7113",
+        "edgeCount": 0,
+        "eventsSha256": "7d8badca0449e5596e8d4c9111d92ceabe5a12eb2968f501a5187f2e6f99fd8b",
+        "groupCount": 3,
+        "height": "620",
+        "nodeCount": 7,
+        "schema": "SvgQualityResult.v1",
+        "visibleElementCount": 25,
+        "width": "860"
+      }
+    }
+  ],
+  "schema": "ArtifactQualityReport.v1",
+  "status": "PASS",
+  "svgCount": 13
+}

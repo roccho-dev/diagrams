@@ -1,0 +1,6 @@
+PASS: node examples/expression_suite/tools/d2_elk_smoke.mjs generated/expression-suite
+Mode: structural-d2-parity-plus-elk-runtime.
+Scope: compiled.d2 structural node/edge parity for 13 samples plus ELK runtime smoke.
+Authority: events.jsonl only; generated D2/SVG/layout/proof are evidence, not authority.
+Note: @terrastruct/d2 WASM render is intentionally not required by this semantic gate.
+See validation/d2-elk-smoke.json for machine-readable details.

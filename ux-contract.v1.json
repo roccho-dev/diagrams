@@ -1,0 +1,21 @@
+{
+  "schema": "JsonlDiagramUxContract.v1",
+  "inputAuthority": "events.jsonl",
+  "allowedUserOperation": "append JSONL events only",
+  "svgPolicy": {
+    "onlyJsonlGeneratedSvgAllowed": true,
+    "manualSvgForbidden": true,
+    "requiredAttributes": ["data-generated-from=\"jsonl\"", "data-authority=\"events.jsonl\""],
+    "requiredMetadataId": "jsonl-diagram-provenance"
+  },
+  "htmlPolicy": {
+    "htmlIsPreviewOnly": true,
+    "htmlMayEmbedSvgForPreview": true,
+    "htmlInZip": false
+  },
+  "libraryBoundary": {
+    "coreAndPorts": "src/jsonl_diagram_core",
+    "nixPackageOutput": "packages.<system>.jsonl-diagram-core",
+    "adapters": "examples/adapters and tests/e2e/fixtures/adapters only"
+  }
+}

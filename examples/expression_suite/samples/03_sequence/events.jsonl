@@ -1,0 +1,15 @@
+{"op":"diagram.init","id":"sequence","kind":"sequence","label":"Sequence: Agent Builds Diagram"}
+{"op":"node.upsert","id":"agent","kind":"participant","label":"Agent","order":0}
+{"op":"node.upsert","id":"repo","kind":"participant","label":"JSONL Repo","order":1}
+{"op":"node.upsert","id":"compiler","kind":"participant","label":"f(jsonl)","order":2}
+{"op":"node.upsert","id":"layout","kind":"participant","label":"Layout Solver","order":3}
+{"op":"node.upsert","id":"svg","kind":"participant","label":"SVG Renderer","order":4}
+{"op":"node.upsert","id":"gate","kind":"participant","label":"Proof Gate","order":5}
+{"op":"edge.upsert","id":"m0","source":"agent","target":"repo","kind":"message","label":"append events","order":0}
+{"op":"edge.upsert","id":"m1","source":"repo","target":"compiler","kind":"message","label":"read events","order":1}
+{"op":"edge.upsert","id":"m2","source":"compiler","target":"compiler","kind":"message","label":"tokenize + reduce","order":2}
+{"op":"edge.upsert","id":"m3","source":"compiler","target":"layout","kind":"message","label":"layout request","order":3}
+{"op":"edge.upsert","id":"m4","source":"layout","target":"compiler","kind":"message","label":"coords","order":4}
+{"op":"edge.upsert","id":"m5","source":"compiler","target":"svg","kind":"message","label":"DVM + tokens","order":5}
+{"op":"edge.upsert","id":"m6","source":"svg","target":"gate","kind":"message","label":"generated SVG","order":6}
+{"op":"edge.upsert","id":"m7","source":"gate","target":"agent","kind":"message","label":"proof OK","order":7}

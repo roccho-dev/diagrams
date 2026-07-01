@@ -1,0 +1,4 @@
+{"id": "wt-010-drawio-native-renderer", "purpose": "render ASTから編集可能drawioを出す", "status": "complete", "title": "drawio native renderer", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_010_drawio_native_renderer.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-010-drawio-native-renderer"}
+{"evidence": ["src/jsonl_diagram_core/drawio_render_ast.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-010-drawio-native-renderer"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-010-drawio-native-renderer"}

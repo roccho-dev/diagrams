@@ -1,0 +1,5 @@
+{"dependsOn": "nix binary availability", "id": "p1", "proposal": "Nix実環境でnix flake check / nix build / nix flake lockを実行しflake.lockを同梱", "purposeGeneration": "meta^5+"}
+{"id": "p2", "proposal": "golden visual scoringを追加し文字溢れ・重なり・余白を検出", "purposeGeneration": "meta^8+"}
+{"id": "p3", "proposal": "図種v2を追加 sequence alt/loop, state nested, gantt critical path, class/ERD richer relations", "purposeGeneration": "meta^4+"}
+{"id": "p4", "proposal": "agent append recipesを整備しユーザー操作をevents.jsonl appendに限定", "purposeGeneration": "meta^0+"}
+{"directPurposeUpTo": "meta^6", "id": "venn-v2", "indirectPurposeFrom": "meta^7", "next": ["2-set/3-set golden visual scoring", "Euler non-overlap regions", "label collision scoring"], "title": "Venn/Euler v2", "type": "proposal"}

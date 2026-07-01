@@ -1,0 +1,32 @@
+{
+  "schema": "jsonl-diagram.zip-role-decision-report.v1",
+  "decision": "Use jsonl-diagram-canonical-merge-proposal-submit-ready.zip as git main baseline.",
+  "zipA": {
+    "path": "/mnt/data/jsonl-diagram-canonical-merge-proposal-submit-ready.zip",
+    "sha256": "f5218573fabce57da136c1293265bb4fc03de948a650aa8f169fb90913dacc0f",
+    "role": "actual integrated worktree",
+    "fileCountMaxDepth4": 66,
+    "root": "jsonl-diagram-integrated-worktree"
+  },
+  "zipB": {
+    "path": "/mnt/data/canonical-jsonl-diagram-merge-proposal-submission-bundle.zip",
+    "sha256": "f49a3c21980a63025998c4d7861d843bc37f0b9aaf3d8c345e6dbc6569ef9867",
+    "role": "submission wrapper containing zipA plus patch and checksums",
+    "fileCount": 7,
+    "containsZipAWithSameSha256": true
+  },
+  "sameGoal": true,
+  "sameContent": false,
+  "mainBaseline": {
+    "path": "/mnt/data/jsonl-diagram-main",
+    "branch": "main",
+    "commitShort": "eb16913",
+    "trackedFiles": 179,
+    "unitTests": "12 passed"
+  },
+  "notes": [
+    "B is not a competing source tree. It is a delivery bundle that wraps A.",
+    "Generated HTML is not authority; events.jsonl remains authority per package docs.",
+    "External Nix gates remain unrun in this sandbox."
+  ]
+}

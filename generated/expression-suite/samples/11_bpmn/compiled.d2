@@ -1,0 +1,50 @@
+# generated-from: jsonl
+# diagram-id: bpmn
+# diagram-kind: bpmn
+direction: right
+
+# nodes
+n_start__cced28c6dc3f: {
+  label: "Submit claim"
+  shape: circle
+  # source-id: start
+}
+n_review__c97ace4c8fef: {
+  label: "Review"
+  shape: rectangle
+  # source-id: review
+}
+n_gateway__4ea5ee68fea0: {
+  label: "Valid?"
+  shape: diamond
+  # source-id: gateway
+}
+n_repair__a1a14ff4aab4: {
+  label: "Request fix"
+  shape: rectangle
+  # source-id: repair
+}
+n_approve__74e21680eac7: {
+  label: "Approve"
+  shape: rectangle
+  # source-id: approve
+}
+n_pay__9350872d712a: {
+  label: "Pay"
+  shape: rectangle
+  # source-id: pay
+}
+n_end__361e48d0308f: {
+  label: "Closed"
+  shape: circle
+  # source-id: end
+}
+
+# edges
+n_start__cced28c6dc3f -> n_review__c97ace4c8fef
+n_review__c97ace4c8fef -> n_gateway__4ea5ee68fea0
+n_gateway__4ea5ee68fea0 -> n_repair__a1a14ff4aab4: "no"
+n_repair__a1a14ff4aab4 -> n_review__c97ace4c8fef: "resubmit"
+n_gateway__4ea5ee68fea0 -> n_approve__74e21680eac7: "yes"
+n_approve__74e21680eac7 -> n_pay__9350872d712a
+n_pay__9350872d712a -> n_end__361e48d0308f

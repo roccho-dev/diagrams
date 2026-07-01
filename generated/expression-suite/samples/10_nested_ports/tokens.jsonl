@@ -1,0 +1,17 @@
+{"op":"diagram.init","payload":{"id":"nested_ports","kind":"nested_ports","label":"Nested / Ports: Trust Boundary","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"group.upsert","payload":{"id":"public","kind":"boundary","label":"Public Zone","op":"group.upsert","order":0},"seq":1,"type":"group"}
+{"op":"group.upsert","payload":{"id":"private","kind":"boundary","label":"Private Zone","op":"group.upsert","order":1},"seq":2,"type":"group"}
+{"op":"group.upsert","payload":{"id":"data","kind":"boundary","label":"Data Zone","op":"group.upsert","order":2},"seq":3,"type":"group"}
+{"op":"node.upsert","payload":{"group":"public","id":"browser","kind":"service","label":"Browser","meta":{"ports":["https"]},"op":"node.upsert","order":0},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"group":"public","id":"gateway","kind":"service","label":"API Gateway","meta":{"ports":["443","auth"]},"op":"node.upsert","order":1},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"group":"private","id":"agent","kind":"service","label":"Agent Worker","meta":{"ports":["jobs","events"]},"op":"node.upsert","order":2},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"group":"private","id":"compiler","kind":"service","label":"Diagram Compiler","meta":{"ports":["jsonl","dvm","svg"]},"op":"node.upsert","order":3},"seq":7,"type":"node"}
+{"op":"node.upsert","payload":{"group":"data","id":"store","kind":"service","label":"JSONL Store","meta":{"ports":["append","read"]},"op":"node.upsert","order":4},"seq":8,"type":"node"}
+{"op":"node.upsert","payload":{"group":"data","id":"proof","kind":"service","label":"Proof Registry","meta":{"ports":["hash"]},"op":"node.upsert","order":5},"seq":9,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"p0","kind":"port_edge","label":"request","op":"edge.upsert","source":"browser","target":"gateway"},"seq":10,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p1","kind":"port_edge","label":"job","op":"edge.upsert","source":"gateway","target":"agent"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p2","kind":"port_edge","label":"append","op":"edge.upsert","source":"agent","target":"store"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p3","kind":"port_edge","label":"build","op":"edge.upsert","source":"agent","target":"compiler"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p4","kind":"port_edge","label":"read","op":"edge.upsert","source":"compiler","target":"store"},"seq":14,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p5","kind":"port_edge","label":"write hash","op":"edge.upsert","source":"compiler","target":"proof"},"seq":15,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"p6","kind":"port_edge","label":"status","op":"edge.upsert","source":"proof","target":"gateway"},"seq":16,"type":"edge"}

@@ -1,0 +1,15 @@
+{"id": 1, "mitigation": "kind/intent/meta/order/start/end/columnsをruntimeで検査", "risk": "JSON Schemaとruntime validatorがズレる"}
+{"id": 2, "mitigation": "reduce後validate_dvmでsource/targetを検査", "risk": "dangling edgeがDVMに入る"}
+{"id": 3, "mitigation": "node.group/laneとscheduled task laneを検査", "risk": "missing group/laneが残る"}
+{"id": 4, "mitigation": "human stem + sha256 suffixでinjective id", "risk": "a-bとa_bが同じD2/DOT idになる"}
+{"id": 5, "mitigation": "rebuild_compare gateで再生成hash比較", "risk": "SVG属性だけでproof済みに見える"}
+{"id": 6, "mitigation": "ZIPからHTMLを除外しpreviewだけ外部生成", "risk": "HTMLが本体化する"}
+{"id": 7, "mitigation": "adapterはexamples/e2e fixturesに隔離", "risk": "adapterがcore libに混入する"}
+{"id": 8, "mitigation": "nix未評価をsmoke-reportとNIX_EVALUATIONに明記", "risk": "Nixを実行済みと誤認する"}
+{"id": 9, "mitigation": "jsonl_diagram_core.schemas package dataに同梱", "risk": "schemaがwheel/Nix outputに入らない"}
+{"id": 10, "mitigation": "tests package init + discover command検証", "risk": "tests discoverで0件になる"}
+{"id": 11, "mitigation": "--require-enginesでfallbackをfail", "risk": "ELK fallbackが気づかれない"}
+{"id": 12, "mitigation": "D2 compiled shapes/connectionsとDVM countsを比較", "risk": "D2構文OKだが意味ズレ"}
+{"id": "venn-core-bloat", "mitigation": "既存 group/node/meta で表現し、Vennはadapter fixtureで描く", "risk": "Venn専用opをcoreに入れてcoreを太らせる", "type": "risk"}
+{"id": "venn-svg-authority", "mitigation": "events.jsonl由来のgenerated SVGのみ許可", "risk": "手書きVenn SVGを許してauthorityが壊れる", "type": "risk"}
+{"id": "venn-overfit", "mitigation": "fixture/example扱いに限定", "risk": "3集合専用実装を安定APIと誤認する", "type": "risk"}

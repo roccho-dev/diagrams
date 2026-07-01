@@ -1,0 +1,4 @@
+{"id": "wt-007-network-projection-adapter", "purpose": "networkを目的別にDAG視点/force視点へ分ける", "status": "complete", "title": "network projection adapter", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_007_network_projection_adapter.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-007-network-projection-adapter"}
+{"evidence": ["src/jsonl_diagram_core/network_projection.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-007-network-projection-adapter"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-007-network-projection-adapter"}

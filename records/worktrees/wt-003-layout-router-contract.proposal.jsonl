@@ -1,0 +1,4 @@
+{"id": "wt-003-layout-router-contract", "purpose": "図タイプごとにlayout backendを選ぶ契約を置く", "status": "complete", "title": "layout router contract", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_003_layout_router_contract.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-003-layout-router-contract"}
+{"evidence": ["src/jsonl_diagram_core/layout_router.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-003-layout-router-contract"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-003-layout-router-contract"}

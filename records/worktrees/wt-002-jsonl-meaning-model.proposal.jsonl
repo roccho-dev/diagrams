@@ -1,0 +1,4 @@
+{"id": "wt-002-jsonl-meaning-model", "purpose": "図面座標ではなく意味モデルを正本にする", "status": "complete", "title": "JSONL meaning model", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_002_jsonl_meaning_model.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-002-jsonl-meaning-model"}
+{"evidence": ["src/jsonl_diagram_core/meaning_model.py", "schemas/diagram-meaning.v1.schema.json"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-002-jsonl-meaning-model"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-002-jsonl-meaning-model"}

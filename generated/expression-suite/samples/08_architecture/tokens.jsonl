@@ -1,0 +1,26 @@
+{"op":"diagram.init","payload":{"id":"architecture","kind":"architecture","label":"Architecture: JSONL Diagram Factory","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"group.upsert","payload":{"id":"input","kind":"container","label":"Input / Authority","op":"group.upsert","order":0},"seq":1,"type":"group"}
+{"op":"group.upsert","payload":{"id":"core","kind":"container","label":"Core","op":"group.upsert","order":1},"seq":2,"type":"group"}
+{"op":"group.upsert","payload":{"id":"adapters","kind":"container","label":"Adapters","op":"group.upsert","order":2},"seq":3,"type":"group"}
+{"op":"group.upsert","payload":{"id":"artifact","kind":"container","label":"Generated Artifacts","op":"group.upsert","order":3},"seq":4,"type":"group"}
+{"op":"node.upsert","payload":{"group":"input","id":"events","kind":"component","label":"events.jsonl","op":"node.upsert","order":0},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"group":"input","id":"schema","kind":"component","label":"schema gate","op":"node.upsert","order":1},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"group":"core","id":"tokenizer","kind":"component","label":"tokenizer","op":"node.upsert","order":2},"seq":7,"type":"node"}
+{"op":"node.upsert","payload":{"group":"core","id":"reducer","kind":"component","label":"reducer","op":"node.upsert","order":3},"seq":8,"type":"node"}
+{"op":"node.upsert","payload":{"group":"core","id":"dvm","kind":"component","label":"DiagramViewModel","op":"node.upsert","order":4},"seq":9,"type":"node"}
+{"op":"node.upsert","payload":{"group":"adapters","id":"d2","kind":"component","label":"D2 target","op":"node.upsert","order":5},"seq":10,"type":"node"}
+{"op":"node.upsert","payload":{"group":"adapters","id":"gv","kind":"component","label":"Graphviz layout","op":"node.upsert","order":6},"seq":11,"type":"node"}
+{"op":"node.upsert","payload":{"group":"adapters","id":"elk","kind":"component","label":"ELK layout","op":"node.upsert","order":7},"seq":12,"type":"node"}
+{"op":"node.upsert","payload":{"group":"artifact","id":"renderer","kind":"component","label":"single SVG renderer","op":"node.upsert","order":8},"seq":13,"type":"node"}
+{"op":"node.upsert","payload":{"group":"artifact","id":"proof","kind":"component","label":"proof gate","op":"node.upsert","order":9},"seq":14,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"a0","kind":"depends","label":"validate","op":"edge.upsert","source":"events","target":"schema"},"seq":15,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a1","kind":"depends","label":"tokens","op":"edge.upsert","source":"schema","target":"tokenizer"},"seq":16,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a2","kind":"depends","label":"stream","op":"edge.upsert","source":"tokenizer","target":"reducer"},"seq":17,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a3","kind":"depends","label":"current","op":"edge.upsert","source":"reducer","target":"dvm"},"seq":18,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a4","kind":"depends","label":"compile","op":"edge.upsert","source":"dvm","target":"d2"},"seq":19,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a5","kind":"depends","label":"dense","op":"edge.upsert","source":"dvm","target":"gv"},"seq":20,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a6","kind":"depends","label":"complex","op":"edge.upsert","source":"dvm","target":"elk"},"seq":21,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a7","kind":"depends","label":"target","op":"edge.upsert","source":"d2","target":"renderer"},"seq":22,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a8","kind":"depends","label":"coords","op":"edge.upsert","source":"gv","target":"renderer"},"seq":23,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a9","kind":"depends","label":"coords","op":"edge.upsert","source":"elk","target":"renderer"},"seq":24,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"a10","kind":"depends","label":"hash","op":"edge.upsert","source":"renderer","target":"proof"},"seq":25,"type":"edge"}

@@ -1,0 +1,26 @@
+{"op":"diagram.init","id":"architecture","kind":"architecture","label":"Architecture: JSONL Diagram Factory"}
+{"op":"group.upsert","id":"input","kind":"container","label":"Input / Authority","order":0}
+{"op":"group.upsert","id":"core","kind":"container","label":"Core","order":1}
+{"op":"group.upsert","id":"adapters","kind":"container","label":"Adapters","order":2}
+{"op":"group.upsert","id":"artifact","kind":"container","label":"Generated Artifacts","order":3}
+{"op":"node.upsert","id":"events","kind":"component","group":"input","label":"events.jsonl","order":0}
+{"op":"node.upsert","id":"schema","kind":"component","group":"input","label":"schema gate","order":1}
+{"op":"node.upsert","id":"tokenizer","kind":"component","group":"core","label":"tokenizer","order":2}
+{"op":"node.upsert","id":"reducer","kind":"component","group":"core","label":"reducer","order":3}
+{"op":"node.upsert","id":"dvm","kind":"component","group":"core","label":"DiagramViewModel","order":4}
+{"op":"node.upsert","id":"d2","kind":"component","group":"adapters","label":"D2 target","order":5}
+{"op":"node.upsert","id":"gv","kind":"component","group":"adapters","label":"Graphviz layout","order":6}
+{"op":"node.upsert","id":"elk","kind":"component","group":"adapters","label":"ELK layout","order":7}
+{"op":"node.upsert","id":"renderer","kind":"component","group":"artifact","label":"single SVG renderer","order":8}
+{"op":"node.upsert","id":"proof","kind":"component","group":"artifact","label":"proof gate","order":9}
+{"op":"edge.upsert","id":"a0","source":"events","target":"schema","kind":"depends","label":"validate"}
+{"op":"edge.upsert","id":"a1","source":"schema","target":"tokenizer","kind":"depends","label":"tokens"}
+{"op":"edge.upsert","id":"a2","source":"tokenizer","target":"reducer","kind":"depends","label":"stream"}
+{"op":"edge.upsert","id":"a3","source":"reducer","target":"dvm","kind":"depends","label":"current"}
+{"op":"edge.upsert","id":"a4","source":"dvm","target":"d2","kind":"depends","label":"compile"}
+{"op":"edge.upsert","id":"a5","source":"dvm","target":"gv","kind":"depends","label":"dense"}
+{"op":"edge.upsert","id":"a6","source":"dvm","target":"elk","kind":"depends","label":"complex"}
+{"op":"edge.upsert","id":"a7","source":"d2","target":"renderer","kind":"depends","label":"target"}
+{"op":"edge.upsert","id":"a8","source":"gv","target":"renderer","kind":"depends","label":"coords"}
+{"op":"edge.upsert","id":"a9","source":"elk","target":"renderer","kind":"depends","label":"coords"}
+{"op":"edge.upsert","id":"a10","source":"renderer","target":"proof","kind":"depends","label":"hash"}

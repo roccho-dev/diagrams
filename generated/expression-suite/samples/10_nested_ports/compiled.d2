@@ -1,0 +1,56 @@
+# generated-from: jsonl
+# diagram-id: nested_ports
+# diagram-kind: nested_ports
+direction: right
+
+# groups
+# group g_public__efa1f375d761: label="Public Zone" kind=boundary
+# group g_private__715dc8493c36: label="Private Zone" kind=boundary
+# group g_data__3a6eb0790f39: label="Data Zone" kind=boundary
+
+# nodes
+n_browser__d4c3e8a11256: {
+  label: "Browser"
+  shape: rectangle
+  # source-id: browser
+  # group: public
+}
+n_gateway__4ea5ee68fea0: {
+  label: "API Gateway"
+  shape: rectangle
+  # source-id: gateway
+  # group: public
+}
+n_agent__d4f0bc5a29de: {
+  label: "Agent Worker"
+  shape: rectangle
+  # source-id: agent
+  # group: private
+}
+n_compiler__e996bb0ea465: {
+  label: "Diagram Compiler"
+  shape: rectangle
+  # source-id: compiler
+  # group: private
+}
+n_store__824d80d71985: {
+  label: "JSONL Store"
+  shape: rectangle
+  # source-id: store
+  # group: data
+}
+n_proof__c1cda2636282: {
+  label: "Proof Registry"
+  shape: rectangle
+  # source-id: proof
+  # group: data
+}
+
+# edges
+n_browser__d4c3e8a11256 -> n_gateway__4ea5ee68fea0: "request"
+n_gateway__4ea5ee68fea0 -> n_agent__d4f0bc5a29de: "job"
+n_agent__d4f0bc5a29de -> n_store__824d80d71985: "append"
+n_agent__d4f0bc5a29de -> n_compiler__e996bb0ea465: "build"
+n_compiler__e996bb0ea465 -> n_store__824d80d71985: "read"
+n_compiler__e996bb0ea465 -> n_proof__c1cda2636282: "write hash"
+n_proof__c1cda2636282 -> n_gateway__4ea5ee68fea0: "status"

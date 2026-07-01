@@ -1,0 +1,15 @@
+{"op":"diagram.init","id":"bpmn","kind":"bpmn","label":"BPMN-like: Claim Approval"}
+{"op":"node.upsert","id":"start","kind":"start","label":"Submit claim","order":0}
+{"op":"node.upsert","id":"review","kind":"task","label":"Review","order":1}
+{"op":"node.upsert","id":"gateway","kind":"gateway","label":"Valid?","order":2}
+{"op":"node.upsert","id":"repair","kind":"task","label":"Request fix","order":3}
+{"op":"node.upsert","id":"approve","kind":"task","label":"Approve","order":4}
+{"op":"node.upsert","id":"pay","kind":"task","label":"Pay","order":5}
+{"op":"node.upsert","id":"end","kind":"end","label":"Closed","order":6}
+{"op":"edge.upsert","id":"b0","source":"start","target":"review","kind":"sequence_flow","label":""}
+{"op":"edge.upsert","id":"b1","source":"review","target":"gateway","kind":"sequence_flow","label":""}
+{"op":"edge.upsert","id":"b2","source":"gateway","target":"repair","kind":"sequence_flow","label":"no"}
+{"op":"edge.upsert","id":"b3","source":"repair","target":"review","kind":"sequence_flow","label":"resubmit"}
+{"op":"edge.upsert","id":"b4","source":"gateway","target":"approve","kind":"sequence_flow","label":"yes"}
+{"op":"edge.upsert","id":"b5","source":"approve","target":"pay","kind":"sequence_flow","label":""}
+{"op":"edge.upsert","id":"b6","source":"pay","target":"end","kind":"sequence_flow","label":""}

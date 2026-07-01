@@ -1,0 +1,5 @@
+{
+  "schema": "GoldenRegressionPolicy.v1",
+  "compare": "hash-manifest",
+  "allowAddedOnlyWithProposal": true
+}

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jsonl-diagram-core"
+version = "0.1.0"
+description = "JSONL diagram core and port contracts. Not published to PyPI; packaged via Nix."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "jsonl-diagram" }]
+dependencies = []
+
+[project.scripts]
+jsonl-diagram-core = "jsonl_diagram_core.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+jsonl_diagram_core = ["py.typed", "schemas/diagram-event.v1.schema.json"]

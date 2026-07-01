@@ -1,0 +1,4 @@
+{"id": "wt-009-svg-renderer", "purpose": "render ASTからSVGを出す", "status": "complete", "title": "SVG renderer", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_009_svg_renderer.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-009-svg-renderer"}
+{"evidence": ["src/jsonl_diagram_core/svg_render_ast.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-009-svg-renderer"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-009-svg-renderer"}

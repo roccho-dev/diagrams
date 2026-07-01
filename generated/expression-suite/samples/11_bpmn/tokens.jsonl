@@ -1,0 +1,15 @@
+{"op":"diagram.init","payload":{"id":"bpmn","kind":"bpmn","label":"BPMN-like: Claim Approval","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"node.upsert","payload":{"id":"start","kind":"start","label":"Submit claim","op":"node.upsert","order":0},"seq":1,"type":"node"}
+{"op":"node.upsert","payload":{"id":"review","kind":"task","label":"Review","op":"node.upsert","order":1},"seq":2,"type":"node"}
+{"op":"node.upsert","payload":{"id":"gateway","kind":"gateway","label":"Valid?","op":"node.upsert","order":2},"seq":3,"type":"node"}
+{"op":"node.upsert","payload":{"id":"repair","kind":"task","label":"Request fix","op":"node.upsert","order":3},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"approve","kind":"task","label":"Approve","op":"node.upsert","order":4},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"pay","kind":"task","label":"Pay","op":"node.upsert","order":5},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"end","kind":"end","label":"Closed","op":"node.upsert","order":6},"seq":7,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"b0","kind":"sequence_flow","label":"","op":"edge.upsert","source":"start","target":"review"},"seq":8,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b1","kind":"sequence_flow","label":"","op":"edge.upsert","source":"review","target":"gateway"},"seq":9,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b2","kind":"sequence_flow","label":"no","op":"edge.upsert","source":"gateway","target":"repair"},"seq":10,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b3","kind":"sequence_flow","label":"resubmit","op":"edge.upsert","source":"repair","target":"review"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b4","kind":"sequence_flow","label":"yes","op":"edge.upsert","source":"gateway","target":"approve"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b5","kind":"sequence_flow","label":"","op":"edge.upsert","source":"approve","target":"pay"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"b6","kind":"sequence_flow","label":"","op":"edge.upsert","source":"pay","target":"end"},"seq":14,"type":"edge"}

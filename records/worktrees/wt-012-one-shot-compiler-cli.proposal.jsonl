@@ -1,0 +1,4 @@
+{"id": "wt-012-one-shot-compiler-cli", "purpose": "JSONLから成果物一式を一発生成する", "status": "complete", "title": "one-shot compiler CLI", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_012_one_shot_compiler_cli.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-012-one-shot-compiler-cli"}
+{"evidence": ["src/jsonl_diagram_core/one_shot.py", "src/jsonl_diagram_core/cli.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-012-one-shot-compiler-cli"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-012-one-shot-compiler-cli"}

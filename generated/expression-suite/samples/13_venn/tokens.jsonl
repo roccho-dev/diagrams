@@ -1,0 +1,13 @@
+{"op":"diagram.init","payload":{"id":"venn_expression","kind":"venn","label":"Venn: JSONL Diagram Value Overlap","meta":{"note":"Venn fixture: sets are groups; regions are nodes with meta.members."},"op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"group.upsert","payload":{"id":"agent","kind":"set","label":"Agent-first","op":"group.upsert","order":1},"seq":1,"type":"group"}
+{"op":"group.upsert","payload":{"id":"governance","kind":"set","label":"Governance / Proof","op":"group.upsert","order":2},"seq":2,"type":"group"}
+{"op":"group.upsert","payload":{"id":"design","kind":"set","label":"Design Quality","op":"group.upsert","order":3},"seq":3,"type":"group"}
+{"op":"node.upsert","payload":{"id":"agent_only","kind":"region","label":"Append UX","meta":{"members":["agent"]},"op":"node.upsert","order":1},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"governance_only","kind":"region","label":"Audit Gate","meta":{"members":["governance"]},"op":"node.upsert","order":2},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"design_only","kind":"region","label":"Visual Tokens","meta":{"members":["design"]},"op":"node.upsert","order":3},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"agent_governance","kind":"region","label":"Safe Automation","meta":{"members":["agent","governance"]},"op":"node.upsert","order":4},"seq":7,"type":"node"}
+{"op":"node.upsert","payload":{"id":"agent_design","kind":"region","label":"Readable Output","meta":{"members":["agent","design"]},"op":"node.upsert","order":5},"seq":8,"type":"node"}
+{"op":"node.upsert","payload":{"id":"governance_design","kind":"region","label":"Proof UI","meta":{"members":["governance","design"]},"op":"node.upsert","order":6},"seq":9,"type":"node"}
+{"op":"node.upsert","payload":{"id":"core_overlap","kind":"region","label":"Valuable Asset","meta":{"members":["agent","governance","design"]},"op":"node.upsert","order":7},"seq":10,"type":"node"}
+{"op":"layout.intent","payload":{"intent":"venn-3-set","meta":{"renderer":"single-svg","sets":["agent","governance","design"]},"op":"layout.intent","target":"venn_expression"},"seq":11,"type":"layout_intent"}
+{"op":"style.intent","payload":{"intent":"emphasis","meta":{"reason":"highest-value overlap"},"op":"style.intent","target":"core_overlap"},"seq":12,"type":"style_intent"}

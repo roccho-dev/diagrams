@@ -1,0 +1,4 @@
+{"id": "wt-006-elk-graph-layout-adapter", "purpose": "graph/DAG/nested向けにELK入力契約を置く", "status": "complete", "title": "ELK graph layout contract", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_006_elk_graph_layout_adapter.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-006-elk-graph-layout-adapter"}
+{"evidence": ["src/jsonl_diagram_core/elk_contract.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-006-elk-graph-layout-adapter"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-006-elk-graph-layout-adapter"}

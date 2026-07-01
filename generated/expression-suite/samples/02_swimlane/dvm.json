@@ -1,0 +1,172 @@
+{
+  "diagram": {
+    "id": "swimlane",
+    "kind": "swimlane",
+    "label": "Swimlane: Proposal → Diagram Release",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "s0",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "draft",
+      "target": "normalize"
+    },
+    {
+      "id": "s1",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "normalize",
+      "target": "check"
+    },
+    {
+      "id": "s2",
+      "kind": "flow",
+      "label": "green",
+      "meta": {},
+      "order": 10000,
+      "source": "check",
+      "target": "render"
+    },
+    {
+      "id": "s3",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "render",
+      "target": "review"
+    },
+    {
+      "id": "s4",
+      "kind": "flow",
+      "label": "ok",
+      "meta": {},
+      "order": 10000,
+      "source": "review",
+      "target": "merge"
+    },
+    {
+      "id": "s5",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "merge",
+      "target": "release"
+    }
+  ],
+  "groups": [
+    {
+      "group": null,
+      "id": "agent",
+      "kind": "lane",
+      "label": "Agent",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "ci",
+      "kind": "lane",
+      "label": "CI / Gate",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "owner",
+      "kind": "lane",
+      "label": "Owner",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "runtime",
+      "kind": "lane",
+      "label": "Runtime",
+      "meta": {},
+      "order": 3
+    }
+  ],
+  "hash": "44f7b415960f9e7e9379685cef60018fc648063b920f84a7307ad1a51395c167",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": "agent",
+      "id": "draft",
+      "kind": "task",
+      "label": "Append proposal events",
+      "lane": "agent",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": "agent",
+      "id": "normalize",
+      "kind": "task",
+      "label": "Normalize diagram tokens",
+      "lane": "agent",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": "ci",
+      "id": "check",
+      "kind": "task",
+      "label": "Schema + proof check",
+      "lane": "ci",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": "runtime",
+      "id": "render",
+      "kind": "task",
+      "label": "Build SVG artifact",
+      "lane": "runtime",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": "owner",
+      "id": "review",
+      "kind": "task",
+      "label": "Review SVG preview",
+      "lane": "owner",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": "owner",
+      "id": "merge",
+      "kind": "task",
+      "label": "Approve merge",
+      "lane": "owner",
+      "meta": {},
+      "order": 5
+    },
+    {
+      "group": "runtime",
+      "id": "release",
+      "kind": "task",
+      "label": "Publish generated SVG",
+      "lane": "runtime",
+      "meta": {},
+      "order": 6
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

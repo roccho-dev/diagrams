@@ -1,0 +1,50 @@
+{
+  "available": true,
+  "engine": "deterministic",
+  "fallbackUsed": true,
+  "layoutOnly": true,
+  "nodes": {
+    "approve": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 200
+    },
+    "end": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 200
+    },
+    "gateway": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 96
+    },
+    "pay": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 200
+    },
+    "repair": {
+      "h": 56,
+      "w": 138,
+      "x": 622,
+      "y": 96
+    },
+    "review": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 96
+    },
+    "start": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 96
+    }
+  }
+}

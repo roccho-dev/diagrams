@@ -1,0 +1,16 @@
+{"op":"diagram.init","id":"state","kind":"state","label":"State: Diagram Artifact Lifecycle"}
+{"op":"node.upsert","id":"draft","kind":"state","label":"Draft JSONL","order":0}
+{"op":"node.upsert","id":"tokenized","kind":"state","label":"Tokenized","order":1}
+{"op":"node.upsert","id":"reduced","kind":"state","label":"DVM Ready","order":2}
+{"op":"node.upsert","id":"rendered","kind":"state","label":"SVG Rendered","order":3}
+{"op":"node.upsert","id":"verified","kind":"state","label":"Proof Verified","order":4}
+{"op":"node.upsert","id":"published","kind":"state","label":"Published","order":5}
+{"op":"node.upsert","id":"rejected","kind":"state","label":"Rejected","order":6}
+{"op":"edge.upsert","id":"t0","source":"draft","target":"tokenized","kind":"transition","label":"append"}
+{"op":"edge.upsert","id":"t1","source":"tokenized","target":"reduced","kind":"transition","label":"schema ok"}
+{"op":"edge.upsert","id":"t2","source":"reduced","target":"rendered","kind":"transition","label":"compile"}
+{"op":"edge.upsert","id":"t3","source":"rendered","target":"verified","kind":"transition","label":"hash ok"}
+{"op":"edge.upsert","id":"t4","source":"verified","target":"published","kind":"transition","label":"green"}
+{"op":"edge.upsert","id":"t5","source":"tokenized","target":"rejected","kind":"transition","label":"schema fail"}
+{"op":"edge.upsert","id":"t6","source":"rendered","target":"rejected","kind":"transition","label":"loss > 0"}
+{"op":"edge.upsert","id":"t7","source":"rejected","target":"draft","kind":"transition","label":"fix JSONL"}

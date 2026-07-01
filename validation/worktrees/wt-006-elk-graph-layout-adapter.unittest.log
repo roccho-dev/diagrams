@@ -1,0 +1,17 @@
+test_adapter_id_mapping_is_injective (e2e.test_fixtures.FixtureBuildTest.test_adapter_id_mapping_is_injective) ... ok
+test_expression_suite_builds_from_jsonl (e2e.test_fixtures.FixtureBuildTest.test_expression_suite_builds_from_jsonl) ... ok
+test_ambiguous_intent_target_is_rejected_when_node_and_edge_share_id (unit.test_core.CoreTest.test_ambiguous_intent_target_is_rejected_when_node_and_edge_share_id) ... ok
+test_entity_kind_is_preserved_without_losing_entity_role (unit.test_core.CoreTest.test_entity_kind_is_preserved_without_losing_entity_role) ... ok
+test_node_and_edge_ids_are_separate_namespaces (unit.test_core.CoreTest.test_node_and_edge_ids_are_separate_namespaces) ... ok
+test_schema_is_packaged (unit.test_core.CoreTest.test_schema_is_packaged) ... ok
+test_schema_rejects_extra_fields (unit.test_core.CoreTest.test_schema_rejects_extra_fields) ... ok
+test_schema_rejects_missing_fields (unit.test_core.CoreTest.test_schema_rejects_missing_fields) ... ok
+test_schema_rejects_runtime_type_mismatches (unit.test_core.CoreTest.test_schema_rejects_runtime_type_mismatches) ... ok
+test_semantic_validation_rejects_dangling_edge (unit.test_core.CoreTest.test_semantic_validation_rejects_dangling_edge) ... ok
+test_semantic_validation_rejects_missing_lane (unit.test_core.CoreTest.test_semantic_validation_rejects_missing_lane) ... ok
+test_tokenize_reduce_minimal (unit.test_core.CoreTest.test_tokenize_reduce_minimal) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.117s
+
+OK

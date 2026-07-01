@@ -1,0 +1,93 @@
+# generated-from: jsonl
+# diagram-id: gantt
+# diagram-kind: gantt
+direction: right
+
+# groups
+# group g_core__0d45f5fd462b: label="Core" kind=lane
+# group g_render__887270d0cbc5: label="Rendering" kind=lane
+# group g_qa__3f3ef786b34d: label="QA" kind=lane
+# group g_release__a4d451ec2346: label="Release" kind=lane
+
+# nodes
+n_schema__df0ad6e43880: {
+  label: "Schema"
+  shape: rectangle
+  # source-id: schema
+  # group: core
+}
+n_tokenizer__5f97e3774c51: {
+  label: "Tokenizer"
+  shape: rectangle
+  # source-id: tokenizer
+  # group: core
+}
+n_reducer__d5bb10afb694: {
+  label: "Reducer"
+  shape: rectangle
+  # source-id: reducer
+  # group: core
+}
+n_dvm__ebc2b222ef02: {
+  label: "DVM"
+  shape: rectangle
+  # source-id: dvm
+  # group: core
+}
+n_d2__e788103ee153: {
+  label: "D2 target"
+  shape: rectangle
+  # source-id: d2
+  # group: render
+}
+n_tokens__c51e455b41df: {
+  label: "Design tokens"
+  shape: rectangle
+  # source-id: tokens
+  # group: render
+}
+n_svg__acdb1373d176: {
+  label: "Single SVG"
+  shape: rectangle
+  # source-id: svg
+  # group: render
+}
+n_graphviz__74a87c2b6b9c: {
+  label: "Graphviz dense"
+  shape: rectangle
+  # source-id: graphviz
+  # group: qa
+}
+n_elk__2f60f61a3424: {
+  label: "ELK nested"
+  shape: rectangle
+  # source-id: elk
+  # group: qa
+}
+n_proof__c1cda2636282: {
+  label: "Proof gate"
+  shape: rectangle
+  # source-id: proof
+  # group: qa
+}
+n_preview__5975cf1bba43: {
+  label: "Preview only"
+  shape: rectangle
+  # source-id: preview
+  # group: release
+}
+n_publish__a5d47a4311d7: {
+  label: "Publish SVG"
+  shape: rectangle
+  # source-id: publish
+  # group: release
+}
+
+# edges
+n_schema__df0ad6e43880 -> n_tokenizer__5f97e3774c51
+n_tokenizer__5f97e3774c51 -> n_reducer__d5bb10afb694
+n_reducer__d5bb10afb694 -> n_dvm__ebc2b222ef02
+n_dvm__ebc2b222ef02 -> n_d2__e788103ee153
+n_tokens__c51e455b41df -> n_svg__acdb1373d176
+n_svg__acdb1373d176 -> n_proof__c1cda2636282
+n_proof__c1cda2636282 -> n_publish__a5d47a4311d7

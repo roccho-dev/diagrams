@@ -1,0 +1,4 @@
+{"id": "wt-005-venn-set-overlap-adapter", "purpose": "集合/重なりをgraph layoutに寄せない", "status": "complete", "title": "venn set overlap adapter", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_005_venn_set_overlap_adapter.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-005-venn-set-overlap-adapter"}
+{"evidence": ["src/jsonl_diagram_core/venn_layout.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-005-venn-set-overlap-adapter"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-005-venn-set-overlap-adapter"}

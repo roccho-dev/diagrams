@@ -1,0 +1,4 @@
+{"id": "wt-015-golden-regression-suite", "purpose": "意図しない破壊をhash/意味差分で落とす", "status": "complete", "title": "golden regression suite", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_015_golden_regression_suite.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-015-golden-regression-suite"}
+{"evidence": ["src/jsonl_diagram_core/regression.py", "validation/golden-regression-policy.json"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-015-golden-regression-suite"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-015-golden-regression-suite"}

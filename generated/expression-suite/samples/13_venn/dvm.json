@@ -1,0 +1,162 @@
+{
+  "diagram": {
+    "id": "venn_expression",
+    "kind": "venn",
+    "label": "Venn: JSONL Diagram Value Overlap",
+    "meta": {
+      "note": "Venn fixture: sets are groups; regions are nodes with meta.members."
+    }
+  },
+  "edges": [],
+  "groups": [
+    {
+      "group": null,
+      "id": "agent",
+      "kind": "set",
+      "label": "Agent-first",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "governance",
+      "kind": "set",
+      "label": "Governance / Proof",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "design",
+      "kind": "set",
+      "label": "Design Quality",
+      "meta": {},
+      "order": 3
+    }
+  ],
+  "hash": "ee1b216726098be67581a36d18ff2f24519cca41f290faddc14589095432ce0c",
+  "layoutIntents": [
+    {
+      "intent": "venn-3-set",
+      "meta": {
+        "renderer": "single-svg",
+        "sets": [
+          "agent",
+          "governance",
+          "design"
+        ]
+      },
+      "op": "layout.intent",
+      "seq": 11,
+      "target": "venn_expression"
+    }
+  ],
+  "nodes": [
+    {
+      "group": null,
+      "id": "agent_only",
+      "kind": "region",
+      "label": "Append UX",
+      "meta": {
+        "members": [
+          "agent"
+        ]
+      },
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "governance_only",
+      "kind": "region",
+      "label": "Audit Gate",
+      "meta": {
+        "members": [
+          "governance"
+        ]
+      },
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "design_only",
+      "kind": "region",
+      "label": "Visual Tokens",
+      "meta": {
+        "members": [
+          "design"
+        ]
+      },
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "agent_governance",
+      "kind": "region",
+      "label": "Safe Automation",
+      "meta": {
+        "members": [
+          "agent",
+          "governance"
+        ]
+      },
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "agent_design",
+      "kind": "region",
+      "label": "Readable Output",
+      "meta": {
+        "members": [
+          "agent",
+          "design"
+        ]
+      },
+      "order": 5
+    },
+    {
+      "group": null,
+      "id": "governance_design",
+      "kind": "region",
+      "label": "Proof UI",
+      "meta": {
+        "members": [
+          "governance",
+          "design"
+        ]
+      },
+      "order": 6
+    },
+    {
+      "group": null,
+      "id": "core_overlap",
+      "kind": "region",
+      "label": "Valuable Asset",
+      "meta": {
+        "members": [
+          "agent",
+          "governance",
+          "design"
+        ]
+      },
+      "order": 7
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": [
+    {
+      "intent": "emphasis",
+      "meta": {
+        "reason": "highest-value overlap"
+      },
+      "op": "style.intent",
+      "seq": 12,
+      "target": "core_overlap"
+    }
+  ]
+}

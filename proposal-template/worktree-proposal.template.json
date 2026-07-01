@@ -1,0 +1,15 @@
+{
+  "id": "<worktree>",
+  "purpose": "<why>",
+  "scope": "<boundary>",
+  "tests": [
+    "<red-test>"
+  ],
+  "evidence": [
+    "<green-evidence>"
+  ],
+  "risks": [
+    "<known-risk>"
+  ],
+  "status": "ready"
+}

@@ -1,0 +1,62 @@
+# generated-from: jsonl
+# diagram-id: swimlane
+# diagram-kind: swimlane
+direction: right
+
+# groups
+# group g_agent__d4f0bc5a29de: label="Agent" kind=lane
+# group g_ci__1b158839f8aa: label="CI / Gate" kind=lane
+# group g_owner__4c1029697ee3: label="Owner" kind=lane
+# group g_runtime__d92c6a81b2ff: label="Runtime" kind=lane
+
+# nodes
+n_draft__7743ce348d92: {
+  label: "Append proposal events"
+  shape: rectangle
+  # source-id: draft
+  # group: agent
+}
+n_normalize__768207cf3cf6: {
+  label: "Normalize diagram tokens"
+  shape: rectangle
+  # source-id: normalize
+  # group: agent
+}
+n_check__20f65c28671b: {
+  label: "Schema + proof check"
+  shape: rectangle
+  # source-id: check
+  # group: ci
+}
+n_render__887270d0cbc5: {
+  label: "Build SVG artifact"
+  shape: rectangle
+  # source-id: render
+  # group: runtime
+}
+n_review__c97ace4c8fef: {
+  label: "Review SVG preview"
+  shape: rectangle
+  # source-id: review
+  # group: owner
+}
+n_merge__283128acef14: {
+  label: "Approve merge"
+  shape: rectangle
+  # source-id: merge
+  # group: owner
+}
+n_release__a4d451ec2346: {
+  label: "Publish generated SVG"
+  shape: rectangle
+  # source-id: release
+  # group: runtime
+}
+
+# edges
+n_draft__7743ce348d92 -> n_normalize__768207cf3cf6
+n_normalize__768207cf3cf6 -> n_check__20f65c28671b
+n_check__20f65c28671b -> n_render__887270d0cbc5: "green"
+n_render__887270d0cbc5 -> n_review__c97ace4c8fef
+n_review__c97ace4c8fef -> n_merge__283128acef14: "ok"
+n_merge__283128acef14 -> n_release__a4d451ec2346

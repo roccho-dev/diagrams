@@ -1,0 +1,55 @@
+{
+  "authority": "events.jsonl",
+  "d2SemanticCounts": {
+    "adapterIdsUnique": true,
+    "d2EdgeDecls": 7,
+    "d2NodeDecls": 7,
+    "dvmEdges": 7,
+    "dvmNodes": 7,
+    "semanticEdgeParity": true,
+    "semanticNodeParity": true
+  },
+  "drawioImageExactQuality": {
+    "cellCount": 3,
+    "edgeCount": 0,
+    "jsonlEdgeCount": 0,
+    "jsonlNodeCount": 0,
+    "mode": "image",
+    "schema": "DrawioQualityResult.v1",
+    "vertexCount": 1
+  },
+  "drawioImageExactSha256": "9dd7b3411abdd2020dcb0ff8c7f73ed4ae74872c740f4cefae1672f194bcd1f7",
+  "drawioQuality": {
+    "cellCount": 18,
+    "edgeCount": 7,
+    "jsonlEdgeCount": 7,
+    "jsonlNodeCount": 7,
+    "mode": "native",
+    "schema": "DrawioQualityResult.v1",
+    "vertexCount": 9
+  },
+  "drawioSha256": "62e9b953afc7f8df35af64179c3e8f50c8ac792f1a0670a54e400740e92ce04b",
+  "dvmSha256": "25d1d9ec927b1e5a7409d499d25ca8773971a795998056cf00b89f8b1ab2332e",
+  "eventsSha256": "c86b94aab79bb70784fa6c5748cfbf8346ee20c1873325763faeabaee54e067e",
+  "generatedIsAuthority": false,
+  "htmlIncludedInZip": false,
+  "htmlPreviewOnly": true,
+  "layoutEngine": "deterministic",
+  "layoutFallbackUsed": true,
+  "layoutOnly": true,
+  "proofSha256": "d3bd7d854387e7e013b6a82d4ce698e6f70eccf46c7a7968a93214277d6d570f",
+  "sample": "11_bpmn",
+  "schema": "DiagramProof.v1",
+  "svgQuality": {
+    "dvmSha256": "25d1d9ec927b1e5a7409d499d25ca8773971a795998056cf00b89f8b1ab2332e",
+    "edgeCount": 7,
+    "eventsSha256": "c86b94aab79bb70784fa6c5748cfbf8346ee20c1873325763faeabaee54e067e",
+    "groupCount": 0,
+    "height": "328",
+    "nodeCount": 7,
+    "schema": "SvgQualityResult.v1",
+    "visibleElementCount": 28,
+    "width": "832"
+  },
+  "svgSha256": "26ec99b99768f91c382f5a7ea0defe5277919dddb0d52ec7c1db720da4807ce0"
+}

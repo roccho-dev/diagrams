@@ -1,0 +1,85 @@
+# generated-from: jsonl
+# diagram-id: architecture
+# diagram-kind: architecture
+direction: right
+
+# groups
+# group g_input__c96c6d5be8d0: label="Input / Authority" kind=container
+# group g_core__0d45f5fd462b: label="Core" kind=container
+# group g_adapters__4b5174ed2e5d: label="Adapters" kind=container
+# group g_artifact__c7c5c1d70c5d: label="Generated Artifacts" kind=container
+
+# nodes
+n_events__862417b9e7c3: {
+  label: "events.jsonl"
+  shape: rectangle
+  # source-id: events
+  # group: input
+}
+n_schema__df0ad6e43880: {
+  label: "schema gate"
+  shape: rectangle
+  # source-id: schema
+  # group: input
+}
+n_tokenizer__5f97e3774c51: {
+  label: "tokenizer"
+  shape: rectangle
+  # source-id: tokenizer
+  # group: core
+}
+n_reducer__d5bb10afb694: {
+  label: "reducer"
+  shape: rectangle
+  # source-id: reducer
+  # group: core
+}
+n_dvm__ebc2b222ef02: {
+  label: "DiagramViewModel"
+  shape: rectangle
+  # source-id: dvm
+  # group: core
+}
+n_d2__e788103ee153: {
+  label: "D2 target"
+  shape: rectangle
+  # source-id: d2
+  # group: adapters
+}
+n_gv__a303517c07f1: {
+  label: "Graphviz layout"
+  shape: rectangle
+  # source-id: gv
+  # group: adapters
+}
+n_elk__2f60f61a3424: {
+  label: "ELK layout"
+  shape: rectangle
+  # source-id: elk
+  # group: adapters
+}
+n_renderer__6bd52b204f5b: {
+  label: "single SVG renderer"
+  shape: rectangle
+  # source-id: renderer
+  # group: artifact
+}
+n_proof__c1cda2636282: {
+  label: "proof gate"
+  shape: rectangle
+  # source-id: proof
+  # group: artifact
+}
+
+# edges
+n_events__862417b9e7c3 -> n_schema__df0ad6e43880: "validate"
+n_schema__df0ad6e43880 -> n_tokenizer__5f97e3774c51: "tokens"
+n_tokenizer__5f97e3774c51 -> n_reducer__d5bb10afb694: "stream"
+n_reducer__d5bb10afb694 -> n_dvm__ebc2b222ef02: "current"
+n_dvm__ebc2b222ef02 -> n_d2__e788103ee153: "compile"
+n_dvm__ebc2b222ef02 -> n_gv__a303517c07f1: "dense"
+n_dvm__ebc2b222ef02 -> n_elk__2f60f61a3424: "complex"
+n_d2__e788103ee153 -> n_renderer__6bd52b204f5b: "target"
+n_gv__a303517c07f1 -> n_renderer__6bd52b204f5b: "coords"
+n_elk__2f60f61a3424 -> n_renderer__6bd52b204f5b: "coords"
+n_renderer__6bd52b204f5b -> n_proof__c1cda2636282: "hash"

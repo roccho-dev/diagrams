@@ -1,0 +1,50 @@
+{
+  "available": true,
+  "engine": "deterministic",
+  "fallbackUsed": true,
+  "layoutOnly": true,
+  "nodes": {
+    "agent_design": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 200
+    },
+    "agent_governance": {
+      "h": 56,
+      "w": 138,
+      "x": 622,
+      "y": 96
+    },
+    "agent_only": {
+      "h": 56,
+      "w": 138,
+      "x": 64,
+      "y": 96
+    },
+    "core_overlap": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 200
+    },
+    "design_only": {
+      "h": 56,
+      "w": 138,
+      "x": 436,
+      "y": 96
+    },
+    "governance_design": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 200
+    },
+    "governance_only": {
+      "h": 56,
+      "w": 138,
+      "x": 250,
+      "y": 96
+    }
+  }
+}

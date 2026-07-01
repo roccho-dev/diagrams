@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "diagram-meaning.v1.schema.json",
+  "title": "Diagram meaning JSONL policy",
+  "type": "object",
+  "properties": {
+    "authority": {"const": "meaning-jsonl"},
+    "forbiddenGeometryKeys": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["authority", "forbiddenGeometryKeys"],
+  "additionalProperties": true
+}

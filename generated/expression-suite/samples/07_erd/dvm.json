@@ -1,0 +1,192 @@
+{
+  "diagram": {
+    "id": "erd",
+    "kind": "erd",
+    "label": "ERD: Diagram Domain Model",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "r0",
+      "kind": "relation",
+      "label": "1:N",
+      "meta": {},
+      "order": 10000,
+      "source": "diagram",
+      "target": "event"
+    },
+    {
+      "id": "r1",
+      "kind": "relation",
+      "label": "1:N",
+      "meta": {},
+      "order": 10000,
+      "source": "diagram",
+      "target": "node"
+    },
+    {
+      "id": "r2",
+      "kind": "relation",
+      "label": "1:N source",
+      "meta": {},
+      "order": 10000,
+      "source": "node",
+      "target": "edge"
+    },
+    {
+      "id": "r3",
+      "kind": "relation",
+      "label": "1:N target",
+      "meta": {},
+      "order": 10000,
+      "source": "node",
+      "target": "edge"
+    },
+    {
+      "id": "r4",
+      "kind": "relation",
+      "label": "1:1",
+      "meta": {},
+      "order": 10000,
+      "source": "diagram",
+      "target": "proof"
+    }
+  ],
+  "groups": [],
+  "hash": "8a717b88b340ad72d10d6e88b572235ccbf094b453eb6dc371740533e46ccbbe",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "entityKind": "table",
+      "group": null,
+      "id": "diagram",
+      "kind": "table",
+      "label": "Diagram",
+      "meta": {
+        "columns": [
+          [
+            "id",
+            "PK"
+          ],
+          [
+            "title",
+            ""
+          ],
+          [
+            "kind",
+            ""
+          ]
+        ]
+      },
+      "opClass": "entity",
+      "order": 0
+    },
+    {
+      "entityKind": "table",
+      "group": null,
+      "id": "event",
+      "kind": "table",
+      "label": "Event",
+      "meta": {
+        "columns": [
+          [
+            "id",
+            "PK"
+          ],
+          [
+            "diagram_id",
+            "FK"
+          ],
+          [
+            "op",
+            ""
+          ]
+        ]
+      },
+      "opClass": "entity",
+      "order": 1
+    },
+    {
+      "entityKind": "table",
+      "group": null,
+      "id": "node",
+      "kind": "table",
+      "label": "Node",
+      "meta": {
+        "columns": [
+          [
+            "id",
+            "PK"
+          ],
+          [
+            "diagram_id",
+            "FK"
+          ],
+          [
+            "kind",
+            ""
+          ]
+        ]
+      },
+      "opClass": "entity",
+      "order": 2
+    },
+    {
+      "entityKind": "table",
+      "group": null,
+      "id": "edge",
+      "kind": "table",
+      "label": "Edge",
+      "meta": {
+        "columns": [
+          [
+            "id",
+            "PK"
+          ],
+          [
+            "source_id",
+            "FK"
+          ],
+          [
+            "target_id",
+            "FK"
+          ]
+        ]
+      },
+      "opClass": "entity",
+      "order": 3
+    },
+    {
+      "entityKind": "table",
+      "group": null,
+      "id": "proof",
+      "kind": "table",
+      "label": "Proof",
+      "meta": {
+        "columns": [
+          [
+            "id",
+            "PK"
+          ],
+          [
+            "input_hash",
+            ""
+          ],
+          [
+            "svg_hash",
+            ""
+          ]
+        ]
+      },
+      "opClass": "entity",
+      "order": 4
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

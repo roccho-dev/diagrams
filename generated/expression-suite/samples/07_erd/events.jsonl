@@ -1,0 +1,11 @@
+{"op":"diagram.init","id":"erd","kind":"erd","label":"ERD: Diagram Domain Model"}
+{"op":"entity.upsert","id":"diagram","kind":"table","label":"Diagram","meta":{"columns":[["id","PK"],["title",""],["kind",""]]},"order":0}
+{"op":"entity.upsert","id":"event","kind":"table","label":"Event","meta":{"columns":[["id","PK"],["diagram_id","FK"],["op",""]]},"order":1}
+{"op":"entity.upsert","id":"node","kind":"table","label":"Node","meta":{"columns":[["id","PK"],["diagram_id","FK"],["kind",""]]},"order":2}
+{"op":"entity.upsert","id":"edge","kind":"table","label":"Edge","meta":{"columns":[["id","PK"],["source_id","FK"],["target_id","FK"]]},"order":3}
+{"op":"entity.upsert","id":"proof","kind":"table","label":"Proof","meta":{"columns":[["id","PK"],["input_hash",""],["svg_hash",""]]},"order":4}
+{"op":"edge.upsert","id":"r0","source":"diagram","target":"event","kind":"relation","label":"1:N"}
+{"op":"edge.upsert","id":"r1","source":"diagram","target":"node","kind":"relation","label":"1:N"}
+{"op":"edge.upsert","id":"r2","source":"node","target":"edge","kind":"relation","label":"1:N source"}
+{"op":"edge.upsert","id":"r3","source":"node","target":"edge","kind":"relation","label":"1:N target"}
+{"op":"edge.upsert","id":"r4","source":"diagram","target":"proof","kind":"relation","label":"1:1"}

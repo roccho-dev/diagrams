@@ -1,0 +1,4 @@
+{"id": "wt-008-render-ast-contract", "purpose": "SVG/drawio共通の描画中間表現を置く", "status": "complete", "title": "render AST contract", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_008_render_ast_contract.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-008-render-ast-contract"}
+{"evidence": ["src/jsonl_diagram_core/render_ast.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-008-render-ast-contract"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-008-render-ast-contract"}

@@ -1,0 +1,142 @@
+{
+  "diagram": {
+    "id": "sequence",
+    "kind": "sequence",
+    "label": "Sequence: Agent Builds Diagram",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "m0",
+      "kind": "message",
+      "label": "append events",
+      "meta": {},
+      "order": 0,
+      "source": "agent",
+      "target": "repo"
+    },
+    {
+      "id": "m1",
+      "kind": "message",
+      "label": "read events",
+      "meta": {},
+      "order": 1,
+      "source": "repo",
+      "target": "compiler"
+    },
+    {
+      "id": "m2",
+      "kind": "message",
+      "label": "tokenize + reduce",
+      "meta": {},
+      "order": 2,
+      "source": "compiler",
+      "target": "compiler"
+    },
+    {
+      "id": "m3",
+      "kind": "message",
+      "label": "layout request",
+      "meta": {},
+      "order": 3,
+      "source": "compiler",
+      "target": "layout"
+    },
+    {
+      "id": "m4",
+      "kind": "message",
+      "label": "coords",
+      "meta": {},
+      "order": 4,
+      "source": "layout",
+      "target": "compiler"
+    },
+    {
+      "id": "m5",
+      "kind": "message",
+      "label": "DVM + tokens",
+      "meta": {},
+      "order": 5,
+      "source": "compiler",
+      "target": "svg"
+    },
+    {
+      "id": "m6",
+      "kind": "message",
+      "label": "generated SVG",
+      "meta": {},
+      "order": 6,
+      "source": "svg",
+      "target": "gate"
+    },
+    {
+      "id": "m7",
+      "kind": "message",
+      "label": "proof OK",
+      "meta": {},
+      "order": 7,
+      "source": "gate",
+      "target": "agent"
+    }
+  ],
+  "groups": [],
+  "hash": "1122c9b05d4706519508966cb015b7e8489d2df8de771a511a2a42d3314b6433",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "agent",
+      "kind": "participant",
+      "label": "Agent",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "repo",
+      "kind": "participant",
+      "label": "JSONL Repo",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "compiler",
+      "kind": "participant",
+      "label": "f(jsonl)",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "layout",
+      "kind": "participant",
+      "label": "Layout Solver",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "svg",
+      "kind": "participant",
+      "label": "SVG Renderer",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "gate",
+      "kind": "participant",
+      "label": "Proof Gate",
+      "meta": {},
+      "order": 5
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

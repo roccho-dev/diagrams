@@ -1,0 +1,98 @@
+{
+  "adaptersAsExamplesAndE2eFixtures": true,
+  "authority": "events.jsonl",
+  "checks": [
+    {
+      "name": "unit_and_e2e_tests",
+      "ok": true,
+      "summary": "Ran 12 tests OK"
+    },
+    {
+      "name": "npm_ci",
+      "ok": true,
+      "summary": "added 2 packages"
+    },
+    {
+      "engineVersions": {
+        "elkjsNpm": "0.11.1",
+        "graphvizDot": "dot - graphviz version 2.42.4 (0)",
+        "node": "v22.16.0",
+        "python": "3.13.5",
+        "terrastructD2Npm": "0.1.33"
+      },
+      "name": "build_suite_require_engines",
+      "ok": true,
+      "requireEngines": true
+    },
+    {
+      "legacySampleCount": 12,
+      "name": "legacy_semantic_compare",
+      "newSamplesAllowed": [
+        "13_venn"
+      ],
+      "ok": true
+    },
+    {
+      "name": "svg_provenance_plus_proof_hash",
+      "ok": true,
+      "svgCount": 13
+    },
+    {
+      "mode": "structural-d2-parity-plus-elk-runtime",
+      "name": "d2_elk_semantic_smoke",
+      "ok": true,
+      "samples": 13
+    },
+    {
+      "d2ElkSmoke": true,
+      "filesCompared": 94,
+      "name": "rebuild_compare_proof_gate",
+      "ok": true,
+      "requireEngines": true
+    },
+    {
+      "name": "wheel_build",
+      "ok": true,
+      "summary": "jsonl_diagram_core-0.1.0 wheel built"
+    },
+    {
+      "coreAdapterImports": [],
+      "flakeHasDefaultOutput": false,
+      "name": "source_boundary",
+      "ok": true
+    },
+    {
+      "htmlCount": 0,
+      "name": "html_source_check",
+      "ok": true
+    },
+    {
+      "expectedFailure": true,
+      "name": "nix_evaluation",
+      "ok": false,
+      "reason": "nix binary unavailable in this sandbox; external CI required"
+    }
+  ],
+  "corePortAsLib": true,
+  "generatedIsAuthority": false,
+  "htmlIncludedInZip": false,
+  "nix": {
+    "binaryAvailable": false,
+    "evaluatedHere": false,
+    "reasonIfNotEvaluated": "nix binary is not installed in this execution container"
+  },
+  "ok": true,
+  "phase": "canonical-merge-proposal-ready",
+  "samples": 13,
+  "schema": "SmokeReport.v4",
+  "semanticFixes": [
+    "entity.upsert kind preserved as DVM kind with opClass/entityKind annotation",
+    "legacy dense edge id d2 preserved exactly using node/edge namespace separation",
+    "append order preserved as default tie-breaker when explicit order is absent"
+  ],
+  "venn": {
+    "generatedSvg": "generated/expression-suite/samples/13_venn/diagram.svg",
+    "possible": true,
+    "source": "examples/expression_suite/samples/13_venn/events.jsonl"
+  }
+}

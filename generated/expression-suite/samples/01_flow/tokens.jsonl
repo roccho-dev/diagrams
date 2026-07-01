@@ -1,0 +1,15 @@
+{"op":"diagram.init","payload":{"id":"flow","kind":"flow","label":"Flow: JSONL Build Gate","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"node.upsert","payload":{"id":"start","kind":"start","label":"append JSONL","op":"node.upsert"},"seq":1,"type":"node"}
+{"op":"node.upsert","payload":{"id":"tokenize","kind":"process","label":"tokenize","op":"node.upsert"},"seq":2,"type":"node"}
+{"op":"node.upsert","payload":{"id":"schema","kind":"decision","label":"schema ok?","op":"node.upsert"},"seq":3,"type":"node"}
+{"op":"node.upsert","payload":{"id":"reduce","kind":"process","label":"reduce to DVM","op":"node.upsert"},"seq":4,"type":"node"}
+{"op":"node.upsert","payload":{"id":"render","kind":"process","label":"render SVG","op":"node.upsert"},"seq":5,"type":"node"}
+{"op":"node.upsert","payload":{"id":"proof","kind":"process","label":"proof gate","op":"node.upsert"},"seq":6,"type":"node"}
+{"op":"node.upsert","payload":{"id":"stop","kind":"end","label":"publish artifact","op":"node.upsert"},"seq":7,"type":"node"}
+{"op":"edge.upsert","payload":{"id":"e0","kind":"flow","label":"","op":"edge.upsert","source":"start","target":"tokenize"},"seq":8,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e1","kind":"flow","label":"","op":"edge.upsert","source":"tokenize","target":"schema"},"seq":9,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e2","kind":"flow","label":"yes","op":"edge.upsert","source":"schema","target":"reduce"},"seq":10,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e3","kind":"flow","label":"","op":"edge.upsert","source":"reduce","target":"render"},"seq":11,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e4","kind":"flow","label":"","op":"edge.upsert","source":"render","target":"proof"},"seq":12,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e5","kind":"flow","label":"green","op":"edge.upsert","source":"proof","target":"stop"},"seq":13,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"e_bad","kind":"flow","label":"fix","op":"edge.upsert","source":"schema","target":"start"},"seq":14,"type":"edge"}

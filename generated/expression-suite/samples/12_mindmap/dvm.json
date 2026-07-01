@@ -1,0 +1,183 @@
+{
+  "diagram": {
+    "id": "mindmap",
+    "kind": "mindmap",
+    "label": "Mindmap: Diagram Asset Value",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "mm0",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "root",
+      "target": "jsonl"
+    },
+    {
+      "id": "mm1",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "root",
+      "target": "repro"
+    },
+    {
+      "id": "mm2",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "root",
+      "target": "agent"
+    },
+    {
+      "id": "mm3",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "root",
+      "target": "dd"
+    },
+    {
+      "id": "mm4",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "jsonl",
+      "target": "schema"
+    },
+    {
+      "id": "mm5",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "repro",
+      "target": "proof"
+    },
+    {
+      "id": "mm6",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "svg"
+    },
+    {
+      "id": "mm7",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "agent",
+      "target": "ci"
+    },
+    {
+      "id": "mm8",
+      "kind": "tree",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "dd",
+      "target": "buyer"
+    }
+  ],
+  "groups": [],
+  "hash": "2e49a54983380350c668760feda99577149f024806851126182f3d9218a4a1a0",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "root",
+      "kind": "root",
+      "label": "Diagram Asset",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "jsonl",
+      "kind": "branch",
+      "label": "JSONL Authority",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "repro",
+      "kind": "branch",
+      "label": "Reproducible",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "agent",
+      "kind": "branch",
+      "label": "Agent Friendly",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "dd",
+      "kind": "branch",
+      "label": "DD Asset",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "schema",
+      "kind": "leaf",
+      "label": "schema",
+      "meta": {},
+      "order": 5
+    },
+    {
+      "group": null,
+      "id": "proof",
+      "kind": "leaf",
+      "label": "proof",
+      "meta": {},
+      "order": 6
+    },
+    {
+      "group": null,
+      "id": "svg",
+      "kind": "leaf",
+      "label": "single SVG",
+      "meta": {},
+      "order": 7
+    },
+    {
+      "group": null,
+      "id": "ci",
+      "kind": "leaf",
+      "label": "visual CI",
+      "meta": {},
+      "order": 8
+    },
+    {
+      "group": null,
+      "id": "buyer",
+      "kind": "leaf",
+      "label": "buyer review",
+      "meta": {},
+      "order": 9
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

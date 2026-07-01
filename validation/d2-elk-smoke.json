@@ -1,0 +1,157 @@
+{
+  "schema": "D2ElkSmoke.v3",
+  "mode": "structural-d2-parity-plus-elk-runtime",
+  "authority": "events.jsonl",
+  "generatedIsAuthority": false,
+  "note": "@terrastruct/d2 WASM render is intentionally not required by this semantic gate; compiled.d2 parity is checked structurally and ELK runtime is smoke-tested.",
+  "results": [
+    {
+      "sample": "01_flow",
+      "ok": true,
+      "dvmNodes": 7,
+      "dvmEdges": 7,
+      "structuralD2NodeDecls": 7,
+      "structuralD2EdgeDecls": 7,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "02_swimlane",
+      "ok": true,
+      "dvmNodes": 7,
+      "dvmEdges": 6,
+      "structuralD2NodeDecls": 7,
+      "structuralD2EdgeDecls": 6,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "03_sequence",
+      "ok": true,
+      "dvmNodes": 6,
+      "dvmEdges": 8,
+      "structuralD2NodeDecls": 6,
+      "structuralD2EdgeDecls": 8,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "04_state",
+      "ok": true,
+      "dvmNodes": 7,
+      "dvmEdges": 8,
+      "structuralD2NodeDecls": 7,
+      "structuralD2EdgeDecls": 8,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "05_timeline",
+      "ok": true,
+      "dvmNodes": 8,
+      "dvmEdges": 0,
+      "structuralD2NodeDecls": 8,
+      "structuralD2EdgeDecls": 0,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "06_gantt",
+      "ok": true,
+      "dvmNodes": 12,
+      "dvmEdges": 7,
+      "structuralD2NodeDecls": 12,
+      "structuralD2EdgeDecls": 7,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "07_erd",
+      "ok": true,
+      "dvmNodes": 5,
+      "dvmEdges": 5,
+      "structuralD2NodeDecls": 5,
+      "structuralD2EdgeDecls": 5,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "08_architecture",
+      "ok": true,
+      "dvmNodes": 10,
+      "dvmEdges": 11,
+      "structuralD2NodeDecls": 10,
+      "structuralD2EdgeDecls": 11,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "09_dense_dependency",
+      "ok": true,
+      "dvmNodes": 14,
+      "dvmEdges": 21,
+      "structuralD2NodeDecls": 14,
+      "structuralD2EdgeDecls": 21,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "10_nested_ports",
+      "ok": true,
+      "dvmNodes": 6,
+      "dvmEdges": 7,
+      "structuralD2NodeDecls": 6,
+      "structuralD2EdgeDecls": 7,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "11_bpmn",
+      "ok": true,
+      "dvmNodes": 7,
+      "dvmEdges": 7,
+      "structuralD2NodeDecls": 7,
+      "structuralD2EdgeDecls": 7,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "12_mindmap",
+      "ok": true,
+      "dvmNodes": 10,
+      "dvmEdges": 9,
+      "structuralD2NodeDecls": 10,
+      "structuralD2EdgeDecls": 9,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    },
+    {
+      "sample": "13_venn",
+      "ok": true,
+      "dvmNodes": 7,
+      "dvmEdges": 0,
+      "structuralD2NodeDecls": 7,
+      "structuralD2EdgeDecls": 0,
+      "nodeParity": true,
+      "edgeParity": true,
+      "adapterIdsUnique": true
+    }
+  ],
+  "elkSmoke": {
+    "ok": true,
+    "width": 204,
+    "height": 64
+  }
+}

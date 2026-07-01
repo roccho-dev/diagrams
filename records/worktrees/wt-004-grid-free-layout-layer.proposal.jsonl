@@ -1,0 +1,4 @@
+{"id": "wt-004-grid-free-layout-layer", "purpose": "swimlane/wireframeを面配置として扱う", "status": "complete", "title": "grid + free layout layer", "type": "proposal_worktree"}
+{"evidence": ["tests/canontdd/test_004_grid_free_layout_layer.py"], "phase": "red", "type": "kentbeck_canontdd", "worktree": "wt-004-grid-free-layout-layer"}
+{"evidence": ["src/jsonl_diagram_core/grid_free_layout.py"], "phase": "green", "type": "kentbeck_canontdd", "worktree": "wt-004-grid-free-layout-layer"}
+{"evidence": ["core-adapter-boundary-preserved", "generated-not-authority"], "phase": "refactor", "type": "kentbeck_canontdd", "worktree": "wt-004-grid-free-layout-layer"}

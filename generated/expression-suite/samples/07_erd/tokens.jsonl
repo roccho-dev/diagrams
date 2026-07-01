@@ -1,0 +1,11 @@
+{"op":"diagram.init","payload":{"id":"erd","kind":"erd","label":"ERD: Diagram Domain Model","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"entity.upsert","payload":{"id":"diagram","kind":"table","label":"Diagram","meta":{"columns":[["id","PK"],["title",""],["kind",""]]},"op":"entity.upsert","order":0},"seq":1,"type":"entity"}
+{"op":"entity.upsert","payload":{"id":"event","kind":"table","label":"Event","meta":{"columns":[["id","PK"],["diagram_id","FK"],["op",""]]},"op":"entity.upsert","order":1},"seq":2,"type":"entity"}
+{"op":"entity.upsert","payload":{"id":"node","kind":"table","label":"Node","meta":{"columns":[["id","PK"],["diagram_id","FK"],["kind",""]]},"op":"entity.upsert","order":2},"seq":3,"type":"entity"}
+{"op":"entity.upsert","payload":{"id":"edge","kind":"table","label":"Edge","meta":{"columns":[["id","PK"],["source_id","FK"],["target_id","FK"]]},"op":"entity.upsert","order":3},"seq":4,"type":"entity"}
+{"op":"entity.upsert","payload":{"id":"proof","kind":"table","label":"Proof","meta":{"columns":[["id","PK"],["input_hash",""],["svg_hash",""]]},"op":"entity.upsert","order":4},"seq":5,"type":"entity"}
+{"op":"edge.upsert","payload":{"id":"r0","kind":"relation","label":"1:N","op":"edge.upsert","source":"diagram","target":"event"},"seq":6,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"r1","kind":"relation","label":"1:N","op":"edge.upsert","source":"diagram","target":"node"},"seq":7,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"r2","kind":"relation","label":"1:N source","op":"edge.upsert","source":"node","target":"edge"},"seq":8,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"r3","kind":"relation","label":"1:N target","op":"edge.upsert","source":"node","target":"edge"},"seq":9,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"r4","kind":"relation","label":"1:1","op":"edge.upsert","source":"diagram","target":"proof"},"seq":10,"type":"edge"}

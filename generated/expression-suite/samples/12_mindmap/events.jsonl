@@ -1,0 +1,20 @@
+{"op":"diagram.init","id":"mindmap","kind":"mindmap","label":"Mindmap: Diagram Asset Value"}
+{"op":"node.upsert","id":"root","kind":"root","label":"Diagram Asset","order":0}
+{"op":"node.upsert","id":"jsonl","kind":"branch","label":"JSONL Authority","order":1}
+{"op":"node.upsert","id":"repro","kind":"branch","label":"Reproducible","order":2}
+{"op":"node.upsert","id":"agent","kind":"branch","label":"Agent Friendly","order":3}
+{"op":"node.upsert","id":"dd","kind":"branch","label":"DD Asset","order":4}
+{"op":"node.upsert","id":"schema","kind":"leaf","label":"schema","order":5}
+{"op":"node.upsert","id":"proof","kind":"leaf","label":"proof","order":6}
+{"op":"node.upsert","id":"svg","kind":"leaf","label":"single SVG","order":7}
+{"op":"node.upsert","id":"ci","kind":"leaf","label":"visual CI","order":8}
+{"op":"node.upsert","id":"buyer","kind":"leaf","label":"buyer review","order":9}
+{"op":"edge.upsert","id":"mm0","source":"root","target":"jsonl","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm1","source":"root","target":"repro","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm2","source":"root","target":"agent","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm3","source":"root","target":"dd","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm4","source":"jsonl","target":"schema","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm5","source":"repro","target":"proof","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm6","source":"agent","target":"svg","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm7","source":"agent","target":"ci","kind":"tree","label":""}
+{"op":"edge.upsert","id":"mm8","source":"dd","target":"buyer","kind":"tree","label":""}

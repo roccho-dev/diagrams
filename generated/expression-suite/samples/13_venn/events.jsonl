@@ -1,0 +1,13 @@
+{"id": "venn_expression", "kind": "venn", "label": "Venn: JSONL Diagram Value Overlap", "meta": {"note": "Venn fixture: sets are groups; regions are nodes with meta.members."}, "op": "diagram.init"}
+{"id": "agent", "kind": "set", "label": "Agent-first", "op": "group.upsert", "order": 1}
+{"id": "governance", "kind": "set", "label": "Governance / Proof", "op": "group.upsert", "order": 2}
+{"id": "design", "kind": "set", "label": "Design Quality", "op": "group.upsert", "order": 3}
+{"id": "agent_only", "kind": "region", "label": "Append UX", "meta": {"members": ["agent"]}, "op": "node.upsert", "order": 1}
+{"id": "governance_only", "kind": "region", "label": "Audit Gate", "meta": {"members": ["governance"]}, "op": "node.upsert", "order": 2}
+{"id": "design_only", "kind": "region", "label": "Visual Tokens", "meta": {"members": ["design"]}, "op": "node.upsert", "order": 3}
+{"id": "agent_governance", "kind": "region", "label": "Safe Automation", "meta": {"members": ["agent", "governance"]}, "op": "node.upsert", "order": 4}
+{"id": "agent_design", "kind": "region", "label": "Readable Output", "meta": {"members": ["agent", "design"]}, "op": "node.upsert", "order": 5}
+{"id": "governance_design", "kind": "region", "label": "Proof UI", "meta": {"members": ["governance", "design"]}, "op": "node.upsert", "order": 6}
+{"id": "core_overlap", "kind": "region", "label": "Valuable Asset", "meta": {"members": ["agent", "governance", "design"]}, "op": "node.upsert", "order": 7}
+{"intent": "venn-3-set", "meta": {"renderer": "single-svg", "sets": ["agent", "governance", "design"]}, "op": "layout.intent", "target": "venn_expression"}
+{"intent": "emphasis", "meta": {"reason": "highest-value overlap"}, "op": "style.intent", "target": "core_overlap"}

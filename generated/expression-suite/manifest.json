@@ -1,0 +1,132 @@
+{
+  "adapterStatus": "adapters are e2e fixtures/examples, not core library",
+  "authority": "samples/*/events.jsonl",
+  "drawioIncluded": true,
+  "drawioModes": [
+    "native-editable",
+    "image-exact"
+  ],
+  "engineVersions": {
+    "elkjsNpm": "0.11.1",
+    "graphvizDot": "dot - graphviz version 2.42.4 (0)",
+    "node": "v22.16.0",
+    "python": "3.13.5",
+    "terrastructD2Npm": "0.1.33"
+  },
+  "generatedIsAuthority": false,
+  "htmlIncludedInZip": false,
+  "htmlPreviewOnly": true,
+  "quality": {
+    "drawioImageExact": "validated",
+    "drawioNative": "validated",
+    "svg": "validated"
+  },
+  "requireEngines": true,
+  "samples": [
+    {
+      "edges": 7,
+      "fallbackUsed": true,
+      "kind": "flow",
+      "layout": "deterministic",
+      "nodes": 7,
+      "sample": "01_flow"
+    },
+    {
+      "edges": 6,
+      "fallbackUsed": true,
+      "kind": "swimlane",
+      "layout": "deterministic",
+      "nodes": 7,
+      "sample": "02_swimlane"
+    },
+    {
+      "edges": 8,
+      "fallbackUsed": true,
+      "kind": "sequence",
+      "layout": "deterministic",
+      "nodes": 6,
+      "sample": "03_sequence"
+    },
+    {
+      "edges": 8,
+      "fallbackUsed": true,
+      "kind": "state",
+      "layout": "deterministic",
+      "nodes": 7,
+      "sample": "04_state"
+    },
+    {
+      "edges": 0,
+      "fallbackUsed": true,
+      "kind": "timeline",
+      "layout": "deterministic",
+      "nodes": 8,
+      "sample": "05_timeline"
+    },
+    {
+      "edges": 7,
+      "fallbackUsed": true,
+      "kind": "gantt",
+      "layout": "deterministic",
+      "nodes": 12,
+      "sample": "06_gantt"
+    },
+    {
+      "edges": 5,
+      "fallbackUsed": true,
+      "kind": "erd",
+      "layout": "deterministic",
+      "nodes": 5,
+      "sample": "07_erd"
+    },
+    {
+      "edges": 11,
+      "fallbackUsed": false,
+      "kind": "architecture",
+      "layout": "elkjs",
+      "nodes": 10,
+      "sample": "08_architecture"
+    },
+    {
+      "edges": 21,
+      "fallbackUsed": false,
+      "kind": "dense",
+      "layout": "graphviz",
+      "nodes": 14,
+      "sample": "09_dense_dependency"
+    },
+    {
+      "edges": 7,
+      "fallbackUsed": false,
+      "kind": "nested_ports",
+      "layout": "elkjs",
+      "nodes": 6,
+      "sample": "10_nested_ports"
+    },
+    {
+      "edges": 7,
+      "fallbackUsed": true,
+      "kind": "bpmn",
+      "layout": "deterministic",
+      "nodes": 7,
+      "sample": "11_bpmn"
+    },
+    {
+      "edges": 9,
+      "fallbackUsed": true,
+      "kind": "mindmap",
+      "layout": "deterministic",
+      "nodes": 10,
+      "sample": "12_mindmap"
+    },
+    {
+      "edges": 0,
+      "fallbackUsed": true,
+      "kind": "venn",
+      "layout": "deterministic",
+      "nodes": 7,
+      "sample": "13_venn"
+    }
+  ],
+  "schema": "GeneratedManifest.v1"
+}

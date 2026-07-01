@@ -1,0 +1,12 @@
+{
+  "changed": [],
+  "d2ElkSmoke": false,
+  "expected": "/mnt/data/work_submit/jsonl_src/jsonl-diagram-integrated-worktree/generated/expression-suite",
+  "extra": [],
+  "filesCompared": 93,
+  "missing": [],
+  "ok": true,
+  "proofErrors": [],
+  "requireEngines": false,
+  "schema": "RebuildCompareReport.v1"
+}

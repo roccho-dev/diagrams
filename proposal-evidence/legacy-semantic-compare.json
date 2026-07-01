@@ -1,0 +1,34 @@
+{
+  "checkedSamples": [
+    "01_flow",
+    "02_swimlane",
+    "03_sequence",
+    "04_state",
+    "05_timeline",
+    "06_gantt",
+    "07_erd",
+    "08_architecture",
+    "09_dense_dependency",
+    "10_nested_ports",
+    "11_bpmn",
+    "12_mindmap"
+  ],
+  "currentRoot": "generated/expression-suite/samples",
+  "currentSampleCount": 13,
+  "failures": [],
+  "generatedAt": "2026-06-14T11:18:25.442934+00:00",
+  "legacyRoot": "/mnt/data/work_submit/baseline_src/260614-104854-jsonl-diagram-expression-coverage/samples",
+  "legacySampleCount": 12,
+  "newSamplesAllowed": [
+    "13_venn"
+  ],
+  "ok": true,
+  "policy": {
+    "entityKindPreservation": "entity.upsert kind is semantic and must remain DVM node.kind; opClass/entityKind carry operation role",
+    "eventAuthorityMustMatch": true,
+    "generatedDvmMustPreserveDiagramGroupsVerticesEdgesIntents": true,
+    "nodeEdgeIdNamespace": "node ids and edge ids are separate semantic namespaces; legacy same-string IDs are preserved",
+    "ordering": "append order is semantic when explicit order is absent"
+  },
+  "schema": "LegacySemanticCompareReport.v1"
+}

@@ -1,0 +1,24 @@
+{"op":"diagram.init","payload":{"id":"gantt","kind":"gantt","label":"Gantt: MVP Workplan","op":"diagram.init"},"seq":0,"type":"diagram"}
+{"op":"group.upsert","payload":{"id":"core","kind":"lane","label":"Core","op":"group.upsert","order":0},"seq":1,"type":"group"}
+{"op":"group.upsert","payload":{"id":"render","kind":"lane","label":"Rendering","op":"group.upsert","order":1},"seq":2,"type":"group"}
+{"op":"group.upsert","payload":{"id":"qa","kind":"lane","label":"QA","op":"group.upsert","order":2},"seq":3,"type":"group"}
+{"op":"group.upsert","payload":{"id":"release","kind":"lane","label":"Release","op":"group.upsert","order":3},"seq":4,"type":"group"}
+{"op":"task.upsert","payload":{"end":2,"id":"schema","kind":"task","label":"Schema","lane":"core","op":"task.upsert","order":0,"start":1},"seq":5,"type":"task"}
+{"op":"task.upsert","payload":{"end":4,"id":"tokenizer","kind":"task","label":"Tokenizer","lane":"core","op":"task.upsert","order":1,"start":2},"seq":6,"type":"task"}
+{"op":"task.upsert","payload":{"end":5,"id":"reducer","kind":"task","label":"Reducer","lane":"core","op":"task.upsert","order":2,"start":3},"seq":7,"type":"task"}
+{"op":"task.upsert","payload":{"end":6,"id":"dvm","kind":"task","label":"DVM","lane":"core","op":"task.upsert","order":3,"start":5},"seq":8,"type":"task"}
+{"op":"task.upsert","payload":{"end":6,"id":"d2","kind":"task","label":"D2 target","lane":"render","op":"task.upsert","order":4,"start":4},"seq":9,"type":"task"}
+{"op":"task.upsert","payload":{"end":7,"id":"tokens","kind":"task","label":"Design tokens","lane":"render","op":"task.upsert","order":5,"start":5},"seq":10,"type":"task"}
+{"op":"task.upsert","payload":{"end":9,"id":"svg","kind":"task","label":"Single SVG","lane":"render","op":"task.upsert","order":6,"start":7},"seq":11,"type":"task"}
+{"op":"task.upsert","payload":{"end":8,"id":"graphviz","kind":"task","label":"Graphviz dense","lane":"qa","op":"task.upsert","order":7,"start":6},"seq":12,"type":"task"}
+{"op":"task.upsert","payload":{"end":10,"id":"elk","kind":"task","label":"ELK nested","lane":"qa","op":"task.upsert","order":8,"start":8},"seq":13,"type":"task"}
+{"op":"task.upsert","payload":{"end":11,"id":"proof","kind":"task","label":"Proof gate","lane":"qa","op":"task.upsert","order":9,"start":9},"seq":14,"type":"task"}
+{"op":"task.upsert","payload":{"end":11,"id":"preview","kind":"task","label":"Preview only","lane":"release","op":"task.upsert","order":10,"start":10},"seq":15,"type":"task"}
+{"op":"task.upsert","payload":{"end":12,"id":"publish","kind":"task","label":"Publish SVG","lane":"release","op":"task.upsert","order":11,"start":11},"seq":16,"type":"task"}
+{"op":"edge.upsert","payload":{"id":"g0","kind":"dependency","label":"","op":"edge.upsert","source":"schema","target":"tokenizer"},"seq":17,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g1","kind":"dependency","label":"","op":"edge.upsert","source":"tokenizer","target":"reducer"},"seq":18,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g2","kind":"dependency","label":"","op":"edge.upsert","source":"reducer","target":"dvm"},"seq":19,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g3","kind":"dependency","label":"","op":"edge.upsert","source":"dvm","target":"d2"},"seq":20,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g4","kind":"dependency","label":"","op":"edge.upsert","source":"tokens","target":"svg"},"seq":21,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g5","kind":"dependency","label":"","op":"edge.upsert","source":"svg","target":"proof"},"seq":22,"type":"edge"}
+{"op":"edge.upsert","payload":{"id":"g6","kind":"dependency","label":"","op":"edge.upsert","source":"proof","target":"publish"},"seq":23,"type":"edge"}

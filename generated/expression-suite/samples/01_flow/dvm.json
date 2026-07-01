@@ -1,0 +1,141 @@
+{
+  "diagram": {
+    "id": "flow",
+    "kind": "flow",
+    "label": "Flow: JSONL Build Gate",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "e0",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "start",
+      "target": "tokenize"
+    },
+    {
+      "id": "e1",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "tokenize",
+      "target": "schema"
+    },
+    {
+      "id": "e2",
+      "kind": "flow",
+      "label": "yes",
+      "meta": {},
+      "order": 10000,
+      "source": "schema",
+      "target": "reduce"
+    },
+    {
+      "id": "e3",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "reduce",
+      "target": "render"
+    },
+    {
+      "id": "e4",
+      "kind": "flow",
+      "label": "",
+      "meta": {},
+      "order": 10000,
+      "source": "render",
+      "target": "proof"
+    },
+    {
+      "id": "e5",
+      "kind": "flow",
+      "label": "green",
+      "meta": {},
+      "order": 10000,
+      "source": "proof",
+      "target": "stop"
+    },
+    {
+      "id": "e_bad",
+      "kind": "flow",
+      "label": "fix",
+      "meta": {},
+      "order": 10000,
+      "source": "schema",
+      "target": "start"
+    }
+  ],
+  "groups": [],
+  "hash": "7b43995f9ffd87cabbf87fb2ca293db2f440d57c64549f5073daac7ef7207f71",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "start",
+      "kind": "start",
+      "label": "append JSONL",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "tokenize",
+      "kind": "process",
+      "label": "tokenize",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "schema",
+      "kind": "decision",
+      "label": "schema ok?",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "reduce",
+      "kind": "process",
+      "label": "reduce to DVM",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "render",
+      "kind": "process",
+      "label": "render SVG",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "proof",
+      "kind": "process",
+      "label": "proof gate",
+      "meta": {},
+      "order": 10000
+    },
+    {
+      "group": null,
+      "id": "stop",
+      "kind": "end",
+      "label": "publish artifact",
+      "meta": {},
+      "order": 10000
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}

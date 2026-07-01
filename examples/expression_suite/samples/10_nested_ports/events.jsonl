@@ -1,0 +1,17 @@
+{"op":"diagram.init","id":"nested_ports","kind":"nested_ports","label":"Nested / Ports: Trust Boundary"}
+{"op":"group.upsert","id":"public","kind":"boundary","label":"Public Zone","order":0}
+{"op":"group.upsert","id":"private","kind":"boundary","label":"Private Zone","order":1}
+{"op":"group.upsert","id":"data","kind":"boundary","label":"Data Zone","order":2}
+{"op":"node.upsert","id":"browser","kind":"service","group":"public","label":"Browser","meta":{"ports":["https"]},"order":0}
+{"op":"node.upsert","id":"gateway","kind":"service","group":"public","label":"API Gateway","meta":{"ports":["443","auth"]},"order":1}
+{"op":"node.upsert","id":"agent","kind":"service","group":"private","label":"Agent Worker","meta":{"ports":["jobs","events"]},"order":2}
+{"op":"node.upsert","id":"compiler","kind":"service","group":"private","label":"Diagram Compiler","meta":{"ports":["jsonl","dvm","svg"]},"order":3}
+{"op":"node.upsert","id":"store","kind":"service","group":"data","label":"JSONL Store","meta":{"ports":["append","read"]},"order":4}
+{"op":"node.upsert","id":"proof","kind":"service","group":"data","label":"Proof Registry","meta":{"ports":["hash"]},"order":5}
+{"op":"edge.upsert","id":"p0","source":"browser","target":"gateway","kind":"port_edge","label":"request"}
+{"op":"edge.upsert","id":"p1","source":"gateway","target":"agent","kind":"port_edge","label":"job"}
+{"op":"edge.upsert","id":"p2","source":"agent","target":"store","kind":"port_edge","label":"append"}
+{"op":"edge.upsert","id":"p3","source":"agent","target":"compiler","kind":"port_edge","label":"build"}
+{"op":"edge.upsert","id":"p4","source":"compiler","target":"store","kind":"port_edge","label":"read"}
+{"op":"edge.upsert","id":"p5","source":"compiler","target":"proof","kind":"port_edge","label":"write hash"}
+{"op":"edge.upsert","id":"p6","source":"proof","target":"gateway","kind":"port_edge","label":"status"}

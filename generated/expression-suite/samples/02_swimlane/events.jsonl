@@ -1,0 +1,18 @@
+{"op":"diagram.init","id":"swimlane","kind":"swimlane","label":"Swimlane: Proposal → Diagram Release"}
+{"op":"group.upsert","id":"agent","kind":"lane","label":"Agent","order":0}
+{"op":"group.upsert","id":"ci","kind":"lane","label":"CI / Gate","order":1}
+{"op":"group.upsert","id":"owner","kind":"lane","label":"Owner","order":2}
+{"op":"group.upsert","id":"runtime","kind":"lane","label":"Runtime","order":3}
+{"op":"node.upsert","id":"draft","kind":"task","lane":"agent","label":"Append proposal events","order":0}
+{"op":"node.upsert","id":"normalize","kind":"task","lane":"agent","label":"Normalize diagram tokens","order":1}
+{"op":"node.upsert","id":"check","kind":"task","lane":"ci","label":"Schema + proof check","order":2}
+{"op":"node.upsert","id":"render","kind":"task","lane":"runtime","label":"Build SVG artifact","order":3}
+{"op":"node.upsert","id":"review","kind":"task","lane":"owner","label":"Review SVG preview","order":4}
+{"op":"node.upsert","id":"merge","kind":"task","lane":"owner","label":"Approve merge","order":5}
+{"op":"node.upsert","id":"release","kind":"task","lane":"runtime","label":"Publish generated SVG","order":6}
+{"op":"edge.upsert","id":"s0","source":"draft","target":"normalize","kind":"flow","label":""}
+{"op":"edge.upsert","id":"s1","source":"normalize","target":"check","kind":"flow","label":""}
+{"op":"edge.upsert","id":"s2","source":"check","target":"render","kind":"flow","label":"green"}
+{"op":"edge.upsert","id":"s3","source":"render","target":"review","kind":"flow","label":""}
+{"op":"edge.upsert","id":"s4","source":"review","target":"merge","kind":"flow","label":"ok"}
+{"op":"edge.upsert","id":"s5","source":"merge","target":"release","kind":"flow","label":""}

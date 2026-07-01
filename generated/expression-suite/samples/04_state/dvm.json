@@ -1,0 +1,150 @@
+{
+  "diagram": {
+    "id": "state",
+    "kind": "state",
+    "label": "State: Diagram Artifact Lifecycle",
+    "meta": {}
+  },
+  "edges": [
+    {
+      "id": "t0",
+      "kind": "transition",
+      "label": "append",
+      "meta": {},
+      "order": 10000,
+      "source": "draft",
+      "target": "tokenized"
+    },
+    {
+      "id": "t1",
+      "kind": "transition",
+      "label": "schema ok",
+      "meta": {},
+      "order": 10000,
+      "source": "tokenized",
+      "target": "reduced"
+    },
+    {
+      "id": "t2",
+      "kind": "transition",
+      "label": "compile",
+      "meta": {},
+      "order": 10000,
+      "source": "reduced",
+      "target": "rendered"
+    },
+    {
+      "id": "t3",
+      "kind": "transition",
+      "label": "hash ok",
+      "meta": {},
+      "order": 10000,
+      "source": "rendered",
+      "target": "verified"
+    },
+    {
+      "id": "t4",
+      "kind": "transition",
+      "label": "green",
+      "meta": {},
+      "order": 10000,
+      "source": "verified",
+      "target": "published"
+    },
+    {
+      "id": "t5",
+      "kind": "transition",
+      "label": "schema fail",
+      "meta": {},
+      "order": 10000,
+      "source": "tokenized",
+      "target": "rejected"
+    },
+    {
+      "id": "t6",
+      "kind": "transition",
+      "label": "loss > 0",
+      "meta": {},
+      "order": 10000,
+      "source": "rendered",
+      "target": "rejected"
+    },
+    {
+      "id": "t7",
+      "kind": "transition",
+      "label": "fix JSONL",
+      "meta": {},
+      "order": 10000,
+      "source": "rejected",
+      "target": "draft"
+    }
+  ],
+  "groups": [],
+  "hash": "eead1b0eda7797c8fe469f6244e4b191463ee87ce43b4362203f442b6166ec04",
+  "layoutIntents": [],
+  "nodes": [
+    {
+      "group": null,
+      "id": "draft",
+      "kind": "state",
+      "label": "Draft JSONL",
+      "meta": {},
+      "order": 0
+    },
+    {
+      "group": null,
+      "id": "tokenized",
+      "kind": "state",
+      "label": "Tokenized",
+      "meta": {},
+      "order": 1
+    },
+    {
+      "group": null,
+      "id": "reduced",
+      "kind": "state",
+      "label": "DVM Ready",
+      "meta": {},
+      "order": 2
+    },
+    {
+      "group": null,
+      "id": "rendered",
+      "kind": "state",
+      "label": "SVG Rendered",
+      "meta": {},
+      "order": 3
+    },
+    {
+      "group": null,
+      "id": "verified",
+      "kind": "state",
+      "label": "Proof Verified",
+      "meta": {},
+      "order": 4
+    },
+    {
+      "group": null,
+      "id": "published",
+      "kind": "state",
+      "label": "Published",
+      "meta": {},
+      "order": 5
+    },
+    {
+      "group": null,
+      "id": "rejected",
+      "kind": "state",
+      "label": "Rejected",
+      "meta": {},
+      "order": 6
+    }
+  ],
+  "policies": {
+    "duplicateUpsert": "last-write-wins-with-compatible-op",
+    "eventOrdering": "append-order",
+    "referenceIntegrity": "strict-existing-node-group-lane"
+  },
+  "schema": "DiagramViewModel.v1",
+  "styleIntents": []
+}
