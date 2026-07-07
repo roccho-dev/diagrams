@@ -22,7 +22,7 @@ EVENT_RULES: dict[str, dict[str, set[str]]] = {
     },
     "edge.upsert": {
         "required": {"op", "id", "source", "target"},
-        "allowed": {"op", "id", "kind", "label", "source", "target", "order", "meta"},
+        "allowed": {"op", "id", "kind", "label", "source", "target", "order", "sourceCommandId", "meta"},
     },
     "task.upsert": {
         "required": {"op", "id", "lane", "start", "end", "label"},
@@ -44,6 +44,30 @@ EVENT_RULES: dict[str, dict[str, set[str]]] = {
         "required": {"op", "target", "intent"},
         "allowed": {"op", "target", "intent", "meta"},
     },
+    "label.update": {
+        "required": {"op", "target", "label"},
+        "allowed": {"op", "target", "label", "sourceCommandId", "meta"},
+    },
+    "edge.reconnect": {
+        "required": {"op", "id", "source", "target"},
+        "allowed": {"op", "id", "source", "target", "sourcePort", "targetPort", "sourceCommandId", "meta"},
+    },
+    "lane.assign": {
+        "required": {"op", "id", "lane"},
+        "allowed": {"op", "id", "lane", "sourceCommandId", "meta"},
+    },
+    "span.update": {
+        "required": {"op", "id", "start", "end"},
+        "allowed": {"op", "id", "start", "end", "sourceCommandId", "meta"},
+    },
+    "visual.position.set": {
+        "required": {"op", "target", "x", "y"},
+        "allowed": {"op", "target", "x", "y", "w", "h", "lock", "sourceCommandId", "meta"},
+    },
+    "visual.edge.bendpoint.set": {
+        "required": {"op", "id", "points"},
+        "allowed": {"op", "id", "points", "sourceCommandId", "meta"},
+    },
 }
 
 ID_FIELDS_BY_OP: dict[str, tuple[str, ...]] = {
@@ -56,6 +80,12 @@ ID_FIELDS_BY_OP: dict[str, tuple[str, ...]] = {
     "milestone.upsert": ("id", "kind"),
     "style.intent": ("target", "intent"),
     "layout.intent": ("target", "intent"),
+    "label.update": ("target",),
+    "edge.reconnect": ("id", "source", "target"),
+    "lane.assign": ("id", "lane"),
+    "span.update": ("id",),
+    "visual.position.set": ("target",),
+    "visual.edge.bendpoint.set": ("id",),
 }
 
 
@@ -83,6 +113,10 @@ def _is_bool(value: Any) -> bool:
 
 def _is_int(value: Any) -> bool:
     return isinstance(value, int) and not _is_bool(value)
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not _is_bool(value)
 
 
 def _is_safe_id(value: Any) -> bool:
@@ -125,6 +159,8 @@ def validate_event(event: JsonObj, index: int = 0, *, strict: bool = True) -> li
 
     for key in ID_FIELDS_BY_OP.get(op, ()):
         _check_optional_id(event, key, errors)
+    if "sourceCommandId" in event and not _is_safe_id(event["sourceCommandId"]):
+        errors.append("sourceCommandId must be a non-empty single-line string")
     if "label" in event and not isinstance(event["label"], str):
         errors.append("label must be a string")
     _check_meta(event, errors)
@@ -158,13 +194,37 @@ def validate_event(event: JsonObj, index: int = 0, *, strict: bool = True) -> li
         if "order" not in event and not has_when:
             errors.append("milestone.upsert requires order or meta.when")
 
+    if op == "span.update":
+        if not _is_int(event.get("start")) or not _is_int(event.get("end")):
+            errors.append("span.update requires integer start/end")
+        elif event["end"] <= event["start"]:
+            errors.append("span.update requires end > start")
+
+    if op == "visual.position.set":
+        if not _is_number(event.get("x")) or not _is_number(event.get("y")):
+            errors.append("visual.position.set requires numeric x/y")
+        for key in ("w", "h"):
+            if key in event and not _is_number(event[key]):
+                errors.append(f"visual.position.set {key} must be numeric")
+        if "lock" in event and not _is_bool(event["lock"]):
+            errors.append("visual.position.set lock must be boolean")
+
+    if op == "visual.edge.bendpoint.set":
+        points = event.get("points")
+        if not isinstance(points, list):
+            errors.append("visual.edge.bendpoint.set requires points list")
+        else:
+            for i, point in enumerate(points):
+                if not isinstance(point, dict) or not _is_number(point.get("x")) or not _is_number(point.get("y")):
+                    errors.append(f"visual.edge.bendpoint.set points[{i}] requires numeric x/y")
+
     return errors
 
 
 def _id_namespace(op: str) -> str:
-    if op in {"node.upsert", "task.upsert", "entity.upsert", "milestone.upsert"}:
+    if op in {"node.upsert", "task.upsert", "entity.upsert", "milestone.upsert", "lane.assign", "span.update"}:
         return "node"
-    if op == "edge.upsert":
+    if op in {"edge.upsert", "edge.reconnect", "visual.edge.bendpoint.set"}:
         return "edge"
     if op == "group.upsert":
         return "group"
@@ -178,7 +238,7 @@ def _compatible_id_reuse(prev_op: str, next_op: str) -> bool:
     next_ns = _id_namespace(next_op)
     if prev_ns == next_ns:
         return True
-    # Node and edge identifiers live in separate DVM collections.  Allowing
+    # Node and edge identifiers live in separate DVM collections. Allowing
     # the same raw string in both namespaces preserves legacy fixtures such as
     # node id d2 plus edge id d2 without forcing a semantic edge rename.
     return {prev_ns, next_ns} == {"node", "edge"}
@@ -286,6 +346,18 @@ def validate_dvm(dvm: JsonObj) -> None:
                 errors.append(f"{collection_name} target missing: {target}")
             elif target_namespace_counts.get(str(target), 0) > 1:
                 errors.append(f"{collection_name} target ambiguous across DVM namespaces: {target}")
+    for patch in dvm.get("visualPatches", []) or []:
+        if not isinstance(patch, dict):
+            errors.append("visualPatches item must be object")
+            continue
+        if patch.get("kind") == "edge_bendpoint":
+            edge_id = patch.get("edge")
+            if edge_id not in edge_ids:
+                errors.append(f"visual edge_bendpoint target missing: {edge_id}")
+        else:
+            target = patch.get("target")
+            if target not in valid_targets:
+                errors.append(f"visual patch target missing: {target}")
     if errors:
         raise DvmValidationError("; ".join(errors))
 
