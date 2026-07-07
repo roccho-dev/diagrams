@@ -50,6 +50,18 @@ class FixtureBuildTest(unittest.TestCase):
         self.assertTrue(counts["adapterIdsUnique"])
         self.assertTrue(counts["semanticNodeParity"])
 
+    def test_semantic_roundtrip_poc_builds(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "semantic-roundtrip"
+            cmd = [sys.executable, str(ROOT / "tools" / "build_semantic_roundtrip_poc.py"), "--out", str(out)]
+            subprocess.run(cmd, cwd=ROOT, check=True)
+            report = json.loads((out / "semantic-roundtrip-report.json").read_text())
+            self.assertEqual(report["status"], "PASS")
+            self.assertGreaterEqual(len(report["fixtures"]), 4)
+            for item in report["fixtures"]:
+                proof = out / item["proof"]
+                self.assertTrue(proof.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
