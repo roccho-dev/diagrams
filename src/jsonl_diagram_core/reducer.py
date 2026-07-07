@@ -51,6 +51,7 @@ def reduce_tokens(tokens: list[JsonObj], *, validate: bool = True) -> JsonObj:
     edges: dict[str, JsonObj] = {}
     styles: list[JsonObj] = []
     layouts: list[JsonObj] = []
+    visual_patches: list[JsonObj] = []
 
     for token in tokens:
         typ = token["type"]
@@ -102,6 +103,50 @@ def reduce_tokens(tokens: list[JsonObj], *, validate: bool = True) -> JsonObj:
             styles.append({"seq": token["seq"], **payload})
         elif typ == "layout_intent":
             layouts.append({"seq": token["seq"], **payload})
+        elif typ == "label_update":
+            target = payload["target"]
+            if diagram and diagram.get("id") == target:
+                diagram["label"] = payload["label"]
+            elif target in nodes:
+                nodes[target]["label"] = payload["label"]
+            elif target in edges:
+                edges[target]["label"] = payload["label"]
+            elif target in groups:
+                groups[target]["label"] = payload["label"]
+            else:
+                raise ValueError(f"label.update target missing: {target}")
+        elif typ == "edge_reconnect":
+            edge = edges.get(payload["id"])
+            if edge is None:
+                raise ValueError(f"edge.reconnect target missing: {payload['id']}")
+            edge["source"] = payload["source"]
+            edge["target"] = payload["target"]
+            meta = dict(edge.get("meta") or {})
+            if "sourcePort" in payload:
+                meta["sourcePort"] = payload["sourcePort"]
+            if "targetPort" in payload:
+                meta["targetPort"] = payload["targetPort"]
+            edge["meta"] = meta
+        elif typ == "lane_assign":
+            node = nodes.get(payload["id"])
+            if node is None:
+                raise ValueError(f"lane.assign target missing: {payload['id']}")
+            node["lane"] = payload["lane"]
+            node["group"] = payload["lane"]
+        elif typ == "span_update":
+            node = nodes.get(payload["id"])
+            if node is None:
+                raise ValueError(f"span.update target missing: {payload['id']}")
+            node["start"] = payload["start"]
+            node["end"] = payload["end"]
+        elif typ == "visual_position":
+            patch = {"seq": token["seq"], "kind": "position", "target": payload["target"], "x": payload["x"], "y": payload["y"]}
+            for key in ("w", "h", "lock"):
+                if key in payload:
+                    patch[key] = payload[key]
+            visual_patches.append(patch)
+        elif typ == "visual_edge_bendpoint":
+            visual_patches.append({"seq": token["seq"], "kind": "edge_bendpoint", "edge": payload["id"], "points": list(payload.get("points") or [])})
 
     if diagram is None:
         raise ValueError("missing diagram.init")
@@ -118,8 +163,11 @@ def reduce_tokens(tokens: list[JsonObj], *, validate: bool = True) -> JsonObj:
             "eventOrdering": "append-order",
             "duplicateUpsert": "last-write-wins-with-compatible-op",
             "referenceIntegrity": "strict-existing-node-group-lane",
+            "semanticVisualSeparation": "visual-patches-are-non-semantic",
         },
     }
+    if visual_patches:
+        dvm["visualPatches"] = visual_patches
     if validate:
         validate_dvm(dvm)
     dvm["hash"] = sha256_text(canonical_json({k: v for k, v in dvm.items() if k != "hash"}))
