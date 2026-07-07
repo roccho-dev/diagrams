@@ -24,6 +24,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Run unit and e2e tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build semantic roundtrip PoC
+        run: python tools/build_semantic_roundtrip_poc.py --out ci-artifacts/semantic-roundtrip
+
       - name: Build artifact gallery
         run: python tools/build_ci_artifact_gallery.py --root . --out ci-artifacts/diagram-gallery
 
@@ -31,5 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: diagram-artifact-gallery
-          path: ci-artifacts/diagram-gallery
+          path: |
+            ci-artifacts/diagram-gallery
+            ci-artifacts/semantic-roundtrip
           if-no-files-found: error
