@@ -3,384 +3,71 @@
   "$id": "https://example.invalid/jsonl-diagram/diagram-event.v1.schema.json",
   "title": "Diagram Event v1",
   "type": "object",
-  "oneOf": [
-    {
-      "$ref": "#/$defs/diagramInit"
-    },
-    {
-      "$ref": "#/$defs/groupUpsert"
-    },
-    {
-      "$ref": "#/$defs/nodeUpsert"
-    },
-    {
-      "$ref": "#/$defs/edgeUpsert"
-    },
-    {
-      "$ref": "#/$defs/taskUpsert"
-    },
-    {
-      "$ref": "#/$defs/entityUpsert"
-    },
-    {
-      "$ref": "#/$defs/milestoneUpsert"
-    },
-    {
-      "$ref": "#/$defs/styleIntent"
-    },
-    {
-      "$ref": "#/$defs/layoutIntent"
-    }
-  ],
-  "$defs": {
-    "id": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^[^\\n\\r\\t]+$"
-    },
-    "label": {
-      "type": "string"
-    },
-    "meta": {
-      "type": "object",
-      "additionalProperties": true
-    },
-    "diagramInit": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "kind",
-        "label"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "diagram.init"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "groupUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "kind",
-        "label"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "group.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "group": {
-          "$ref": "#/$defs/id"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "nodeUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "kind",
-        "label"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "node.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "group": {
-          "$ref": "#/$defs/id"
-        },
-        "lane": {
-          "$ref": "#/$defs/id"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "edgeUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "source",
-        "target"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "edge.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "source": {
-          "$ref": "#/$defs/id"
-        },
-        "target": {
-          "$ref": "#/$defs/id"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "taskUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "lane",
-        "start",
-        "end",
-        "label"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "task.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "lane": {
-          "$ref": "#/$defs/id"
-        },
-        "start": {
-          "type": "integer"
-        },
-        "end": {
-          "type": "integer"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "entityUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "kind",
-        "label",
-        "meta"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "entity.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "group": {
-          "$ref": "#/$defs/id"
-        },
-        "meta": {
-          "type": "object",
-          "required": [
-            "columns"
-          ],
-          "properties": {
-            "columns": {
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "additionalProperties": true
-        }
-      }
-    },
-    "milestoneUpsert": {
-      "type": "object",
-      "required": [
-        "op",
-        "id",
-        "kind",
-        "label"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "milestone.upsert"
-        },
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "kind": {
-          "$ref": "#/$defs/id"
-        },
-        "label": {
-          "$ref": "#/$defs/label"
-        },
-        "order": {
-          "type": "integer"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      },
-      "allOf": [
-        {
-          "anyOf": [
-            {
-              "required": [
-                "order"
-              ]
-            },
-            {
-              "required": [
-                "meta"
-              ],
-              "properties": {
-                "meta": {
-                  "type": "object",
-                  "required": [
-                    "when"
-                  ],
-                  "properties": {
-                    "when": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "additionalProperties": true
-                }
-              }
-            }
-          ]
-        }
+  "required": ["op"],
+  "additionalProperties": true,
+  "properties": {
+    "op": {
+      "enum": [
+        "diagram.init",
+        "group.upsert",
+        "node.upsert",
+        "edge.upsert",
+        "task.upsert",
+        "entity.upsert",
+        "milestone.upsert",
+        "style.intent",
+        "layout.intent",
+        "label.update",
+        "edge.reconnect",
+        "lane.assign",
+        "span.update",
+        "visual.position.set",
+        "visual.edge.bendpoint.set"
       ]
     },
-    "styleIntent": {
+    "id": { "$ref": "#/$defs/id" },
+    "target": { "$ref": "#/$defs/id" },
+    "source": { "$ref": "#/$defs/id" },
+    "kind": { "$ref": "#/$defs/id" },
+    "lane": { "$ref": "#/$defs/id" },
+    "label": { "type": "string" },
+    "intent": { "$ref": "#/$defs/id" },
+    "start": { "type": "integer" },
+    "end": { "type": "integer" },
+    "order": { "type": "integer" },
+    "x": { "type": "number" },
+    "y": { "type": "number" },
+    "w": { "type": "number" },
+    "h": { "type": "number" },
+    "lock": { "type": "boolean" },
+    "sourceCommandId": { "$ref": "#/$defs/id" },
+    "points": { "type": "array", "items": { "$ref": "#/$defs/point" } },
+    "meta": { "type": "object", "additionalProperties": true }
+  },
+  "allOf": [
+    { "if": { "properties": { "op": { "const": "diagram.init" } } }, "then": { "required": ["op", "id", "kind", "label"] } },
+    { "if": { "properties": { "op": { "const": "group.upsert" } } }, "then": { "required": ["op", "id", "kind", "label"] } },
+    { "if": { "properties": { "op": { "const": "node.upsert" } } }, "then": { "required": ["op", "id", "kind", "label"] } },
+    { "if": { "properties": { "op": { "const": "edge.upsert" } } }, "then": { "required": ["op", "id", "source", "target"] } },
+    { "if": { "properties": { "op": { "const": "task.upsert" } } }, "then": { "required": ["op", "id", "lane", "start", "end", "label"] } },
+    { "if": { "properties": { "op": { "const": "entity.upsert" } } }, "then": { "required": ["op", "id", "kind", "label", "meta"] } },
+    { "if": { "properties": { "op": { "const": "milestone.upsert" } } }, "then": { "required": ["op", "id", "kind", "label"] } },
+    { "if": { "properties": { "op": { "const": "style.intent" } } }, "then": { "required": ["op", "target", "intent"] } },
+    { "if": { "properties": { "op": { "const": "layout.intent" } } }, "then": { "required": ["op", "target", "intent"] } },
+    { "if": { "properties": { "op": { "const": "label.update" } } }, "then": { "required": ["op", "target", "label"] } },
+    { "if": { "properties": { "op": { "const": "edge.reconnect" } } }, "then": { "required": ["op", "id", "source", "target"] } },
+    { "if": { "properties": { "op": { "const": "lane.assign" } } }, "then": { "required": ["op", "id", "lane"] } },
+    { "if": { "properties": { "op": { "const": "span.update" } } }, "then": { "required": ["op", "id", "start", "end"] } },
+    { "if": { "properties": { "op": { "const": "visual.position.set" } } }, "then": { "required": ["op", "target", "x", "y"] } },
+    { "if": { "properties": { "op": { "const": "visual.edge.bendpoint.set" } } }, "then": { "required": ["op", "id", "points"] } }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "pattern": "^[^\\n\\r\\t]+$" },
+    "point": {
       "type": "object",
-      "required": [
-        "op",
-        "target",
-        "intent"
-      ],
+      "required": ["x", "y"],
       "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "style.intent"
-        },
-        "target": {
-          "$ref": "#/$defs/id"
-        },
-        "intent": {
-          "$ref": "#/$defs/id"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
-    },
-    "layoutIntent": {
-      "type": "object",
-      "required": [
-        "op",
-        "target",
-        "intent"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "op": {
-          "const": "layout.intent"
-        },
-        "target": {
-          "$ref": "#/$defs/id"
-        },
-        "intent": {
-          "$ref": "#/$defs/id"
-        },
-        "meta": {
-          "$ref": "#/$defs/meta"
-        }
-      }
+      "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
     }
   }
 }
