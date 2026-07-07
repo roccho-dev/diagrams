@@ -15,6 +15,12 @@ TOKEN_TYPE_BY_OP = {
     "milestone.upsert": "milestone",
     "style.intent": "style_intent",
     "layout.intent": "layout_intent",
+    "label.update": "label_update",
+    "edge.reconnect": "edge_reconnect",
+    "lane.assign": "lane_assign",
+    "span.update": "span_update",
+    "visual.position.set": "visual_position",
+    "visual.edge.bendpoint.set": "visual_edge_bendpoint",
 }
 
 
