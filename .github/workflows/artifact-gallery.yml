@@ -24,6 +24,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install system layout engine dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+
       - name: Install layout engine dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
 
