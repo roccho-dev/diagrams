@@ -11,6 +11,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def file_bytes_by_relative_path(root: Path) -> dict[str, bytes]:
+    return {
+        str(path.relative_to(root)): path.read_bytes()
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
 class FixtureBuildTest(unittest.TestCase):
     def test_expression_suite_builds_from_jsonl(self):
         with tempfile.TemporaryDirectory() as td:
@@ -50,17 +58,22 @@ class FixtureBuildTest(unittest.TestCase):
         self.assertTrue(counts["adapterIdsUnique"])
         self.assertTrue(counts["semanticNodeParity"])
 
-    def test_semantic_roundtrip_poc_builds(self):
+    def test_semantic_roundtrip_poc_builds_deterministically(self):
         with tempfile.TemporaryDirectory() as td:
-            out = Path(td) / "semantic-roundtrip"
-            cmd = [sys.executable, str(ROOT / "tools" / "build_semantic_roundtrip_poc.py"), "--out", str(out)]
-            subprocess.run(cmd, cwd=ROOT, check=True)
-            report = json.loads((out / "semantic-roundtrip-report.json").read_text())
+            out_a = Path(td) / "semantic-roundtrip-a"
+            out_b = Path(td) / "semantic-roundtrip-b"
+            command = [sys.executable, str(ROOT / "tools" / "build_semantic_roundtrip_poc.py"), "--out"]
+            subprocess.run([*command, str(out_a)], cwd=ROOT, check=True)
+            subprocess.run([*command, str(out_b)], cwd=ROOT, check=True)
+
+            report = json.loads((out_a / "semantic-roundtrip-report.json").read_text())
             self.assertEqual(report["status"], "PASS")
             self.assertGreaterEqual(len(report["fixtures"]), 4)
             for item in report["fixtures"]:
-                proof = out / item["proof"]
+                proof = out_a / item["proof"]
                 self.assertTrue(proof.exists())
+
+            self.assertEqual(file_bytes_by_relative_path(out_a), file_bytes_by_relative_path(out_b))
 
 
 if __name__ == "__main__":
