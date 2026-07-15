@@ -24,12 +24,46 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install system layout engine dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+
+      - name: Install layout engine dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install package and test dependencies
+        run: python -m pip install '.[test]'
+
+      - name: Run unit and e2e tests
+        id: tests
+        shell: bash
+        run: |
+          mkdir -p ci-artifacts/diagnostics
+          set +e
+          python -m unittest discover -s tests -v > ci-artifacts/diagnostics/unit-e2e.log 2>&1
+          status=$?
+          cat ci-artifacts/diagnostics/unit-e2e.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build semantic roundtrip PoC
+        if: steps.tests.outputs.status == '0'
+        run: python tools/build_semantic_roundtrip_poc.py --out ci-artifacts/semantic-roundtrip
+
       - name: Build artifact gallery
+        if: steps.tests.outputs.status == '0'
         run: python tools/build_ci_artifact_gallery.py --root . --out ci-artifacts/diagram-gallery
 
       - name: Upload diagram artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: diagram-artifact-gallery
-          path: ci-artifacts/diagram-gallery
+          path: ci-artifacts
           if-no-files-found: error
+
+      - name: Enforce unit and e2e result
+        if: always()
+        shell: bash
+        run: test "${{ steps.tests.outputs.status }}" = '0'

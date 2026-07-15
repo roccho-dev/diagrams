@@ -12,6 +12,9 @@ license = { text = "MIT" }
 authors = [{ name = "jsonl-diagram" }]
 dependencies = []
 
+[project.optional-dependencies]
+test = ["jsonschema>=4.18,<5"]
+
 [project.scripts]
 jsonl-diagram-core = "jsonl_diagram_core.cli:main"
 
