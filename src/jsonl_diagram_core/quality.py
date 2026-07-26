@@ -90,64 +90,89 @@ def _reject_review_projection(root: ET.Element) -> None:
             raise AssertionError('review projection is not a semantic drawio quality input')
 
 
+def _drawio_entries(root: ET.Element) -> list[tuple[str, ET.Element, dict[str, str]]]:
+    entries: list[tuple[str, ET.Element, dict[str, str]]] = []
+    wrapped_cells: set[int] = set()
+    for obj in root.iter():
+        if _local(obj.tag) != 'object':
+            continue
+        cell = next((child for child in list(obj) if _local(child.tag) == 'mxCell'), None)
+        if cell is None:
+            raise AssertionError('XML user object missing mxCell')
+        wrapper_id = obj.attrib.get('id')
+        nested_id = cell.attrib.get('id')
+        if not wrapper_id:
+            raise AssertionError('XML user object missing id')
+        if nested_id and nested_id != wrapper_id:
+            raise AssertionError(f'XML user object id mismatch: {wrapper_id} != {nested_id}')
+        entries.append((wrapper_id, cell, dict(obj.attrib)))
+        wrapped_cells.add(id(cell))
+    for cell in root.iter():
+        if _local(cell.tag) != 'mxCell' or id(cell) in wrapped_cells:
+            continue
+        cid = cell.attrib.get('id')
+        if not cid:
+            raise AssertionError('mxCell missing id')
+        entries.append((cid, cell, {}))
+    return entries
+
+
 def validate_drawio_quality(drawio_text: str, *, expected_nodes: int | None = None, expected_edges: int | None = None, mode: str = 'native') -> JsonObj:
     root = ET.fromstring(drawio_text)
     if root.tag != 'mxfile':
         raise AssertionError('drawio root must be mxfile')
     _reject_review_projection(root)
-    cells = list(root.iter('mxCell'))
-    by_id: dict[str, ET.Element] = {}
-    for cell in cells:
-        cid = cell.attrib.get('id')
-        if not cid:
-            raise AssertionError('mxCell missing id')
+    entries = _drawio_entries(root)
+    by_id: dict[str, tuple[ET.Element, dict[str, str]]] = {}
+    for cid, cell, attrs in entries:
         if cid in by_id:
-            raise AssertionError(f'duplicate mxCell id: {cid}')
-        by_id[cid] = cell
+            raise AssertionError(f'duplicate mxCell/user-object id: {cid}')
+        by_id[cid] = (cell, attrs)
     if '0' not in by_id or '1' not in by_id:
         raise AssertionError('drawio root/layer cells 0 and 1 are required')
-    if 'parent' in by_id['0'].attrib:
+    if 'parent' in by_id['0'][0].attrib:
         raise AssertionError('mxCell id=0 must not have parent')
-    if by_id['1'].attrib.get('parent') != '0':
+    if by_id['1'][0].attrib.get('parent') != '0':
         raise AssertionError('mxCell id=1 must be parented by 0')
-    vertex_ids = {cid for cid, cell in by_id.items() if cell.attrib.get('vertex') == '1'}
-    edge_cells = [cell for cell in cells if cell.attrib.get('edge') == '1']
-    for cell in cells:
+    vertex_ids = {cid for cid, (cell, _) in by_id.items() if cell.attrib.get('vertex') == '1'}
+    edge_entries = [(cid, cell, attrs) for cid, (cell, attrs) in by_id.items() if cell.attrib.get('edge') == '1']
+    for cid, (cell, _) in by_id.items():
         if cell.attrib.get('vertex') == '1':
-            geom = cell.find('mxGeometry')
+            geom = next((child for child in list(cell) if _local(child.tag) == 'mxGeometry'), None)
             if geom is None:
-                raise AssertionError(f'vertex {cell.attrib.get("id")} missing mxGeometry')
+                raise AssertionError(f'vertex {cid} missing mxGeometry')
             if not _positive_number(geom.attrib.get('width')) or not _positive_number(geom.attrib.get('height')):
-                raise AssertionError(f'vertex {cell.attrib.get("id")} must have positive geometry')
+                raise AssertionError(f'vertex {cid} must have positive geometry')
         if cell.attrib.get('edge') == '1':
             source = cell.attrib.get('source')
             target = cell.attrib.get('target')
-            geom = cell.find('mxGeometry')
-            has_points = geom is not None and (geom.find('mxPoint') is not None or list(geom.iter('mxPoint')))
+            geom = next((child for child in list(cell) if _local(child.tag) == 'mxGeometry'), None)
+            has_points = geom is not None and any(_local(point.tag) == 'mxPoint' for point in geom.iter())
             if source or target:
                 if source not in vertex_ids or target not in vertex_ids:
-                    raise AssertionError(f'edge {cell.attrib.get("id")} source/target must reference vertices')
+                    raise AssertionError(f'edge {cid} source/target must reference vertices')
             elif not has_points:
-                raise AssertionError(f'edge {cell.attrib.get("id")} needs source/target or points')
-    native_nodes = [c for c in cells if c.attrib.get('jsonlType') == 'node']
-    native_edges = [c for c in cells if c.attrib.get('jsonlType') == 'edge']
+                raise AssertionError(f'edge {cid} needs source/target or points')
+    native_nodes = [cid for cid, (cell, attrs) in by_id.items() if attrs.get('jsonlType', cell.attrib.get('jsonlType')) == 'node']
+    native_edges = [cid for cid, (cell, attrs) in by_id.items() if attrs.get('jsonlType', cell.attrib.get('jsonlType')) == 'edge']
     if mode == 'native':
         if expected_nodes is not None and len(native_nodes) != expected_nodes:
             raise AssertionError(f'drawio node count mismatch: {len(native_nodes)} != {expected_nodes}')
         if expected_edges is not None and len(native_edges) != expected_edges:
             raise AssertionError(f'drawio edge count mismatch: {len(native_edges)} != {expected_edges}')
     if mode == 'image':
-        image_cells = [c for c in cells if c.attrib.get('jsonlType') == 'imageExact']
+        image_cells = [cid for cid, (cell, attrs) in by_id.items() if attrs.get('jsonlType', cell.attrib.get('jsonlType')) == 'imageExact']
         if len(image_cells) != 1:
             raise AssertionError('image mode drawio must have exactly one jsonlType=imageExact cell')
-        if 'image=data:image/svg+xml' not in image_cells[0].attrib.get('style', ''):
+        image_cell = by_id[image_cells[0]][0]
+        if 'image=data:image/svg+xml' not in image_cell.attrib.get('style', ''):
             raise AssertionError('image mode drawio must embed SVG data URI')
     return {
         'schema': 'DrawioQualityResult.v1',
         'mode': mode,
-        'cellCount': len(cells),
+        'cellCount': len(entries),
         'vertexCount': len(vertex_ids),
-        'edgeCount': len(edge_cells),
+        'edgeCount': len(edge_entries),
         'jsonlNodeCount': len(native_nodes),
         'jsonlEdgeCount': len(native_edges),
     }
