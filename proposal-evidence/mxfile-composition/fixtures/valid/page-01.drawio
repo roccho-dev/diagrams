@@ -1,0 +1,16 @@
+<mxfile compressed="false" pages="1">
+  <diagram id="page-01" name="01 Base">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="region:company" value="company" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="40" y="40" width="640" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="region:product" value="product" vertex="1" parent="region:company" style="rounded=0;whiteSpace=wrap;html=1;">
+          <mxGeometry x="30" y="60" width="260" height="180" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,24 @@
+<mxfile compressed="false" pages="1">
+  <diagram id="page-02" name="02 Edges" background="#ffffff">
+    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" page="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="node:a" value="A" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="node:b" value="B" vertex="1" parent="1">
+          <mxGeometry x="420" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="edge:a-b" value="depends_on" edge="1" parent="1" source="node:a" target="node:b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="150" />
+              <mxPoint x="350" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,129 @@
+name: mxfile composition proof
+
+"on":
+  pull_request:
+    branches:
+      - proposals
+    paths:
+      - .github/workflows/mxfile-composition-proof.yml
+      - docs/architecture/mxfile-composition.md
+      - proposal-evidence/mxfile-composition/**
+  push:
+    branches:
+      - proposals
+    paths:
+      - .github/workflows/mxfile-composition-proof.yml
+      - docs/architecture/mxfile-composition.md
+      - proposal-evidence/mxfile-composition/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+concurrency:
+  group: mxfile-composition-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: exact head proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      EXPECTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact tested commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ env.EXPECTED_SHA }}
+
+      - name: Verify exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+
+      - name: Enforce Issue 8 changed-path allowlist
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python3 proposal-evidence/mxfile-composition/check_changed_paths.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA"
+
+      - name: Replay isolated proof twice
+        shell: bash
+        run: proposal-evidence/mxfile-composition/run_all.sh
+
+      - name: Materialize CI proof artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROOF_DIR="$RUNNER_TEMP/mxfile-proof"
+          python3 proposal-evidence/mxfile-composition/run_proof.py \
+            --output-dir "$PROOF_DIR"
+          cmp \
+            proposal-evidence/mxfile-composition/expected/proof-summary.json \
+            "$PROOF_DIR/proof-summary.json"
+
+          MODE=manual
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            MODE=pr-exact-head
+          elif [[ "$GITHUB_EVENT_NAME" == push ]]; then
+            MODE=post-merge
+          fi
+
+          python3 proposal-evidence/mxfile-composition/ci_receipt.py \
+            --proof-dir "$PROOF_DIR" \
+            --output "$RUNNER_TEMP/mxfile-ci-receipt.json" \
+            --expected-sha "$EXPECTED_SHA" \
+            --mode "$MODE"
+
+      - name: Upload proof and exact-commit receipt
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mxfile-composition-${{ github.event_name }}-${{ env.EXPECTED_SHA }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/mxfile-proof
+            ${{ runner.temp }}/mxfile-ci-receipt.json
+
+  integration:
+    name: event-base integration proof
+    if: github.event_name == 'pull_request'
+    needs: exact-head
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out exact event base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ env.BASE_SHA }}
+
+      - name: Create local integration commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git cat-file -e "$HEAD_SHA^{commit}" 2>/dev/null || git fetch --no-tags origin "$HEAD_SHA"
+          git config user.name mxfile-proof
+          git config user.email mxfile-proof@users.noreply.github.com
+          git merge --no-ff --no-edit "$HEAD_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Replay proof on integration tree
+        shell: bash
+        run: proposal-evidence/mxfile-composition/run_all.sh

@@ -1,0 +1,19 @@
+<mxfile compressed="false" pages="1">
+  <diagram id="page-05" name="05 Layers">
+    <mxGraphModel dx="1400" dy="900" grid="1" page="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="layer:base" value="Base" parent="0" />
+        <mxCell id="layer:overlay" value="Overlay A" parent="0" visible="0" />
+        <mxCell id="base:scope" value="scope" vertex="1" parent="layer:base">
+          <mxGeometry x="40" y="40" width="500" height="300" as="geometry" />
+        </mxCell>
+        <object id="overlay:condition" condition="change_requested=true" evaluator="v1" revision="o1">
+          <mxCell id="overlay:gate" value="review gate" vertex="1" parent="layer:overlay" style="rounded=0;dashed=1;">
+            <mxGeometry x="180" y="140" width="180" height="70" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
