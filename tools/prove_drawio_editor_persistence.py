@@ -54,33 +54,53 @@ def parse(path: Path) -> ET.Element:
     return ET.fromstring(path.read_text(encoding="utf-8"))
 
 
-def all_cells(root: ET.Element) -> dict[str, ET.Element]:
-    cells: dict[str, ET.Element] = {}
-    for element in root.iter():
-        if local(element.tag) != "mxCell":
+def entries(root: ET.Element) -> dict[str, tuple[ET.Element, dict[str, str]]]:
+    result: dict[str, tuple[ET.Element, dict[str, str]]] = {}
+    wrapped: set[int] = set()
+    for obj in root.iter():
+        if local(obj.tag) != "object":
             continue
-        cell_id = element.attrib.get("id")
+        cell = next((child for child in list(obj) if local(child.tag) == "mxCell"), None)
+        if cell is None:
+            raise AssertionError("XML user object missing mxCell")
+        wrapper_id = obj.attrib.get("id")
+        nested_id = cell.attrib.get("id")
+        if not wrapper_id:
+            raise AssertionError("XML user object missing id")
+        if nested_id and nested_id != wrapper_id:
+            raise AssertionError(f"XML user object id mismatch: {wrapper_id} != {nested_id}")
+        result[wrapper_id] = (cell, dict(obj.attrib))
+        wrapped.add(id(cell))
+    for cell in root.iter():
+        if local(cell.tag) != "mxCell" or id(cell) in wrapped:
+            continue
+        cell_id = cell.attrib.get("id")
         if cell_id:
-            cells[cell_id] = element
-    return cells
+            result[cell_id] = (cell, {})
+    return result
 
 
 def find_objects(root: ET.Element, role: str) -> list[ET.Element]:
     return [element for element in root.iter() if local(element.tag) == "object" and element.attrib.get("role") == role]
 
 
+def stable_object_attrs(item: ET.Element) -> dict[str, str]:
+    return dict(sorted((key, value) for key, value in item.attrib.items() if key != "label"))
+
+
 def semantic_snapshot(root: ET.Element) -> dict[str, Any]:
-    cells = all_cells(root)
+    cells = entries(root)
     semantic = find_objects(root, "semantic-node")
+    scope_cell, scope_attrs = cells.get("scope", (ET.Element("missing"), {}))
     return {
         "cellIds": sorted(cells),
-        "semanticObjects": [dict(sorted(item.attrib.items())) for item in semantic],
-        "scopeValue": cells.get("scope", ET.Element("missing")).attrib.get("value"),
+        "semanticObjects": [stable_object_attrs(item) for item in semantic],
+        "scopeValue": scope_attrs.get("label", scope_cell.attrib.get("value")),
     }
 
 
 def review_snapshot(root: ET.Element) -> dict[str, Any]:
-    cells = all_cells(root)
+    cells = entries(root)
     artifacts = find_objects(root, "diagram-artifact")
     overlays = find_objects(root, "decision-overlay")
     overlay_parents = sorted(
@@ -89,12 +109,13 @@ def review_snapshot(root: ET.Element) -> dict[str, Any]:
         for cell in obj
         if local(cell.tag) == "mxCell"
     )
+    scope_cell, scope_attrs = cells.get("scope", (ET.Element("missing"), {}))
     return {
         "cellIds": sorted(cells),
-        "artifactObjects": [dict(sorted(item.attrib.items())) for item in artifacts],
+        "artifactObjects": [stable_object_attrs(item) for item in artifacts],
         "overlayObjects": [dict(sorted(item.attrib.items())) for item in overlays],
         "overlayParents": overlay_parents,
-        "scopeValue": cells.get("scope", ET.Element("missing")).attrib.get("value"),
+        "scopeValue": scope_attrs.get("label", scope_cell.attrib.get("value")),
     }
 
 
