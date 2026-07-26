@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from jsonl_diagram_core.approval_receipt import approval_receipt_digest
+from jsonl_diagram_core.approval_receipt import ACCEPTED_ENGINE_MANIFEST_DIGEST, approval_receipt_digest
 from jsonl_diagram_core.decision_overlay import assert_semantic_drawio, inspect_semantic_drawio, project_review_drawio
 from jsonl_diagram_core.policy_gate import gate_findings, policy_digest
 from jsonl_diagram_core.quality import validate_drawio_quality
@@ -32,7 +32,7 @@ def policy() -> dict:
 
 
 def approval_receipt(finding: dict, *, status: str = "VALID") -> dict:
-    receipt = {
+    return {
         "kind":"approvalReceipt.v1",
         "approval_id":"approval:W-1",
         "subject":{
@@ -60,7 +60,7 @@ def approval_receipt(finding: dict, *, status: str = "VALID") -> dict:
             "valid_until":"2026-08-01T00:00:00+09:00",
         },
         "provider_evidence_digest":"sha256:" + "2" * 64,
-        "engine_digest":"sha256:" + "3" * 64,
+        "engine_manifest_digest":ACCEPTED_ENGINE_MANIFEST_DIGEST,
         "as_of":"2026-07-26T10:31:00+09:00",
         "status":status,
         "findings":[],
@@ -70,7 +70,6 @@ def approval_receipt(finding: dict, *, status: str = "VALID") -> dict:
             "provider_independent_non_repudiation_proven":False,
         },
     }
-    return receipt
 
 
 def exact_waiver(finding: dict, receipt: dict) -> dict:
