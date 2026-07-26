@@ -1,0 +1,22 @@
+{
+  "$id": "doc://adrs/approval-actor-v1/approval-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {"additionalProperties": false, "properties": {"kind": {"const": "pull_request_review.approve"}, "provider_review_id": {"minimum": 1, "type": "integer"}, "state": {"const": "APPROVED"}, "submitted_at": {"format": "date-time", "type": "string"}}, "required": ["kind", "provider_review_id", "state", "submitted_at"], "type": ["object", "null"]},
+    "actor": {"additionalProperties": false, "properties": {"provider": {"const": "github"}, "provider_account_id": {"minimum": 1, "type": "integer"}, "provider_login": {"minLength": 1, "type": "string"}, "subject_id": {"minLength": 1, "type": "string"}}, "required": ["subject_id", "provider", "provider_account_id", "provider_login"], "type": ["object", "null"]},
+    "approval_id": {"type": ["string", "null"]},
+    "as_of": {"format": "date-time", "type": ["string", "null"]},
+    "authority": {"additionalProperties": false, "properties": {"grant_id": {"minLength": 1, "type": "string"}, "scope_digest": {"pattern": "^sha256:[0-9a-f]{64}$", "type": "string"}, "valid_from": {"format": "date-time", "type": "string"}, "valid_until": {"format": "date-time", "type": "string"}}, "required": ["grant_id", "scope_digest", "valid_from", "valid_until"], "type": ["object", "null"]},
+    "claim_ceiling": {"additionalProperties": false, "properties": {"account_non_compromise_proven": {"const": false}, "physical_human_identity_proven": {"const": false}, "provider_independent_non_repudiation_proven": {"const": false}}, "required": ["physical_human_identity_proven", "account_non_compromise_proven", "provider_independent_non_repudiation_proven"], "type": "object"},
+    "engine_manifest_digest": {"pattern": "^sha256:[0-9a-f]{64}$", "type": "string"},
+    "findings": {"items": {"type": "object"}, "type": "array"},
+    "kind": {"const": "approvalReceipt.v1"},
+    "provider_evidence_digest": {"pattern": "^sha256:[0-9a-f]{64}$", "type": ["string", "null"]},
+    "status": {"enum": ["VALID", "INVALID", "ERROR"]},
+    "subject": {"additionalProperties": false, "properties": {"candidate_revision": {"pattern": "^[0-9a-f]{40}$", "type": "string"}, "finding_digest": {"pattern": "^sha256:[0-9a-f]{64}$", "type": "string"}, "policy_digest": {"pattern": "^sha256:[0-9a-f]{64}$", "type": "string"}, "repository": {"pattern": "^[^/]+/[^/]+$", "type": "string"}}, "required": ["repository", "candidate_revision", "finding_digest", "policy_digest"], "type": "object"}
+  },
+  "required": ["kind", "approval_id", "subject", "actor", "action", "authority", "provider_evidence_digest", "engine_manifest_digest", "as_of", "status", "findings", "claim_ceiling"],
+  "title": "approvalReceipt.v1",
+  "type": "object"
+}
