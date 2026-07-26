@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net" compressed="false" pages="1">
+  <diagram id="work-view-minimal" name="Page-1">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" page="1" pageWidth="827" pageHeight="1169">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="parent" value="Parent" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="180" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="child" value="Child" vertex="1" parent="1">
+          <mxGeometry x="380" y="260" width="140" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="edge" value="relates" edge="1" source="parent" target="child" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
