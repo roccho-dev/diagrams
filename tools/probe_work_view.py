@@ -79,6 +79,24 @@ def main() -> int:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
             context = browser.new_context(viewport={"width": 1440, "height": 1000})
+            context.add_init_script(
+                """
+                (() => {
+                  window.__workViewMessages = [];
+                  window.addEventListener('message', (event) => {
+                    let data;
+                    try {
+                      data = typeof event.data === 'string'
+                        ? event.data
+                        : JSON.stringify(event.data);
+                    } catch (_) {
+                      data = String(event.data);
+                    }
+                    window.__workViewMessages.push({origin: event.origin, data});
+                  }, true);
+                })();
+                """
+            )
             page = context.new_page()
             response = page.goto(url, wait_until="domcontentloaded", timeout=90_000)
             result["httpStatus"] = response.status if response is not None else None
@@ -129,8 +147,32 @@ def main() -> int:
                 result["editorDiagramLabelsVisible"] = _labels_visible(editor)
                 payload = _decode_r_url(editor.url)
                 if payload is not None:
-                    result["editorPayloadSha256"] = _sha256(payload)
+                    result["editorUrlPayloadSha256"] = _sha256(payload)
                     result["editorPayloadDigestMatched"] = _sha256(payload) == source_digest
+
+                messages = editor.evaluate("window.__workViewMessages || []")
+                result["editorMessageCount"] = len(messages)
+                result["editorMessages"] = [
+                    {"origin": message.get("origin"), "dataSample": str(message.get("data", ""))[:500]}
+                    for message in messages
+                ]
+                source_text = source.decode("utf-8")
+                for message in messages:
+                    data = str(message.get("data", ""))
+                    candidates = [data]
+                    try:
+                        parsed = json.loads(data)
+                    except (json.JSONDecodeError, TypeError):
+                        parsed = None
+                    if isinstance(parsed, dict):
+                        candidates.extend(value for value in parsed.values() if isinstance(value, str))
+                    for candidate_payload in candidates:
+                        if candidate_payload == source_text:
+                            result["editorPayloadSha256"] = _sha256(candidate_payload.encode("utf-8"))
+                            result["editorPayloadDigestMatched"] = True
+                            break
+                    if result["editorPayloadDigestMatched"]:
+                        break
                 args.editor_dom.write_text(editor.content(), encoding="utf-8")
                 editor.screenshot(path=str(args.editor_screenshot), full_page=True)
             else:
@@ -146,11 +188,10 @@ def main() -> int:
             result["editControlAvailable"],
             result["editorOpened"],
             result["editorDiagramLabelsVisible"],
+            result["editorPayloadDigestMatched"],
         )
         result["status"] = "PASS" if all(required) else "FAIL"
-        result["claimCeiling"] = (
-            "Editor source labels proven; exact source bytes proven only when editorPayloadDigestMatched=true"
-        )
+        result["claimCeiling"] = "PASS requires exact source bytes observed in the Editor input channel"
     except Exception as exc:
         result["status"] = "BLOCKED"
         result["error"] = f"{type(exc).__name__}: {exc}"
