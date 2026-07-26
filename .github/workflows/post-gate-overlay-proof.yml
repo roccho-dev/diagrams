@@ -1,0 +1,51 @@
+name: Post-gate decision overlay proof
+
+on:
+  pull_request:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Install package
+        run: python -m pip install '.[test]'
+      - name: Run canonical tests
+        run: python -m unittest discover -s tests -v
+      - name: Materialize accepted-risk example
+        run: |
+          jsonl-diagram-core materialize-review \
+            examples/post_gate_overlay/semantic.drawio \
+            --policy examples/post_gate_overlay/policy.json \
+            --waivers examples/post_gate_overlay/waivers.jsonl \
+            --as-of 2026-07-26T12:00:00+09:00 \
+            --out-dir ci-artifacts/post-gate-overlay
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.gate.json"))["risk"])')" = ACCEPTED
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.projection-receipt.json"))["overlayCount"])')" -gt 0
+      - name: Rebuild deterministically
+        run: |
+          jsonl-diagram-core materialize-review \
+            examples/post_gate_overlay/semantic.drawio \
+            --policy examples/post_gate_overlay/policy.json \
+            --waivers examples/post_gate_overlay/waivers.jsonl \
+            --as-of 2026-07-26T12:00:00+09:00 \
+            --out-dir ci-artifacts/replay
+          diff -ru ci-artifacts/post-gate-overlay ci-artifacts/replay
+      - name: Reject competing state and DVM dependencies
+        run: |
+          test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
+          test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py | wc -l)" -eq 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: post-gate-overlay-proof
+          path: ci-artifacts
+          if-no-files-found: error
