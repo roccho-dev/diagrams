@@ -1,0 +1,146 @@
+name: Post-gate decision overlay proof
+
+on:
+  pull_request:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install canonical and editor dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            graphviz xvfb libgtk-3-0 libnss3 libasound2t64 libgbm1 libxss1
+          npm ci --ignore-scripts --no-audit --no-fund
+          python -m pip install '.[test]' playwright
+      - name: Pin draw.io Desktop 30.0.4
+        run: |
+          curl --fail --location --retry 3 \
+            https://github.com/jgraph/drawio-desktop/releases/download/v30.0.4/drawio-x86_64-30.0.4.AppImage \
+            --output drawio-x86_64-30.0.4.AppImage
+          echo '31209df93ed9dd6f3226bdc4f6e413d754431c5d1dd60002f1c03e832c8df54f  drawio-x86_64-30.0.4.AppImage' | sha256sum --check
+          chmod +x drawio-x86_64-30.0.4.AppImage
+          mkdir -p "$RUNNER_TEMP/drawio-30.0.4"
+          (
+            cd "$RUNNER_TEMP/drawio-30.0.4"
+            "$GITHUB_WORKSPACE/drawio-x86_64-30.0.4.AppImage" --appimage-extract >/dev/null
+          )
+          test -x "$RUNNER_TEMP/drawio-30.0.4/squashfs-root/drawio"
+          echo "DRAWIO_APP=$RUNNER_TEMP/drawio-30.0.4/squashfs-root/drawio" >> "$GITHUB_ENV"
+      - name: Run post-gate tests first
+        id: post_gate_tests
+        shell: bash
+        run: |
+          mkdir -p ci-artifacts/diagnostics
+          set +e
+          python -m unittest tests.unit.test_decision_overlay tests.unit.test_drawio_user_object -v > ci-artifacts/diagnostics/post-gate-tests.log 2>&1
+          status=$?
+          cat ci-artifacts/diagnostics/post-gate-tests.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Run canonical tests
+        id: canonical_tests
+        shell: bash
+        run: |
+          set +e
+          python -m unittest discover -s tests -v > ci-artifacts/diagnostics/canonical-tests.log 2>&1
+          status=$?
+          tail -n 100 ci-artifacts/diagnostics/canonical-tests.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Materialize accepted-risk example
+        if: steps.post_gate_tests.outputs.status == '0'
+        run: |
+          jsonl-diagram-core materialize-review \
+            examples/post_gate_overlay/semantic.drawio \
+            --policy examples/post_gate_overlay/policy.json \
+            --waivers examples/post_gate_overlay/waivers.jsonl \
+            --as-of 2026-07-26T12:00:00+09:00 \
+            --out-dir ci-artifacts/post-gate-overlay
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.gate.json"))["risk"])')" = ACCEPTED
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.projection-receipt.json"))["overlayCount"])')" -gt 0
+      - name: Rebuild deterministically
+        if: steps.post_gate_tests.outputs.status == '0'
+        run: |
+          jsonl-diagram-core materialize-review \
+            examples/post_gate_overlay/semantic.drawio \
+            --policy examples/post_gate_overlay/policy.json \
+            --waivers examples/post_gate_overlay/waivers.jsonl \
+            --as-of 2026-07-26T12:00:00+09:00 \
+            --out-dir ci-artifacts/replay
+          diff -ru ci-artifacts/post-gate-overlay ci-artifacts/replay
+      - name: Prove fixed draw.io UI edit-save persistence
+        if: steps.post_gate_tests.outputs.status == '0'
+        run: |
+          xvfb-run -a python tools/prove_drawio_editor_persistence.py \
+            --drawio-app "$DRAWIO_APP" \
+            --semantic ci-artifacts/post-gate-overlay/diagram.semantic.drawio \
+            --review ci-artifacts/post-gate-overlay/diagram.review.drawio \
+            --out ci-artifacts/editor-persistence
+          test -f ci-artifacts/editor-persistence/PASS
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/editor-persistence/editor-persistence-report.json"))["status"])')" = PASS
+      - name: Reject competing state and DVM dependencies
+        run: |
+          test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
+          test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py | wc -l)" -eq 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: post-gate-overlay-proof
+          path: ci-artifacts
+          if-no-files-found: error
+      - name: Enforce tests
+        if: always()
+        run: |
+          test "${{ steps.post_gate_tests.outputs.status }}" = '0'
+          test "${{ steps.canonical_tests.outputs.status }}" = '0'
+
+  nix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31.10.6
+      - name: Run Nix gates with retained diagnostics
+        id: nix_gates
+        shell: bash
+        run: |
+          mkdir -p ci-artifacts/nix
+          set +e
+          nix flake check -L 2>&1 | tee ci-artifacts/nix/flake-check.log
+          flake_status=${PIPESTATUS[0]}
+          build_status=99
+          if [ "$flake_status" -eq 0 ]; then
+            nix build -L .#jsonl-diagram-core 2>&1 | tee ci-artifacts/nix/build.log
+            build_status=${PIPESTATUS[0]}
+          else
+            printf 'SKIPPED: flake check failed\n' > ci-artifacts/nix/build.log
+          fi
+          printf '{"flakeStatus":%s,"buildStatus":%s}\n' "$flake_status" "$build_status" > ci-artifacts/nix/status.json
+          echo "flake_status=$flake_status" >> "$GITHUB_OUTPUT"
+          echo "build_status=$build_status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: post-gate-overlay-nix-proof
+          path: ci-artifacts/nix
+          if-no-files-found: error
+      - name: Enforce Nix gates
+        if: always()
+        run: |
+          test "${{ steps.nix_gates.outputs.flake_status }}" = '0'
+          test "${{ steps.nix_gates.outputs.build_status }}" = '0'

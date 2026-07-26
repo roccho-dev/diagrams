@@ -18,6 +18,7 @@
           src = self;
           pyproject = true;
           build-system = with pkgs.python3Packages; [ setuptools wheel ];
+          nativeCheckInputs = with pkgs.python3Packages; [ jsonschema ];
           pythonImportsCheck = [ "jsonl_diagram_core" ];
           doCheck = true;
           checkPhase = ''

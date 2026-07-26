@@ -1,0 +1,7 @@
+<mxfile><diagram id="p1" name="Purpose graph"><mxGraphModel><root>
+<mxCell id="0"/><mxCell id="1" parent="0"/>
+<object id="scope" label="scope purpose" role="semantic-node" jsonlId="scope" semanticKind="purpose"><mxCell vertex="1" parent="1"><mxGeometry x="20" y="80" width="100" height="48" as="geometry"/></mxCell></object>
+<mxCell id="meta" value="meta purpose" vertex="1" parent="1"><mxGeometry x="260" y="80" width="100" height="48" as="geometry"/></mxCell>
+<mxCell id="obstacle" value="temporary boundary" vertex="1" parent="1"><mxGeometry x="150" y="70" width="80" height="68" as="geometry"/></mxCell>
+<mxCell id="contributes" value="contributes_to" edge="1" source="scope" target="meta" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+</root></mxGraphModel></diagram></mxfile>

@@ -2,11 +2,24 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
+
 from .io import canonical_json, read_jsonl, write_jsonl
 from .tokenizer import tokenize_events
 from .reducer import reduce_tokens
+
+
+def _read_object(path: str | Path) -> dict:
+    value = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError(f"{path}: expected one JSON object")
+    return value
+
+
+def _write_object(path: str | Path, value: dict) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -23,7 +36,55 @@ def main(argv: list[str] | None = None) -> int:
     p_compile = sub.add_parser("compile-bundle")
     p_compile.add_argument("events")
     p_compile.add_argument("--out-dir", required=True)
+    p_review = sub.add_parser("materialize-review")
+    p_review.add_argument("semantic_drawio")
+    p_review.add_argument("--policy", required=True)
+    p_review.add_argument("--waivers")
+    p_review.add_argument("--as-of", required=True)
+    p_review.add_argument("--out-dir", required=True)
     args = parser.parse_args(argv)
+
+    if args.cmd == "materialize-review":
+        from .decision_overlay import inspect_semantic_drawio, project_review_drawio
+        from .policy_gate import gate_findings
+
+        semantic_path = Path(args.semantic_drawio)
+        semantic_text = semantic_path.read_text(encoding="utf-8")
+        geometry = inspect_semantic_drawio(semantic_text)
+        policy = _read_object(args.policy)
+        waivers = read_jsonl(args.waivers) if args.waivers else []
+        report, gate_receipt = gate_findings(
+            semantic_model_digest=geometry["semanticModelDigest"],
+            verification=geometry["verification"],
+            findings=geometry["findings"],
+            policy=policy,
+            waivers=waivers,
+            as_of=args.as_of,
+        )
+        review_text, projection_receipt = project_review_drawio(
+            semantic_text,
+            report,
+            gate_receipt,
+            as_of=args.as_of,
+        )
+        out = Path(args.out_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "diagram.semantic.drawio").write_text(semantic_text, encoding="utf-8")
+        (out / "diagram.review.drawio").write_text(review_text, encoding="utf-8")
+        _write_object(out / "diagram.geometry.json", geometry)
+        _write_object(out / "diagram.gate.json", report)
+        _write_object(out / "diagram.gate-receipt.json", gate_receipt)
+        _write_object(out / "diagram.projection-receipt.json", projection_receipt)
+        print(canonical_json({
+            "verification": report["verification"],
+            "gateStatus": report["gateStatus"],
+            "decision": report["decision"],
+            "risk": report["risk"],
+            "overlayCount": projection_receipt["overlayCount"],
+        }))
+        if report["gateStatus"] == "ERROR":
+            return 4
+        return {"ALLOW": 0, "REVIEW": 2, "DENY": 3}[report["decision"]]
 
     events = read_jsonl(args.events)
     tokens = tokenize_events(events)

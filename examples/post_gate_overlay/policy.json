@@ -1,0 +1,22 @@
+{
+  "maxWaiverDays": 31,
+  "rules": {
+    "edge_crosses_unrelated_rectangle": {
+      "effect": "DENY",
+      "waivable": true
+    },
+    "edge_route_approximate": {
+      "effect": "INFO",
+      "waivable": false
+    },
+    "model_parent_not_containing": {
+      "effect": "DENY",
+      "waivable": true
+    },
+    "partial_overlap": {
+      "effect": "INFO",
+      "waivable": false
+    }
+  },
+  "schema": "DiagramPolicy.v1"
+}
