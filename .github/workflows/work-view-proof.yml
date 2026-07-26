@@ -1,0 +1,56 @@
+name: Work View proof
+
+on:
+  pull_request:
+    branches:
+      - proposals
+  push:
+    branches:
+      - proposals
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  work-view-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Work View unit tests
+        run: python -m unittest tests.test_work_view -v
+
+      - name: Build Work View URL and local receipt
+        run: |
+          python tools/build_work_view.py \
+            tests/fixtures/work_view/minimal.drawio \
+            --url-out ci-artifacts/work-view/work-view.url.txt \
+            --receipt-out ci-artifacts/work-view/local-codec-proof.json
+
+      - name: Install pinned browser proof dependency
+        run: |
+          python -m pip install playwright==1.54.0
+          python -m playwright install --with-deps chromium
+
+      - name: Prove hosted Viewer and Edit entry
+        run: |
+          python tools/probe_work_view.py \
+            --url-file ci-artifacts/work-view/work-view.url.txt \
+            --source tests/fixtures/work_view/minimal.drawio \
+            --out ci-artifacts/work-view/browser-proof.json \
+            --screenshot ci-artifacts/work-view/hosted-viewer.png
+
+      - name: Upload Work View proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: work-view-proof
+          path: ci-artifacts/work-view
+          if-no-files-found: error
