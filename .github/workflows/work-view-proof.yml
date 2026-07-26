@@ -39,13 +39,16 @@ jobs:
           python -m pip install playwright==1.54.0
           python -m playwright install --with-deps chromium
 
-      - name: Prove hosted Viewer and Edit entry
+      - name: Prove hosted Viewer and official Editor entry
         run: |
           python tools/probe_work_view.py \
             --url-file ci-artifacts/work-view/work-view.url.txt \
             --source tests/fixtures/work_view/minimal.drawio \
             --out ci-artifacts/work-view/browser-proof.json \
-            --screenshot ci-artifacts/work-view/hosted-viewer.png
+            --screenshot ci-artifacts/work-view/hosted-viewer.png \
+            --viewer-dom ci-artifacts/work-view/hosted-viewer.html \
+            --editor-screenshot ci-artifacts/work-view/editor.png \
+            --editor-dom ci-artifacts/work-view/editor.html
 
       - name: Upload Work View proof
         if: always()
