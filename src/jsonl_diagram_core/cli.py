@@ -39,7 +39,10 @@ def main(argv: list[str] | None = None) -> int:
     p_review = sub.add_parser("materialize-review")
     p_review.add_argument("semantic_drawio")
     p_review.add_argument("--policy", required=True)
-    p_review.add_argument("--waivers")
+    p_review.add_argument("--waivers", required=True)
+    p_review.add_argument("--approval-receipts", required=True)
+    p_review.add_argument("--repository", required=True)
+    p_review.add_argument("--candidate-revision", required=True)
     p_review.add_argument("--as-of", required=True)
     p_review.add_argument("--out-dir", required=True)
     args = parser.parse_args(argv)
@@ -52,13 +55,17 @@ def main(argv: list[str] | None = None) -> int:
         semantic_text = semantic_path.read_text(encoding="utf-8")
         geometry = inspect_semantic_drawio(semantic_text)
         policy = _read_object(args.policy)
-        waivers = read_jsonl(args.waivers) if args.waivers else []
+        waivers = read_jsonl(args.waivers)
+        approval_receipts = read_jsonl(args.approval_receipts)
         report, gate_receipt = gate_findings(
             semantic_model_digest=geometry["semanticModelDigest"],
             verification=geometry["verification"],
             findings=geometry["findings"],
             policy=policy,
             waivers=waivers,
+            approval_receipts=approval_receipts,
+            repository=args.repository,
+            candidate_revision=args.candidate_revision,
             as_of=args.as_of,
         )
         review_text, projection_receipt = project_review_drawio(
