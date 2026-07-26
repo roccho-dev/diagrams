@@ -4,7 +4,9 @@ import copy
 import unittest
 from pathlib import Path
 
+from jsonl_diagram_core import policy_gate as policy_gate_module
 from jsonl_diagram_core.approval_receipt import approval_receipt_digest
+from jsonl_diagram_core.decision_overlay import inspect_semantic_drawio
 from jsonl_diagram_core.policy_gate import gate_findings, policy_digest
 from jsonl_diagram_core.receipt_overlay import project_review_drawio
 
@@ -15,6 +17,9 @@ AS_OF = "2026-07-26T12:00:00+09:00"
 
 def policy() -> dict:
     return {"schema":"DiagramPolicy.v1","maxWaiverDays":31,"rules":{
+        "partial_overlap":{"effect":"INFO","waivable":False},
+        "model_parent_not_containing":{"effect":"DENY","waivable":True},
+        "edge_route_approximate":{"effect":"INFO","waivable":False},
         "edge_crosses_unrelated_rectangle":{"effect":"DENY","waivable":True},
     }}
 
@@ -97,6 +102,16 @@ def accepted_case():
     return f, w, r
 
 
+def semantic_crossing() -> str:
+    return '''<mxfile><diagram id="p1" name="P1"><mxGraphModel><root>
+<mxCell id="0"/><mxCell id="1" parent="0"/>
+<mxCell id="a" value="A" vertex="1" parent="1"><mxGeometry x="20" y="80" width="80" height="40" as="geometry"/></mxCell>
+<mxCell id="b" value="B" vertex="1" parent="1"><mxGeometry x="220" y="80" width="80" height="40" as="geometry"/></mxCell>
+<mxCell id="o" value="obstacle" vertex="1" parent="1"><mxGeometry x="130" y="70" width="60" height="60" as="geometry"/></mxCell>
+<mxCell id="e" value="contributes_to" edge="1" source="a" target="b" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+</root></mxGraphModel></diagram></mxfile>'''
+
+
 class ApprovalReceiptConsumerTest(unittest.TestCase):
     def test_valid_receipt_accepts_only_disposition(self):
         f, w, r = accepted_case()
@@ -145,17 +160,34 @@ class ApprovalReceiptConsumerTest(unittest.TestCase):
         text = "\n".join((root / name).read_text(encoding="utf-8") for name in ("approval_receipt.py", "policy_gate.py", "receipt_overlay.py"))
         for token in ("requests", "httpx", "github.Github", "urllib.request", "collaborator permission"):
             self.assertNotIn(token, text)
-        self.assertNotIn('"approvalRef"', (root / "policy_gate.py").read_text(encoding="utf-8"))
+        self.assertNotIn("approvalRef", policy_gate_module._WAIVER_KEYS)
+        self.assertIn("approvalReceiptRef", policy_gate_module._WAIVER_KEYS)
+        self.assertIn("approvalReceiptDigest", policy_gate_module._WAIVER_KEYS)
+        self.assertIn("FREE_FORM_APPROVAL_REF_FORBIDDEN", (root / "policy_gate.py").read_text(encoding="utf-8"))
 
     def test_deterministic_gate_and_receipt_bound_overlay(self):
-        f, w, r = accepted_case()
-        first = gate(current_finding=f, current_waiver=w, current_receipt=r)
-        second = gate(current_finding=copy.deepcopy(f), current_waiver=copy.deepcopy(w), current_receipt=copy.deepcopy(r))
+        semantic = semantic_crossing()
+        geometry = inspect_semantic_drawio(semantic)
+        current_finding = next(row for row in geometry["findings"] if row["ruleId"] == "edge_crosses_unrelated_rectangle")
+        current_receipt = receipt(current_finding)
+        current_waiver = waiver(current_finding, current_receipt)
+        args = dict(
+            semantic_model_digest=geometry["semanticModelDigest"],
+            verification=geometry["verification"],
+            findings=geometry["findings"],
+            policy=policy(),
+            waivers=[current_waiver],
+            approval_receipts=[current_receipt],
+            repository=REPOSITORY,
+            candidate_revision=CANDIDATE,
+            as_of=AS_OF,
+        )
+        first = gate_findings(**args)
+        second = gate_findings(**copy.deepcopy(args))
         self.assertEqual(first, second)
-        semantic = '<mxfile><diagram id="p1"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="e" vertex="1" parent="1"><mxGeometry width="10" height="10" as="geometry"/></mxCell><mxCell id="o" vertex="1" parent="1"><mxGeometry x="20" width="10" height="10" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>'
         review, _ = project_review_drawio(semantic, first[0], first[1], as_of=AS_OF)
         self.assertIn('approvalReceiptRef="approval:1"', review)
-        self.assertIn(f'approvalReceiptDigest="{approval_receipt_digest(r)}"', review)
+        self.assertIn(f'approvalReceiptDigest="{approval_receipt_digest(current_receipt)}"', review)
 
 
 if __name__ == "__main__":
