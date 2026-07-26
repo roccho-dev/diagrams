@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from jsonl_diagram_core import policy_gate as policy_gate_module
-from jsonl_diagram_core.approval_receipt import approval_receipt_digest
+from jsonl_diagram_core.approval_receipt import ACCEPTED_ENGINE_MANIFEST_DIGEST, approval_receipt_digest
 from jsonl_diagram_core.decision_overlay import inspect_semantic_drawio
 from jsonl_diagram_core.policy_gate import gate_findings, policy_digest
 from jsonl_diagram_core.receipt_overlay import project_review_drawio
@@ -53,7 +53,7 @@ def receipt(current_finding: dict | None = None) -> dict:
         "action":{"kind":"pull_request_review.approve","provider_review_id":9001,"state":"APPROVED","submitted_at":"2026-07-26T10:30:00+09:00"},
         "authority":{"grant_id":"G-1","scope_digest":"sha256:"+"6"*64,"valid_from":"2026-07-01T00:00:00+09:00","valid_until":"2026-08-01T00:00:00+09:00"},
         "provider_evidence_digest":"sha256:"+"7"*64,
-        "engine_digest":"sha256:"+"8"*64,
+        "engine_manifest_digest":ACCEPTED_ENGINE_MANIFEST_DIGEST,
         "as_of":"2026-07-26T10:31:00+09:00",
         "status":"VALID",
         "findings":[],
@@ -145,15 +145,17 @@ class ApprovalReceiptConsumerTest(unittest.TestCase):
         run("D11-action", lambda f,w,r,p: (r["action"].__setitem__("kind","pull_request_review.comment"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_ACTION_NOT_ALLOWED")
         run("D12-scope", lambda f,w,r,p: (r["authority"].__setitem__("scope_digest",""), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_SCOPE_MISMATCH")
         run("D13-time", lambda f,w,r,p: (r["action"].__setitem__("submitted_at","2026-08-02T00:00:00+09:00"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_TIME_MISMATCH")
-        run("D14-engine", lambda f,w,r,p: (r.__setitem__("engine_digest","unknown"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_ENGINE_UNKNOWN")
+        run("D14-engine", lambda f,w,r,p: (r.__setitem__("engine_manifest_digest","sha256:"+"0"*64), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_ENGINE_UNKNOWN")
         run("D15-other-finding", lambda f,w,r,p: (r["subject"].__setitem__("finding_digest","sha256:"+"a"*64), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_FINDING_MISMATCH")
         run("D16-unknown-receipt-field", lambda f,w,r,p: (r.__setitem__("provider_raw",{}), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_VALIDATION_EXCEPTION")
         run("D17-claim-overreach", lambda f,w,r,p: (r["claim_ceiling"].__setitem__("physical_human_identity_proven",True), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_SCOPE_MISMATCH")
         run("D18-action-state", lambda f,w,r,p: (r["action"].__setitem__("state","COMMENTED"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_NOT_VALID")
         run("D19-receipt-id", lambda f,w,r,p: (r.__setitem__("approval_id","approval:other"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_MISSING")
         run("D20-policy-change", lambda f,w,r,p: p.__setitem__("maxWaiverDays",7), "waiver_invalid")
+        run("D21-version-only-engine", lambda f,w,r,p: (r.__setitem__("engine_manifest_digest","sha256:"+"8"*64), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_ENGINE_UNKNOWN")
+        run("D22-unaccepted-action", lambda f,w,r,p: (r["action"].__setitem__("kind","diagram_waiver.approve"), w.__setitem__("approvalReceiptDigest",approval_receipt_digest(r))), "APPROVAL_RECEIPT_ACTION_NOT_ALLOWED")
 
-        self.assertEqual(len(cases), 20)
+        self.assertEqual(len(cases), 22)
 
     def test_no_provider_logic_or_free_form_acceptance_in_consumer(self):
         root = Path(__file__).resolve().parents[2] / "src" / "jsonl_diagram_core"
@@ -164,6 +166,8 @@ class ApprovalReceiptConsumerTest(unittest.TestCase):
         self.assertIn("approvalReceiptRef", policy_gate_module._WAIVER_KEYS)
         self.assertIn("approvalReceiptDigest", policy_gate_module._WAIVER_KEYS)
         self.assertIn("FREE_FORM_APPROVAL_REF_FORBIDDEN", (root / "policy_gate.py").read_text(encoding="utf-8"))
+        self.assertNotIn("diagram_waiver.approve", (root / "approval_receipt.py").read_text(encoding="utf-8"))
+        self.assertNotIn("engine_digest", (root / "approval_receipt.py").read_text(encoding="utf-8"))
 
     def test_deterministic_gate_and_receipt_bound_overlay(self):
         semantic = semantic_crossing()
