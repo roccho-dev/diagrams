@@ -34,11 +34,16 @@ jobs:
             --url-out ci-artifacts/work-view/work-view.url.txt \
             --receipt-out ci-artifacts/work-view/local-codec-proof.json
 
-      - name: Build legacy invalid URL fixture
+      - name: Build truncated URL fixture
         run: |
-          python tools/build_legacy_work_view_fixture.py \
-            tests/fixtures/work_view/minimal.drawio \
-            --url-out ci-artifacts/work-view/legacy-whole-deflate.url.txt
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('ci-artifacts/work-view/work-view.url.txt')
+          url = source.read_text(encoding='utf-8').strip()
+          if len(url) < 128:
+              raise SystemExit('Work View URL is unexpectedly short')
+          Path('ci-artifacts/work-view/truncated.url.txt').write_text(url[:-64] + '\n', encoding='utf-8')
+          PY
 
       - name: Install pinned browser proof dependency
         run: |
@@ -56,12 +61,12 @@ jobs:
             --editor-screenshot ci-artifacts/work-view/editor.png \
             --editor-dom ci-artifacts/work-view/editor.html
 
-      - name: Prove legacy whole-file deflate is rejected
+      - name: Prove truncated URL is rejected
         run: |
           python tools/probe_work_view_failure.py \
-            --url-file ci-artifacts/work-view/legacy-whole-deflate.url.txt \
-            --out ci-artifacts/work-view/legacy-negative-proof.json \
-            --screenshot ci-artifacts/work-view/legacy-negative.png
+            --url-file ci-artifacts/work-view/truncated.url.txt \
+            --out ci-artifacts/work-view/truncated-negative-proof.json \
+            --screenshot ci-artifacts/work-view/truncated-negative.png
 
       - name: Upload Work View proof
         if: always()
