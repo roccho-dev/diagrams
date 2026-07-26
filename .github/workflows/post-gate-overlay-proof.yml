@@ -81,7 +81,7 @@ jobs:
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.gate.json"))["risk"])')" = ACCEPTED
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.projection-receipt.json"))["overlayCount"])')" -gt 0
           grep -q 'approvalReceiptRef="approval:example-001"' ci-artifacts/post-gate-overlay/diagram.review.drawio
-          grep -q 'approvalReceiptDigest="sha256:587271a6c2dab13f083b2b863a1b0347f1e686e5281433ecb85ab5ae1f41f1b4"' ci-artifacts/post-gate-overlay/diagram.review.drawio
+          grep -q 'approvalReceiptDigest="sha256:d078a3a4b96a09840b7a9c4aa6f4940c46a25918ea9f127f67729456c09838c1"' ci-artifacts/post-gate-overlay/diagram.review.drawio
       - name: Rebuild deterministically
         if: steps.post_gate_tests.outputs.status == '0'
         run: |
@@ -106,7 +106,7 @@ jobs:
           test -f ci-artifacts/editor-persistence/PASS
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/editor-persistence/editor-persistence-report.json"))["status"])')" = PASS
           grep -q 'approvalReceiptRef="approval:example-001"' ci-artifacts/editor-persistence/review-editor-proof.drawio
-          grep -q 'approvalReceiptDigest="sha256:587271a6c2dab13f083b2b863a1b0347f1e686e5281433ecb85ab5ae1f41f1b4"' ci-artifacts/editor-persistence/review-editor-proof.drawio
+          grep -q 'approvalReceiptDigest="sha256:d078a3a4b96a09840b7a9c4aa6f4940c46a25918ea9f127f67729456c09838c1"' ci-artifacts/editor-persistence/review-editor-proof.drawio
       - name: Reject competing state, provider logic and dual approval paths
         run: |
           test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
