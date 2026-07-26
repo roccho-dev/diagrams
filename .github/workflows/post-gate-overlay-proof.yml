@@ -35,6 +35,7 @@ jobs:
           echo '31209df93ed9dd6f3226bdc4f6e413d754431c5d1dd60002f1c03e832c8df54f  drawio-x86_64-30.0.4.AppImage' | sha256sum --check
           chmod +x drawio-x86_64-30.0.4.AppImage
           ./drawio-x86_64-30.0.4.AppImage --appimage-extract >/dev/null
+          test -x squashfs-root/drawio
       - name: Run post-gate tests first
         id: post_gate_tests
         shell: bash
@@ -81,7 +82,7 @@ jobs:
         if: steps.post_gate_tests.outputs.status == '0'
         run: |
           xvfb-run -a python tools/prove_drawio_editor_persistence.py \
-            --drawio-app "$PWD/squashfs-root/AppRun" \
+            --drawio-app "$PWD/squashfs-root/drawio" \
             --semantic ci-artifacts/post-gate-overlay/diagram.semantic.drawio \
             --review ci-artifacts/post-gate-overlay/diagram.review.drawio \
             --out ci-artifacts/editor-persistence
