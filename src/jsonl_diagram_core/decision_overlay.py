@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import json
 import math
 import urllib.parse
 import xml.etree.ElementTree as ET
@@ -118,9 +119,13 @@ def _page_model(page_id: str, graph: ET.Element) -> tuple[dict[str, Rect], dict[
     cells: dict[str, ET.Element] = {}
     wrappers: dict[str, JsonObj] = {}
     for _, cell, attrs in _items(graph):
-        cid = cell.get("id")
+        nested_id = cell.get("id")
+        wrapper_id = attrs.get("id")
+        if nested_id and wrapper_id and nested_id != wrapper_id:
+            raise ValueError(f"XML user object id mismatch: {wrapper_id} != {nested_id}")
+        cid = nested_id or wrapper_id
         if not cid:
-            raise ValueError("mxCell missing id")
+            raise ValueError("mxCell or XML user object missing id")
         if cid in cells:
             raise ValueError(f"duplicate mxCell id: {cid}")
         cells[cid] = cell
@@ -304,7 +309,7 @@ def project_review_drawio(drawio_text: str, gate_report: JsonObj, gate_receipt: 
             "gateReceiptId": str(gate_receipt["receiptId"]),
             "asOf": as_of,
         })
-        ET.SubElement(meta, "mxCell", {"id": meta.get("id") + "-cell", "parent": layer_id})
+        ET.SubElement(meta, "mxCell", {"parent": layer_id})
         index = 0
         for key in sorted(dispositions):
             finding = findings.get(key)
@@ -341,7 +346,7 @@ def project_review_drawio(drawio_text: str, gate_report: JsonObj, gate_receipt: 
                 obj_attrs["expiresAt"] = str(disposition["expiresAt"])
             obj = ET.SubElement(page_root, "object", obj_attrs)
             cell = ET.SubElement(obj, "mxCell", {
-                "id": oid + "-cell", "value": label, "vertex": "1", "parent": layer_id,
+                "vertex": "1", "parent": layer_id,
                 "style": "rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=middle;spacingLeft=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;",
             })
             ET.SubElement(cell, "mxGeometry", {"x": "8", "y": str(8 + index * 30), "width": "360", "height": "24", "as": "geometry"})
