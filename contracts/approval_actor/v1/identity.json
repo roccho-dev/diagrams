@@ -1,0 +1,13 @@
+{
+  "adrsCandidateHead": "1bbce6400724a0b0395dc8c5c3d3acb8d4bcade8",
+  "adrsIssue": "roccho-dev/adrs#260",
+  "adrsPullRequest": "roccho-dev/adrs#263",
+  "approvalReceiptSchemaDigest": "sha256:d3d52f076a94dce2693827aebecae7fdc18d5345bd2e0be39c85f090bc028ff4",
+  "contractDigest": "sha256:21abaeb0cfb4f76babe7f1f530d14e807ef1c236e891257199490a8c0bb9d03e",
+  "governanceCandidateHead": "cb876da5c98776cc7654c85eabae38cf1bd93cf6",
+  "governanceEngineManifestDigest": "sha256:f80c3e4c02e36591dfc913f029daa5c7fce41890bf6021833283a6d65fb65674",
+  "governancePullRequest": "roccho-dev/governance#183",
+  "kind": "approvalReceiptConsumerIdentity.v1",
+  "onlyActionKind": "pull_request_review.approve",
+  "status": "PROPOSED_UPSTREAM_CANDIDATES"
+}
