@@ -120,9 +120,9 @@ def validate_approval_receipt(
     provider_digest = receipt.get("provider_evidence_digest")
     if not isinstance(provider_digest, str) or not provider_digest.startswith("sha256:"):
         add("APPROVAL_RECEIPT_SCOPE_MISMATCH", "sha256 provider evidence digest", provider_digest)
-    engine_digest = receipt.get("engine_manifest_digest")
-    if engine_digest != ACCEPTED_ENGINE_MANIFEST_DIGEST:
-        add("APPROVAL_RECEIPT_ENGINE_UNKNOWN", ACCEPTED_ENGINE_MANIFEST_DIGEST, engine_digest)
+    manifest_digest = receipt.get("engine_manifest_digest")
+    if manifest_digest != ACCEPTED_ENGINE_MANIFEST_DIGEST:
+        add("APPROVAL_RECEIPT_ENGINE_UNKNOWN", ACCEPTED_ENGINE_MANIFEST_DIGEST, manifest_digest)
 
     try:
         gate_time = _instant(as_of, "as_of")
