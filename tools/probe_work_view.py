@@ -40,7 +40,7 @@ def _labels_visible(page: object) -> bool:
 
 
 def _edit_candidates(page: object) -> list[dict[str, object]]:
-    locator = page.locator('a,button,[role="button"]')
+    locator = page.locator('a,button,[role="button"],span[title]')
     candidates: list[dict[str, object]] = []
     for index in range(locator.count()):
         element = locator.nth(index)
@@ -122,13 +122,15 @@ def main() -> int:
             result["diagramLabelsVisible"] = _labels_visible(page)
             args.viewer_dom.write_text(page.content(), encoding="utf-8")
 
+            page.mouse.move(720, 970)
+            page.wait_for_timeout(1_000)
             candidates = _edit_candidates(page)
             result["editCandidates"] = candidates
             result["editControlAvailable"] = bool(candidates)
 
             editor = None
             if candidates:
-                raw_locator = page.locator('a,button,[role="button"]')
+                raw_locator = page.locator('a,button,[role="button"],span[title]')
                 candidate = raw_locator.nth(int(candidates[0]["index"]))
                 before_pages = list(context.pages)
                 before_url = page.url
