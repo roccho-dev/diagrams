@@ -1,0 +1,427 @@
+{
+  "claim_ceiling": "Isolated proof only: ordered native single-page mxfiles compose into one deterministic multi-page mxfile without another authority or persisted document IR. Canonical integration is not claimed.",
+  "dependency_check": {
+    "forbidden_coupling_tokens_found": [],
+    "import_roots_by_file": {
+      "check_changed_paths.py": [
+        "__future__",
+        "argparse",
+        "json",
+        "pathlib",
+        "subprocess",
+        "sys"
+      ],
+      "ci_receipt.py": [
+        "__future__",
+        "argparse",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "platform",
+        "subprocess",
+        "sys"
+      ],
+      "composer.py": [
+        "__future__",
+        "argparse",
+        "copy",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "os",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "typing",
+        "xml"
+      ],
+      "invalid_cases.py": [
+        "__future__"
+      ],
+      "run_proof.py": [
+        "__future__",
+        "argparse",
+        "ast",
+        "composer",
+        "hashlib",
+        "invalid_cases",
+        "json",
+        "os",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "typing",
+        "xml"
+      ],
+      "tests/test_ci_support.py": [
+        "__future__",
+        "check_changed_paths",
+        "json",
+        "os",
+        "pathlib",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "tests/test_composer.py": [
+        "__future__",
+        "composer",
+        "copy",
+        "invalid_cases",
+        "json",
+        "os",
+        "pathlib",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "unittest",
+        "xml"
+      ]
+    },
+    "non_stdlib_imports": {},
+    "status": "PASS"
+  },
+  "external_gate": "G13 existing repository checks must run on the actual PR head and integration tree.",
+  "gates": [
+    {
+      "gate": "G1",
+      "name": "valid_composition_1_2_5",
+      "status": "PASS"
+    },
+    {
+      "gate": "G2",
+      "name": "input_order_preserved",
+      "status": "PASS"
+    },
+    {
+      "gate": "G3",
+      "name": "page_identity_preserved",
+      "status": "PASS"
+    },
+    {
+      "gate": "G4",
+      "name": "model_structural_digests_equal",
+      "status": "PASS"
+    },
+    {
+      "gate": "G5",
+      "name": "deterministic_bytes",
+      "status": "PASS"
+    },
+    {
+      "gate": "G6",
+      "name": "single_page_semantic_identity",
+      "status": "PASS"
+    },
+    {
+      "gate": "G7",
+      "name": "duplicate_ids_rejected",
+      "status": "PASS"
+    },
+    {
+      "gate": "G8",
+      "name": "invalid_inputs_fail_closed",
+      "status": "PASS"
+    },
+    {
+      "gate": "G9",
+      "name": "no_event_or_jsonl_authority",
+      "status": "PASS"
+    },
+    {
+      "gate": "G10",
+      "name": "no_persisted_document_ir",
+      "status": "PASS"
+    },
+    {
+      "gate": "G11",
+      "name": "pr7_import_isolation",
+      "status": "PASS_LOCAL"
+    },
+    {
+      "gate": "G12",
+      "name": "stdlib_dependency_floor",
+      "status": "PASS"
+    },
+    {
+      "gate": "G13",
+      "name": "existing_repository_checks",
+      "status": "REQUIRES_REPOSITORY_CI"
+    },
+    {
+      "gate": "G14",
+      "name": "delete_and_rebuild_byte_identity",
+      "status": "VERIFIED_BY_RUN_ALL"
+    }
+  ],
+  "kind": "mxfile.composition.proof.v1",
+  "negative_case_count": 22,
+  "negative_cases": [
+    {
+      "evidence": {
+        "error_code": "empty_input"
+      },
+      "name": "empty_input_list",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "invalid_xml"
+      },
+      "name": "malformed_xml",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "invalid_xml"
+      },
+      "name": "unknown_encoding",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "xml_nesting_too_deep"
+      },
+      "name": "deeply_nested_model",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "invalid_root"
+      },
+      "name": "non_mxfile_root",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "single_page_required"
+      },
+      "name": "zero_diagrams",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "single_page_required"
+      },
+      "name": "multiple_diagrams",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "single_model_required"
+      },
+      "name": "missing_model",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "compressed_page_payload"
+      },
+      "name": "compressed_page_text",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "compressed_input"
+      },
+      "name": "compressed_root",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "missing_page_id"
+      },
+      "name": "missing_page_id",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "empty_page_id"
+      },
+      "name": "empty_page_id",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "missing_page_name"
+      },
+      "name": "missing_page_name",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "empty_page_name"
+      },
+      "name": "empty_page_name",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "unexpected_root_child"
+      },
+      "name": "unexpected_root_child",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "forbidden_dtd"
+      },
+      "name": "forbidden_dtd",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "forbidden_dtd"
+      },
+      "name": "forbidden_utf16_dtd",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "duplicate_page_id"
+      },
+      "name": "duplicate_page_id",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "invalid_xml",
+        "existing_output_preserved": true,
+        "temporary_files": 0
+      },
+      "name": "invalid_input_no_partial_output",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "forbidden_time_attributes_present": [],
+        "source_date_epoch_independent": true
+      },
+      "name": "timestamp_independence",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "rejection_codes": {
+          "cell_attribute": "diagram_mutated",
+          "cell_id": "diagram_mutated",
+          "geometry": "diagram_mutated",
+          "user_object": "diagram_mutated"
+        }
+      },
+      "name": "model_mutations_rejected",
+      "status": "PASS"
+    },
+    {
+      "evidence": {
+        "error_code": "page_order_or_id_mismatch"
+      },
+      "name": "changed_page_order_rejected",
+      "status": "PASS"
+    }
+  ],
+  "positive_case_count": 3,
+  "positive_cases": [
+    {
+      "name": "compose_1_page",
+      "output_file": "composed-1.drawio",
+      "receipt": {
+        "kind": "mxfile.composition.receipt.v1",
+        "output_sha256": "cfd10e5cd53a9f54bb27e7256dff4a12bed52de6f1814fdea45322ed204d0029",
+        "page_count": 1,
+        "page_order": [
+          "page-01"
+        ],
+        "pages": [
+          {
+            "diagram_digest": "f810ecccea2e3f6c211446c7709d4a926f58125ea34f1fbd66765ad020fb28ff",
+            "model_digest": "4b0f753cc34c73d8def62d00efa1026aad3cd7d6e57e012b16d9e59f775008b6",
+            "name": "01 Base",
+            "page_id": "page-01"
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "compose_2_page",
+      "output_file": "composed-2.drawio",
+      "receipt": {
+        "kind": "mxfile.composition.receipt.v1",
+        "output_sha256": "4fc79eae4c79b9bd9c9f128bc1c100609a7ae1b7e3e03bc0c20a81c8e9379e68",
+        "page_count": 2,
+        "page_order": [
+          "page-01",
+          "page-02"
+        ],
+        "pages": [
+          {
+            "diagram_digest": "f810ecccea2e3f6c211446c7709d4a926f58125ea34f1fbd66765ad020fb28ff",
+            "model_digest": "4b0f753cc34c73d8def62d00efa1026aad3cd7d6e57e012b16d9e59f775008b6",
+            "name": "01 Base",
+            "page_id": "page-01"
+          },
+          {
+            "diagram_digest": "c31baf986fe4986a182b9d8d3c22e00dd29875bd504dc1de466a6a6575e7342d",
+            "model_digest": "4c53e7a8aedb782463169da865c85d0295b5235187a48e0cedb6cddc62518da1",
+            "name": "02 Edges",
+            "page_id": "page-02"
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "compose_5_page",
+      "output_file": "composed-5.drawio",
+      "receipt": {
+        "kind": "mxfile.composition.receipt.v1",
+        "output_sha256": "3b3f7343b1d533062493e55d8d334dd0933c42edd27a882d61bd0a83f88d9468",
+        "page_count": 5,
+        "page_order": [
+          "page-01",
+          "page-02",
+          "page-03",
+          "page-04",
+          "page-05"
+        ],
+        "pages": [
+          {
+            "diagram_digest": "f810ecccea2e3f6c211446c7709d4a926f58125ea34f1fbd66765ad020fb28ff",
+            "model_digest": "4b0f753cc34c73d8def62d00efa1026aad3cd7d6e57e012b16d9e59f775008b6",
+            "name": "01 Base",
+            "page_id": "page-01"
+          },
+          {
+            "diagram_digest": "c31baf986fe4986a182b9d8d3c22e00dd29875bd504dc1de466a6a6575e7342d",
+            "model_digest": "4c53e7a8aedb782463169da865c85d0295b5235187a48e0cedb6cddc62518da1",
+            "name": "02 Edges",
+            "page_id": "page-02"
+          },
+          {
+            "diagram_digest": "222400f32464620e5d73bc22024d745312fe36f40a5d0da6287c6d8013f928b9",
+            "model_digest": "f8a243a443123bc2ade2054a77b456654e446ba4cb794d42f7a248c2db8bc04d",
+            "name": "03 User objects",
+            "page_id": "page-03"
+          },
+          {
+            "diagram_digest": "064642326ab4f0f02f42241ed4426239880e82ed15f0cd70d236a04cad12e037",
+            "model_digest": "d96934205c2aa59f6a0289e613c3bc4a61c4caabed42f2b2cf1f9d1839d1269c",
+            "name": "04 Styles & labels",
+            "page_id": "page-04"
+          },
+          {
+            "diagram_digest": "d8a246d662777c77d5d2c6781faa8b438719627fe136d52a0da532c4c26a6b20",
+            "model_digest": "a382fbf1a8437a77b32e9f132a48b01aa189c0b0b0eabef486b8116cf8603990",
+            "name": "05 Layers",
+            "page_id": "page-05"
+          }
+        ]
+      },
+      "status": "PASS"
+    }
+  ],
+  "preproof_status": "PASS"
+}
