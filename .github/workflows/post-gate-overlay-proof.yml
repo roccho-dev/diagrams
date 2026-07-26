@@ -114,9 +114,33 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31.10.6
+      - name: Run Nix gates with retained diagnostics
+        id: nix_gates
+        shell: bash
+        run: |
+          mkdir -p ci-artifacts/nix
+          set +e
+          nix flake check -L 2>&1 | tee ci-artifacts/nix/flake-check.log
+          flake_status=${PIPESTATUS[0]}
+          build_status=99
+          if [ "$flake_status" -eq 0 ]; then
+            nix build -L .#jsonl-diagram-core 2>&1 | tee ci-artifacts/nix/build.log
+            build_status=${PIPESTATUS[0]}
+          else
+            printf 'SKIPPED: flake check failed\n' > ci-artifacts/nix/build.log
+          fi
+          printf '{"flakeStatus":%s,"buildStatus":%s}\n' "$flake_status" "$build_status" > ci-artifacts/nix/status.json
+          echo "flake_status=$flake_status" >> "$GITHUB_OUTPUT"
+          echo "build_status=$build_status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          nix_path: nixpkgs=channel:nixos-24.11
-      - name: Check flake
-        run: nix flake check -L
-      - name: Build canonical package
-        run: nix build -L .#jsonl-diagram-core
+          name: post-gate-overlay-nix-proof
+          path: ci-artifacts/nix
+          if-no-files-found: error
+      - name: Enforce Nix gates
+        if: always()
+        run: |
+          test "${{ steps.nix_gates.outputs.flake_status }}" = '0'
+          test "${{ steps.nix_gates.outputs.build_status }}" = '0'
