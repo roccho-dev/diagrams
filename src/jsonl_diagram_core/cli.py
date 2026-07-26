@@ -48,8 +48,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.cmd == "materialize-review":
-        from .decision_overlay import inspect_semantic_drawio, project_review_drawio
+        from .decision_overlay import inspect_semantic_drawio
         from .policy_gate import gate_findings
+        from .receipt_overlay import project_review_drawio
 
         semantic_path = Path(args.semantic_drawio)
         semantic_text = semantic_path.read_text(encoding="utf-8")
