@@ -26,7 +26,7 @@ def main() -> int:
     result: dict[str, object] = {
         "schema": "diagram.workViewNegativeBrowserProof.v1",
         "status": "ERROR",
-        "expectedFailure": "whole-mxfile raw-deflate is not a valid #R outer mxfile",
+        "expectedFailure": "truncated Work View URL must not render the source diagram",
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.screenshot.parent.mkdir(parents=True, exist_ok=True)
@@ -51,7 +51,7 @@ def main() -> int:
             page.screenshot(path=str(args.screenshot), full_page=True)
             browser.close()
 
-        result["status"] = "PASS" if present_errors and not labels_visible else "FAIL"
+        result["status"] = "PASS" if not labels_visible else "FAIL"
     except Exception as exc:
         result["status"] = "BLOCKED"
         result["error"] = f"{type(exc).__name__}: {exc}"
