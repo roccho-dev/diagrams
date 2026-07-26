@@ -1,0 +1,20 @@
+{"id":"D01","case":"semantic metadata omitted from generated cells","expected":"fail","proof":"field-by-field event-to-cell test","status":"pass"}
+{"id":"D02","case":"semantic-state JSON reintroduced under another name","expected":"fail","proof":"generated artifact scan and no public snapshot API","status":"pass"}
+{"id":"D03","case":"unknown or cross-operation event field accepted","expected":"fail-before-reduce","proof":"negative contract tests","status":"pass"}
+{"id":"D04","case":"one raw ID belongs to more than one semantic namespace and an edge endpoint binds by overwrite order","expected":"fail-before-reduce","proof":"diagram/group, group/node and node/edge collision tests","status":"pass"}
+{"id":"D05","case":"invalid editor command appends an event","expected":"no append","proof":"reject-before-append roundtrip test","status":"pass"}
+{"id":"D06","case":"visual move changes semantic hash","expected":"semantic hash stable","proof":"visual isolation test","status":"pass"}
+{"id":"D07","case":"semantic rename changes visual hash","expected":"visual hash stable","proof":"semantic isolation test","status":"pass"}
+{"id":"D08","case":"Venn membership or ERD columns lost in projection","expected":"metadata preserved","proof":"cell metadata tests","status":"pass"}
+{"id":"D09","case":"external projection secretly depends on an independent state file","expected":"mxGraphModel-only input","proof":"projections consume XML directly","status":"pass"}
+{"id":"D10","case":"parent containment and edge crossing metrics report enclosing containers as defects","expected":"ancestor-aware","proof":"geometry metric tests","status":"pass"}
+{"id":"D11","case":"draw.io open-edit-save strips or mutates semantic metadata","expected":"byte/semantic preservation or explicit event","proof":"official editor execution unavailable locally","status":"not_proven"}
+{"id":"D12","case":"draw.io edit cannot be translated back to one valid append event","expected":"fail closed or append exact event","proof":"only abstract commands tested","status":"not_proven"}
+{"id":"D13","case":"canonical exact fixtures change semantics after DVM deletion","expected":"semantic parity","proof":"canonical cutover not executed","status":"not_proven"}
+{"id":"D14","case":"locked Graphviz/ELK/Nix outputs change or fail after correction","expected":"all revised-head gates green","proof":"revised exact-head CI required","status":"not_run"}
+{"id":"D15","case":"terminal-connected edge without explicit endpoints receives a false exact crossing status","expected":"precision=inferred and strict mode error","proof":"inferred-path and inferred-crossing tests","status":"pass"}
+{"id":"D16","case":"required proof file is absent or a manifest-covered file is modified","expected":"proof collection fails","proof":"missing and tampered evidence verifier tests","status":"pass"}
+{"id":"D17","case":"temporary proof reducer survives canonical cutover as a second implementation","expected":"cutover gate fails","proof":"retirement assertions","status":"pass_contract"}
+{"id":"D18","case":"proof CI is green but architecture decision is not accepted or reviewer-bound","expected":"merge readiness remains NOT_PASSED","proof":"status contract separates localPreflight from mergeReadiness","status":"pass"}
+{"id":"D19","case":"a concurrently written local log invalidates the proof manifest after success","expected":"volatile logs excluded from manifest scope","proof":"path-safe manifest rule and post-build verifier","status":"pass"}
+{"id":"D20","case":"a self-roundtripping but diagrams.net-incompatible URL is emitted","expected":"official #create payload format and byte restoration","proof":"official create payload encoder/decoder; origin rendering remains unproven","status":"pass"}
