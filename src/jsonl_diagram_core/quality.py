@@ -82,10 +82,19 @@ def validate_svg_quality(svg_text: str, *, expected_nodes: int | None = None, ex
     }
 
 
+def _reject_review_projection(root: ET.Element) -> None:
+    for el in root.iter():
+        if _local(el.tag) != 'object':
+            continue
+        if el.attrib.get('artifactKind') == 'diagram.review.v1' or el.attrib.get('role') == 'decision-overlay':
+            raise AssertionError('review projection is not a semantic drawio quality input')
+
+
 def validate_drawio_quality(drawio_text: str, *, expected_nodes: int | None = None, expected_edges: int | None = None, mode: str = 'native') -> JsonObj:
     root = ET.fromstring(drawio_text)
     if root.tag != 'mxfile':
         raise AssertionError('drawio root must be mxfile')
+    _reject_review_projection(root)
     cells = list(root.iter('mxCell'))
     by_id: dict[str, ET.Element] = {}
     for cell in cells:
