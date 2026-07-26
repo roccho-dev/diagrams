@@ -39,35 +39,6 @@ def _labels_visible(page: object) -> bool:
     return page.locator("svg text").filter(has_text=re.compile("Parent|Child")).count() >= 2
 
 
-def _edit_candidates(page: object) -> list[dict[str, object]]:
-    locator = page.locator('a,button,[role="button"],span[title]')
-    candidates: list[dict[str, object]] = []
-    for index in range(locator.count()):
-        element = locator.nth(index)
-        try:
-            if not element.is_visible():
-                continue
-            title = element.get_attribute("title") or ""
-            aria = element.get_attribute("aria-label") or ""
-            text = element.inner_text(timeout=1000).strip()
-            signature = " ".join(part for part in (title, aria, text) if part)
-            if re.search(r"\bedit\b", signature, re.IGNORECASE):
-                candidates.append(
-                    {
-                        "index": index,
-                        "tag": element.evaluate("el => el.tagName"),
-                        "title": title,
-                        "ariaLabel": aria,
-                        "text": text,
-                        "href": element.get_attribute("href"),
-                        "target": element.get_attribute("target"),
-                    }
-                )
-        except Exception:
-            continue
-    return candidates
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url-file", type=Path, required=True)
@@ -124,14 +95,15 @@ def main() -> int:
 
             page.mouse.move(720, 970)
             page.wait_for_timeout(1_000)
-            candidates = _edit_candidates(page)
-            result["editCandidates"] = candidates
-            result["editControlAvailable"] = bool(candidates)
+            edit_control = page.locator('span[title="Edit"]')
+            result["editControlCount"] = edit_control.count()
+            result["editControlAvailable"] = edit_control.count() > 0
 
             editor = None
-            if candidates:
-                raw_locator = page.locator('a,button,[role="button"],span[title]')
-                candidate = raw_locator.nth(int(candidates[0]["index"]))
+            if edit_control.count() > 0:
+                candidate = edit_control.last
+                result["editControlVisible"] = candidate.is_visible()
+                result["editControlBox"] = candidate.bounding_box()
                 before_pages = list(context.pages)
                 before_url = page.url
                 candidate.click(force=True)
@@ -146,12 +118,6 @@ def main() -> int:
                         editor = page
                         break
                     page.wait_for_timeout(500)
-
-                if editor is None:
-                    href = candidates[0].get("href")
-                    if isinstance(href, str) and href and not href.lower().startswith("javascript:"):
-                        editor = context.new_page()
-                        editor.goto(urllib.parse.urljoin(page.url, href), wait_until="domcontentloaded", timeout=90_000)
 
             if editor is not None:
                 editor.wait_for_load_state("domcontentloaded", timeout=90_000)
@@ -168,7 +134,7 @@ def main() -> int:
                 args.editor_dom.write_text(editor.content(), encoding="utf-8")
                 editor.screenshot(path=str(args.editor_screenshot), full_page=True)
             else:
-                result["editorOpenError"] = "no popup, navigation, or direct href"
+                result["editorOpenError"] = "no popup or same-page navigation"
 
             page.screenshot(path=str(args.screenshot), full_page=True)
             browser.close()
