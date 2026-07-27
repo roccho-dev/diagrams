@@ -1,16 +1,19 @@
 {
-  "adrsCandidateHead": "1bbce6400724a0b0395dc8c5c3d3acb8d4bcade8",
+  "admission": "ALLOW_WITH_ACCEPTED_EXCEPTION",
+  "admissionExceptionDigest": "sha256:748ab4ccc62bc60c6bdc8c38a9d64d121f6fe0340907a935873c98971ca17f91",
+  "adrsAcceptedMerge": "70244fa200d8717c61b514432c54bed4248028d9",
   "adrsIssue": "roccho-dev/adrs#260",
   "adrsPullRequest": "roccho-dev/adrs#263",
   "approvalReceiptSchemaDigest": "sha256:d3d52f076a94dce2693827aebecae7fdc18d5345bd2e0be39c85f090bc028ff4",
-  "contractDigest": "sha256:21abaeb0cfb4f76babe7f1f530d14e807ef1c236e891257199490a8c0bb9d03e",
-  "governanceCandidateHead": "0039fe78d316912c4f4b7d6fdf2445f8d2dd7ad8",
+  "contractDigest": "sha256:53e9fa1053c8a2f003765c6af2e8a90114f6470b46c9cc28d45eb3562518af0b",
+  "fullCanonicalGreen": false,
   "governanceEngineManifestDigest": "sha256:8c36e8ad5618219de3222f352a7415f2285976728141da5ea6003ec2c398e245",
+  "governanceMergedCommit": "9be6d7c1413b6c9ea15c06fbed2392f7fa64219b",
   "governancePullRequest": "roccho-dev/governance#183",
   "kind": "approvalReceiptConsumerIdentity.v1",
   "onlyActionKind": "pull_request_review.approve",
   "opsAdapterManifestDigest": "sha256:538ba7977bc9894bfcc2e2ae7f7e670b915f0302f318663546071d196f048724",
-  "opsCandidateHead": "18241cfc08b0623b175e458123297e8e125b8b96",
+  "opsMergedCommit": "a622192703c53fea4890a3ad3618e2a0ac85032f",
   "opsPullRequest": "roccho-dev/ops#92",
-  "status": "PROPOSED_UPSTREAM_CANDIDATES"
+  "status": "MERGED_UPSTREAM_IDENTITIES"
 }
