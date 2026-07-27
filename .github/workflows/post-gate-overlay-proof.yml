@@ -16,16 +16,27 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Load exact approval lane identities
+        id: approval_identity
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          value=json.load(open('contracts/approval_actor/v1/identity.json'))
+          print('ops_head='+value['opsCandidateHead'])
+          print('governance_head='+value['governanceCandidateHead'])
+          print('ops_manifest='+value['opsAdapterManifestDigest'])
+          print('governance_manifest='+value['governanceEngineManifestDigest'])
+          PY
       - uses: actions/checkout@v6
         with:
           repository: roccho-dev/ops
-          ref: 20a25b89d1ffe2495b5af8d351a8b60be15fcecf
+          ref: ${{ steps.approval_identity.outputs.ops_head }}
           path: external/ops
           persist-credentials: false
       - uses: actions/checkout@v6
         with:
           repository: roccho-dev/governance
-          ref: 0039fe78d316912c4f4b7d6fdf2445f8d2dd7ad8
+          ref: ${{ steps.approval_identity.outputs.governance_head }}
           path: external/governance
           persist-credentials: false
       - uses: actions/setup-python@v6
@@ -89,14 +100,16 @@ jobs:
         shell: bash
         env:
           DIAGRAMS_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          OPS_HEAD: ${{ steps.approval_identity.outputs.ops_head }}
+          GOVERNANCE_HEAD: ${{ steps.approval_identity.outputs.governance_head }}
         run: |
           set +e
           python tools/prove_approval_lane_e2e.py \
             --ops-root external/ops \
             --governance-root external/governance \
             --diagrams-root . \
-            --ops-head 20a25b89d1ffe2495b5af8d351a8b60be15fcecf \
-            --governance-head 0039fe78d316912c4f4b7d6fdf2445f8d2dd7ad8 \
+            --ops-head "$OPS_HEAD" \
+            --governance-head "$GOVERNANCE_HEAD" \
             --diagrams-head "$DIAGRAMS_HEAD" \
             --out ci-artifacts/approval-lane-e2e.json \
             > ci-artifacts/diagnostics/approval-lane-e2e.log 2>&1
@@ -150,7 +163,7 @@ jobs:
           test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
           test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py src/jsonl_diagram_core/approval_receipt.py src/jsonl_diagram_core/receipt_overlay.py | wc -l)" -eq 0
           python - <<'PY'
-          import ast
+          import ast,json
           from pathlib import Path
           root = Path('src/jsonl_diagram_core')
           consumer = (root / 'approval_receipt.py').read_text() + (root / 'policy_gate.py').read_text() + (root / 'receipt_overlay.py').read_text()
@@ -166,9 +179,10 @@ jobs:
           assert 'approvalRef' not in policy_gate._WAIVER_KEYS
           assert 'approvalReceiptRef' in policy_gate._WAIVER_KEYS
           assert 'approvalReceiptDigest' in policy_gate._WAIVER_KEYS
-          identity = __import__('json').load(open('contracts/approval_actor/v1/identity.json'))
+          identity = json.load(open('contracts/approval_actor/v1/identity.json'))
           assert identity['governanceEngineManifestDigest'] == ACCEPTED_ENGINE_MANIFEST_DIGEST
-          assert identity['opsAdapterManifestDigest'] == 'sha256:538ba7977bc9894bfcc2e2ae7f7e670b915f0302f318663546071d196f048724'
+          assert identity['opsAdapterManifestDigest'] == '${{ steps.approval_identity.outputs.ops_manifest }}'
+          assert identity['governanceEngineManifestDigest'] == '${{ steps.approval_identity.outputs.governance_manifest }}'
           PY
       - uses: actions/upload-artifact@v4
         if: always()
