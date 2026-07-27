@@ -16,14 +16,18 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Load exact approval lane identities
+      - name: Load exact merged approval lane identities
         id: approval_identity
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           value=json.load(open('contracts/approval_actor/v1/identity.json'))
-          print('ops_head='+value['opsCandidateHead'])
-          print('governance_head='+value['governanceCandidateHead'])
+          assert value['status']=='MERGED_UPSTREAM_IDENTITIES'
+          assert value['adrsAcceptedMerge']=='70244fa200d8717c61b514432c54bed4248028d9'
+          assert value['admission']=='ALLOW_WITH_ACCEPTED_EXCEPTION'
+          assert value['fullCanonicalGreen'] is False
+          print('ops_head='+value['opsMergedCommit'])
+          print('governance_head='+value['governanceMergedCommit'])
           print('ops_manifest='+value['opsAdapterManifestDigest'])
           print('governance_manifest='+value['governanceEngineManifestDigest'])
           PY
@@ -95,7 +99,7 @@ jobs:
           tail -n 100 ci-artifacts/diagnostics/canonical-tests.log
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
-      - name: Prove exact cross-repository approval lane
+      - name: Prove exact merged cross-repository approval lane
         id: approval_lane
         shell: bash
         env:
@@ -180,9 +184,14 @@ jobs:
           assert 'approvalReceiptRef' in policy_gate._WAIVER_KEYS
           assert 'approvalReceiptDigest' in policy_gate._WAIVER_KEYS
           identity = json.load(open('contracts/approval_actor/v1/identity.json'))
+          assert identity['status'] == 'MERGED_UPSTREAM_IDENTITIES'
+          assert identity['opsMergedCommit'] == '${{ steps.approval_identity.outputs.ops_head }}'
+          assert identity['governanceMergedCommit'] == '${{ steps.approval_identity.outputs.governance_head }}'
           assert identity['governanceEngineManifestDigest'] == ACCEPTED_ENGINE_MANIFEST_DIGEST
           assert identity['opsAdapterManifestDigest'] == '${{ steps.approval_identity.outputs.ops_manifest }}'
           assert identity['governanceEngineManifestDigest'] == '${{ steps.approval_identity.outputs.governance_manifest }}'
+          assert identity['admission'] == 'ALLOW_WITH_ACCEPTED_EXCEPTION'
+          assert identity['fullCanonicalGreen'] is False
           PY
       - uses: actions/upload-artifact@v4
         if: always()
