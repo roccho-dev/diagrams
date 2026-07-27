@@ -13,6 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Load exact merged approval lane identities
+        id: approval_identity
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          value=json.load(open('contracts/approval_actor/v1/identity.json'))
+          assert value['status']=='MERGED_UPSTREAM_IDENTITIES'
+          assert value['adrsAcceptedMerge']=='70244fa200d8717c61b514432c54bed4248028d9'
+          assert value['admission']=='ALLOW_WITH_ACCEPTED_EXCEPTION'
+          assert value['fullCanonicalGreen'] is False
+          print('ops_head='+value['opsMergedCommit'])
+          print('governance_head='+value['governanceMergedCommit'])
+          print('ops_manifest='+value['opsAdapterManifestDigest'])
+          print('governance_manifest='+value['governanceEngineManifestDigest'])
+          PY
+      - uses: actions/checkout@v6
+        with:
+          repository: roccho-dev/ops
+          ref: ${{ steps.approval_identity.outputs.ops_head }}
+          path: external/ops
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: roccho-dev/governance
+          ref: ${{ steps.approval_identity.outputs.governance_head }}
+          path: external/governance
+          persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
@@ -47,7 +77,12 @@ jobs:
         run: |
           mkdir -p ci-artifacts/diagnostics
           set +e
-          python -m unittest tests.unit.test_decision_overlay tests.unit.test_drawio_user_object -v > ci-artifacts/diagnostics/post-gate-tests.log 2>&1
+          python -m unittest \
+            tests.unit.test_decision_overlay \
+            tests.unit.test_approval_actor_contract_identity \
+            tests.unit.test_approval_receipt_consumer \
+            tests.unit.test_drawio_user_object -v \
+            > ci-artifacts/diagnostics/post-gate-tests.log 2>&1
           status=$?
           cat ci-artifacts/diagnostics/post-gate-tests.log
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -57,9 +92,33 @@ jobs:
         shell: bash
         run: |
           set +e
+          mv external "$RUNNER_TEMP/approval-lane-external"
           python -m unittest discover -s tests -v > ci-artifacts/diagnostics/canonical-tests.log 2>&1
           status=$?
+          mv "$RUNNER_TEMP/approval-lane-external" external
           tail -n 100 ci-artifacts/diagnostics/canonical-tests.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Prove exact merged cross-repository approval lane
+        id: approval_lane
+        shell: bash
+        env:
+          DIAGRAMS_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          OPS_HEAD: ${{ steps.approval_identity.outputs.ops_head }}
+          GOVERNANCE_HEAD: ${{ steps.approval_identity.outputs.governance_head }}
+        run: |
+          set +e
+          python tools/prove_approval_lane_e2e.py \
+            --ops-root external/ops \
+            --governance-root external/governance \
+            --diagrams-root . \
+            --ops-head "$OPS_HEAD" \
+            --governance-head "$GOVERNANCE_HEAD" \
+            --diagrams-head "$DIAGRAMS_HEAD" \
+            --out ci-artifacts/approval-lane-e2e.json \
+            > ci-artifacts/diagnostics/approval-lane-e2e.log 2>&1
+          status=$?
+          cat ci-artifacts/diagnostics/approval-lane-e2e.log
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Materialize accepted-risk example
@@ -69,10 +128,15 @@ jobs:
             examples/post_gate_overlay/semantic.drawio \
             --policy examples/post_gate_overlay/policy.json \
             --waivers examples/post_gate_overlay/waivers.jsonl \
+            --approval-receipts examples/post_gate_overlay/approval-receipts.jsonl \
+            --repository roccho-dev/diagrams \
+            --candidate-revision aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
             --as-of 2026-07-26T12:00:00+09:00 \
             --out-dir ci-artifacts/post-gate-overlay
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.gate.json"))["risk"])')" = ACCEPTED
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/post-gate-overlay/diagram.projection-receipt.json"))["overlayCount"])')" -gt 0
+          grep -q 'approvalReceiptRef="approval:example-001"' ci-artifacts/post-gate-overlay/diagram.review.drawio
+          grep -q 'approvalReceiptDigest="sha256:e4d69670766d01e13768e1522143344993d12f43199ec28c36e5fb5d0c169c23"' ci-artifacts/post-gate-overlay/diagram.review.drawio
       - name: Rebuild deterministically
         if: steps.post_gate_tests.outputs.status == '0'
         run: |
@@ -80,6 +144,9 @@ jobs:
             examples/post_gate_overlay/semantic.drawio \
             --policy examples/post_gate_overlay/policy.json \
             --waivers examples/post_gate_overlay/waivers.jsonl \
+            --approval-receipts examples/post_gate_overlay/approval-receipts.jsonl \
+            --repository roccho-dev/diagrams \
+            --candidate-revision aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
             --as-of 2026-07-26T12:00:00+09:00 \
             --out-dir ci-artifacts/replay
           diff -ru ci-artifacts/post-gate-overlay ci-artifacts/replay
@@ -93,10 +160,39 @@ jobs:
             --out ci-artifacts/editor-persistence
           test -f ci-artifacts/editor-persistence/PASS
           test "$(python -c 'import json; print(json.load(open("ci-artifacts/editor-persistence/editor-persistence-report.json"))["status"])')" = PASS
-      - name: Reject competing state and DVM dependencies
+          grep -q 'approvalReceiptRef="approval:example-001"' ci-artifacts/editor-persistence/review-editor-proof.drawio
+          grep -q 'approvalReceiptDigest="sha256:e4d69670766d01e13768e1522143344993d12f43199ec28c36e5fb5d0c169c23"' ci-artifacts/editor-persistence/review-editor-proof.drawio
+      - name: Reject competing state, provider logic and dual approval paths
         run: |
           test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
-          test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py | wc -l)" -eq 0
+          test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py src/jsonl_diagram_core/approval_receipt.py src/jsonl_diagram_core/receipt_overlay.py | wc -l)" -eq 0
+          python - <<'PY'
+          import ast,json
+          from pathlib import Path
+          root = Path('src/jsonl_diagram_core')
+          consumer = (root / 'approval_receipt.py').read_text() + (root / 'policy_gate.py').read_text() + (root / 'receipt_overlay.py').read_text()
+          tree = ast.parse(consumer)
+          forbidden = {'requests', 'httpx', 'github', 'urllib'}
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  assert not ({a.name.split('.')[0] for a in node.names} & forbidden)
+              if isinstance(node, ast.ImportFrom) and node.module:
+                  assert node.module.split('.')[0] not in forbidden
+          from jsonl_diagram_core import policy_gate
+          from jsonl_diagram_core.approval_receipt import ACCEPTED_ENGINE_MANIFEST_DIGEST
+          assert 'approvalRef' not in policy_gate._WAIVER_KEYS
+          assert 'approvalReceiptRef' in policy_gate._WAIVER_KEYS
+          assert 'approvalReceiptDigest' in policy_gate._WAIVER_KEYS
+          identity = json.load(open('contracts/approval_actor/v1/identity.json'))
+          assert identity['status'] == 'MERGED_UPSTREAM_IDENTITIES'
+          assert identity['opsMergedCommit'] == '${{ steps.approval_identity.outputs.ops_head }}'
+          assert identity['governanceMergedCommit'] == '${{ steps.approval_identity.outputs.governance_head }}'
+          assert identity['governanceEngineManifestDigest'] == ACCEPTED_ENGINE_MANIFEST_DIGEST
+          assert identity['opsAdapterManifestDigest'] == '${{ steps.approval_identity.outputs.ops_manifest }}'
+          assert identity['governanceEngineManifestDigest'] == '${{ steps.approval_identity.outputs.governance_manifest }}'
+          assert identity['admission'] == 'ALLOW_WITH_ACCEPTED_EXCEPTION'
+          assert identity['fullCanonicalGreen'] is False
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -108,11 +204,16 @@ jobs:
         run: |
           test "${{ steps.post_gate_tests.outputs.status }}" = '0'
           test "${{ steps.canonical_tests.outputs.status }}" = '0'
+          test "${{ steps.approval_lane.outputs.status }}" = '0'
+          test "$(python -c 'import json; print(json.load(open("ci-artifacts/approval-lane-e2e.json"))["status"])')" = PASS
 
   nix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: cachix/install-nix-action@v31.10.6
       - name: Run Nix gates with retained diagnostics
         id: nix_gates
