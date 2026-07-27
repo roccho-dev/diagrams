@@ -15,7 +15,7 @@ _RECEIPT_KEYS = {
 _SUBJECT_KEYS = {"repository", "candidate_revision", "finding_digest", "policy_digest"}
 _ACTION_KEYS = {"kind", "provider_review_id", "state", "submitted_at"}
 _AUTHORITY_KEYS = {"grant_id", "scope_digest", "valid_from", "valid_until"}
-ACCEPTED_ENGINE_MANIFEST_DIGEST = "sha256:b89d7598fb69edd660f8d7d159a536699f6463bcaa2f02e38d61ca65fc1bed66"
+ACCEPTED_ENGINE_MANIFEST_DIGEST = "sha256:8c36e8ad5618219de3222f352a7415f2285976728141da5ea6003ec2c398e245"
 
 
 def _digest(value: Any) -> str:
