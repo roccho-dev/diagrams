@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: roccho-dev/governance
-          ref: c0e79d712797a192edf909f9c3422a06ef9d084b
+          ref: 4f7c416cb725aec81ae9bcce86ec98552d170970
           path: external/governance
           persist-credentials: false
       - uses: actions/setup-python@v6
@@ -94,7 +94,7 @@ jobs:
             --governance-root external/governance \
             --diagrams-root . \
             --ops-head 20a25b89d1ffe2495b5af8d351a8b60be15fcecf \
-            --governance-head c0e79d712797a192edf909f9c3422a06ef9d084b \
+            --governance-head 4f7c416cb725aec81ae9bcce86ec98552d170970 \
             --diagrams-head "$DIAGRAMS_HEAD" \
             --out ci-artifacts/approval-lane-e2e.json \
             > ci-artifacts/diagnostics/approval-lane-e2e.log 2>&1
