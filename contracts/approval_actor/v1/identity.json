@@ -4,7 +4,7 @@
   "adrsPullRequest": "roccho-dev/adrs#263",
   "approvalReceiptSchemaDigest": "sha256:d3d52f076a94dce2693827aebecae7fdc18d5345bd2e0be39c85f090bc028ff4",
   "contractDigest": "sha256:21abaeb0cfb4f76babe7f1f530d14e807ef1c236e891257199490a8c0bb9d03e",
-  "governanceCandidateHead": "c0e79d712797a192edf909f9c3422a06ef9d084b",
+  "governanceCandidateHead": "4f7c416cb725aec81ae9bcce86ec98552d170970",
   "governanceEngineManifestDigest": "sha256:8c36e8ad5618219de3222f352a7415f2285976728141da5ea6003ec2c398e245",
   "governancePullRequest": "roccho-dev/governance#183",
   "kind": "approvalReceiptConsumerIdentity.v1",
