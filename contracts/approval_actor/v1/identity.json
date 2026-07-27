@@ -10,7 +10,7 @@
   "kind": "approvalReceiptConsumerIdentity.v1",
   "onlyActionKind": "pull_request_review.approve",
   "opsAdapterManifestDigest": "sha256:538ba7977bc9894bfcc2e2ae7f7e670b915f0302f318663546071d196f048724",
-  "opsCandidateHead": "20a25b89d1ffe2495b5af8d351a8b60be15fcecf",
+  "opsCandidateHead": "bc5acd9602cfd2108a42d280fc41b621d5f7cc10",
   "opsPullRequest": "roccho-dev/ops#92",
   "status": "PROPOSED_UPSTREAM_CANDIDATES"
 }
