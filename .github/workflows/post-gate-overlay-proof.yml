@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: roccho-dev/governance
-          ref: 4f7c416cb725aec81ae9bcce86ec98552d170970
+          ref: 0039fe78d316912c4f4b7d6fdf2445f8d2dd7ad8
           path: external/governance
           persist-credentials: false
       - uses: actions/setup-python@v6
@@ -77,8 +77,10 @@ jobs:
         shell: bash
         run: |
           set +e
+          mv external "$RUNNER_TEMP/approval-lane-external"
           python -m unittest discover -s tests -v > ci-artifacts/diagnostics/canonical-tests.log 2>&1
           status=$?
+          mv "$RUNNER_TEMP/approval-lane-external" external
           tail -n 100 ci-artifacts/diagnostics/canonical-tests.log
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
@@ -94,7 +96,7 @@ jobs:
             --governance-root external/governance \
             --diagrams-root . \
             --ops-head 20a25b89d1ffe2495b5af8d351a8b60be15fcecf \
-            --governance-head 4f7c416cb725aec81ae9bcce86ec98552d170970 \
+            --governance-head 0039fe78d316912c4f4b7d6fdf2445f8d2dd7ad8 \
             --diagrams-head "$DIAGRAMS_HEAD" \
             --out ci-artifacts/approval-lane-e2e.json \
             > ci-artifacts/diagnostics/approval-lane-e2e.log 2>&1
