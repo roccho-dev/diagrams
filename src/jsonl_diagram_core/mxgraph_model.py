@@ -154,7 +154,7 @@ def _style(kind: str, *, group: bool = False, ellipse: bool = False) -> str:
 
 def _object(root: ET.Element, *, cell_id: str, label: str, attrs: dict[str, str], cell_attrs: dict[str, str], geom: Json) -> ET.Element:
     wrapper = ET.SubElement(root, "object", {"id": cell_id, "label": label, **attrs})
-    cell = ET.SubElement(wrapper, "mxCell", {"id": cell_id, **cell_attrs})
+    cell = ET.SubElement(wrapper, "mxCell", dict(cell_attrs))
     ET.SubElement(cell, "mxGeometry", {"x": str(geom.get("x", 0)), "y": str(geom.get("y", 0)), "width": str(geom.get("w", 0)), "height": str(geom.get("h", 0)), "as": "geometry", **({"relative":"1"} if cell_attrs.get("edge") == "1" else {})})
     return cell
 

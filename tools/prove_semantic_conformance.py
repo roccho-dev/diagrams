@@ -90,7 +90,7 @@ def main() -> int:
         return compare_semantics(e, o, copy.deepcopy(c or contract), prov)
 
     cases.append(("D01-missing-expected", "FAIL", "missing_expected", lambda: run(o=replace_once(observed, b' jsonlId="output"', b' jsonlId="output-missing"'))))
-    extra = replace_once(observed, b"</root>", b'<object id="extra" label="Extra" jsonlType="node" jsonlId="extra" semanticKind="process" metaJson="{}"><mxCell id="extra" vertex="1" parent="1"><mxGeometry x="10" y="10" width="10" height="10" as="geometry"/></mxCell></object></root>')
+    extra = replace_once(observed, b"</root>", b'<object id="extra" label="Extra" jsonlType="node" jsonlId="extra" semanticKind="process" metaJson="{}"><mxCell vertex="1" parent="1"><mxGeometry x="10" y="10" width="10" height="10" as="geometry"/></mxCell></object></root>')
     cases.append(("D02-unapproved-observed", "FAIL", "unapproved_observed", lambda: run(o=extra)))
     cases.append(("D03-tree-parent", "FAIL", "tree_changed", lambda: run(o=replace_once(observed, b'semanticGroup="scope"', b'semanticGroup="other"'))))
     cases.append(("D04-edge-target", "FAIL", "graph_changed", lambda: run(o=replace_once(observed, b'semanticTarget="output"', b'semanticTarget="input"'))))
@@ -109,7 +109,7 @@ def main() -> int:
     cases.append(("D09-visual-only", "PASS", "visual_only_changed", lambda: run()))
     annotation = replace_once(observed, b"</root>", b'<mxCell id="annotation" value="note" vertex="1" parent="1"><mxGeometry x="5" y="5" width="20" height="10" as="geometry"/></mxCell></root>')
     cases.append(("D10-annotation-ignored", "PASS", "", lambda: run(o=annotation)))
-    duplicate = replace_once(observed, b"</root>", b'<object id="dup" label="Input duplicate" jsonlType="node" jsonlId="input" semanticKind="process" metaJson="{}"><mxCell id="dup" vertex="1" parent="1"><mxGeometry x="5" y="5" width="20" height="10" as="geometry"/></mxCell></object></root>')
+    duplicate = replace_once(observed, b"</root>", b'<object id="dup" label="Input duplicate" jsonlType="node" jsonlId="input" semanticKind="process" metaJson="{}"><mxCell vertex="1" parent="1"><mxGeometry x="5" y="5" width="20" height="10" as="geometry"/></mxCell></object></root>')
     cases.append(("D11-duplicate-subject", "ERROR", "DUPLICATE_IDENTITY", lambda: run(o=duplicate)))
     root_xml = ET.fromstring(observed)
     root_xml.append(copy.deepcopy(next(iter(root_xml))))
@@ -122,11 +122,11 @@ def main() -> int:
     reused = copy.deepcopy(base_provenance); reused["expectedContentSourceUsed"] = True
     cases.append(("D15-expected-source-reused", "ERROR", "EXPECTED_CONTENT_SOURCE_REUSED", lambda: run(p=reused)))
     cases.append(("D16-malformed-xml", "ERROR", "MALFORMED_INPUT", lambda: run(o=b"<mxfile>")))
-    rotated = replace_once(expected, b'<mxCell id="node_input" vertex="1" parent="group_scope" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;">', b'<mxCell id="node_input" vertex="1" parent="group_scope" style="shape=rectangle;rotation=45;">')
+    rotated = replace_once(expected, b'<mxCell vertex="1" parent="group_scope" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;">', b'<mxCell vertex="1" parent="group_scope" style="shape=rectangle;rotation=45;">')
     cases.append(("D17-unsupported-exactness", "ERROR", "UNSUPPORTED_GEOMETRY", lambda: run(e=expected, o=rotated, c=spatial_contract, p=provenance(rotated, args.implementation_revision, args.generated_at, root))))
     exception_contract = copy.deepcopy(contract); exception_contract["pageIds"] = [{"not": "sortable"}, None]
     cases.append(("D18-comparator-exception", "ERROR", "COMPARATOR_EXCEPTION", lambda: run(c=exception_contract)))
-    expected_overlay = replace_once(expected, b"</root>", b'<object id="overlay" label="accepted" jsonlType="overlay" jsonlId="overlay-1" semanticKind="decision" semanticSubject="flow" semanticState="accepted" semanticExpiry="2026-08-31" decisionRef="roccho-dev/adrs#257" metaJson="{}"><mxCell id="overlay" vertex="1" parent="1"><mxGeometry x="1" y="1" width="1" height="1" as="geometry"/></mxCell></object></root>')
+    expected_overlay = replace_once(expected, b"</root>", b'<object id="overlay" label="accepted" jsonlType="overlay" jsonlId="overlay-1" semanticKind="decision" semanticSubject="flow" semanticState="accepted" semanticExpiry="2026-08-31" decisionRef="roccho-dev/adrs#257" metaJson="{}"><mxCell vertex="1" parent="1"><mxGeometry x="1" y="1" width="1" height="1" as="geometry"/></mxCell></object></root>')
     observed_overlay = replace_once(expected_overlay, b'semanticState="accepted"', b'semanticState="open"')
     overlay_contract = with_contract(expected_overlay, contract, contract["policy"])
     cases.append(("D19-overlay-changed", "FAIL", "overlay_changed", lambda: run(e=expected_overlay, o=observed_overlay, c=overlay_contract, p=provenance(observed_overlay, args.implementation_revision, args.generated_at, root))))

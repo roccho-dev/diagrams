@@ -1,0 +1,136 @@
+name: Official draw.io user-object encoding
+
+on:
+  pull_request:
+    branches: [proposals]
+  push:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: diagrams
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: jgraph/drawio
+          ref: 88ee1f5ab4d40603a8f3aaa0d9d6dc3794c6b3f0
+          path: drawio
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: diagrams/package-lock.json
+      - name: Install package, projection and browser dependencies
+        working-directory: diagrams
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]' playwright==1.54.0
+          npm ci --ignore-scripts --no-audit --no-fund
+          python -m playwright install --with-deps chromium
+      - name: Run full repository tests
+        working-directory: diagrams
+        env:
+          DRAWIO_VIEWER_RUNTIME: ../drawio/src/main/webapp/js/viewer-static.min.js
+          DRAWIO_VIEWER_LICENSE: ../drawio/LICENSE
+        run: python -m unittest discover -s tests -v
+      - name: Prove corrected Accepted identity and independent semantic PASS
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,xml.etree.ElementTree as ET
+          from pathlib import Path
+          expected=Path('tests/fixtures/semantic_conformance/expected.drawio')
+          contract=json.load(open('tests/fixtures/semantic_conformance/expected-contract.json'))
+          assert contract['adrsMergeCommit']=='37833fb028146140681fde01d7d33cb633b6c508'
+          assert contract['decisionId']=='01KZRENDER4C0RRECT10N00001'
+          assert contract['releaseId']=='diagram-semantic-contract-v1.0.1'
+          assert contract['acceptedArtifactSha256']=='sha256:'+hashlib.sha256(expected.read_bytes()).hexdigest()=='sha256:a1f5c765f477286e030a7a7c614ed7649b0048d9c53ee32ddfe34170e9957112'
+          assert contract['expectedSemanticSha256']=='sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2'
+          root=ET.parse(expected).getroot()
+          wrappers=[x for x in root.findall('./diagram/mxGraphModel/root/*') if x.tag in {'object','UserObject'}]
+          assert len(wrappers)==5 and all(x.get('id') and x.find('mxCell').get('id') is None for x in wrappers)
+          PY
+          GENERATED_AT="$(git show -s --format=%cI HEAD)"
+          mkdir -p ../proof
+          python tools/build_semantic_conformance.py \
+            --expected tests/fixtures/semantic_conformance/expected.drawio \
+            --expected-contract tests/fixtures/semantic_conformance/expected-contract.json \
+            --events tests/fixtures/semantic_conformance/observed.events.jsonl \
+            --implementation-revision "$(git rev-parse HEAD)" \
+            --generated-at "$GENERATED_AT" \
+            --observed-out ../proof/observed.drawio \
+            --provenance-out ../proof/observed-provenance.json \
+            --receipt-out ../proof/receipt.json
+          python - <<'PY'
+          import json,xml.etree.ElementTree as ET
+          receipt=json.load(open('../proof/receipt.json'))
+          assert receipt['comparison']['status']=='PASS'
+          assert receipt['expected']['decision_id']=='01KZRENDER4C0RRECT10N00001'
+          assert receipt['expected']['adrs_merge_commit']=='37833fb028146140681fde01d7d33cb633b6c508'
+          for path in ('tests/fixtures/semantic_conformance/expected.drawio','../proof/observed.drawio'):
+              root=ET.parse(path).getroot()
+              wrappers=[x for x in root.findall('./diagram/mxGraphModel/root/*') if x.tag in {'object','UserObject'}]
+              assert wrappers and all(x.get('id') and x.find('mxCell').get('id') is None for x in wrappers)
+          PY
+      - name: Build official GraphViewer bundle
+        working-directory: diagrams
+        run: |
+          PYTHONPATH=src python tools/build_compiled_graphviewer.py \
+            --source tests/fixtures/semantic_conformance/expected.drawio \
+            --viewer-runtime ../drawio/src/main/webapp/js/viewer-static.min.js \
+            --license ../drawio/LICENSE \
+            --runtime-pin contracts/compiled_graphviewer/v1/runtime-pin.json \
+            --out ../proof/bundle
+      - name: Prove official renderer has no duplicate-ID error
+        run: |
+          python - <<'PY'
+          import hashlib,html,json,re,time
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          bundle=Path('proof/bundle'); index=(bundle/'index.html').read_text(); m=re.search(r'<div id="viewer" class="mxgraph" data-mxgraph="([^"]*)"></div>',index); assert m
+          data=html.unescape(m.group(1)); console=[]; page_errors=[]
+          with sync_playwright() as p:
+              browser=p.chromium.launch(headless=True)
+              page=browser.new_page(viewport={'width':1280,'height':800},device_scale_factor=1)
+              page.on('console',lambda msg: console.append(msg.text) if msg.type=='error' else None); page.on('pageerror',lambda err: page_errors.append(str(err)))
+              page.set_content('<style>html,body,#viewer{width:100%;height:100%;margin:0}#viewer{min-height:600px}</style><div id="viewer" class="mxgraph" data-mxgraph="'+html.escape(data,quote=True)+'"></div>')
+              page.add_script_tag(content=(bundle/'app.js').read_text()); page.add_script_tag(content=(bundle/'viewer-static.min.js').read_text())
+              deadline=time.monotonic()+30
+              while time.monotonic()<deadline:
+                  if page.evaluate("Boolean(window.__compiledViewerProof&&window.__compiledViewerProof.status==='READY')"): break
+                  page.wait_for_timeout(100)
+              else: raise RuntimeError('GraphViewer did not reach READY')
+              assert page.locator('#viewer svg').count()>0
+              page.screenshot(path='proof/official-user-object.png',full_page=True,animations='disabled')
+              browser.close()
+          assert console==[] and page_errors==[]
+          result={'kind':'officialUserObjectEncodingProof.v1','status':'PASS','consoleErrors':console,'pageErrors':page_errors,'screenshotSha256':'sha256:'+hashlib.sha256(Path('proof/official-user-object.png').read_bytes()).hexdigest(),'sourceSha256':'sha256:'+hashlib.sha256((bundle/'source.drawio').read_bytes()).hexdigest(),'implementationEncodingCorrected':True,'semanticMeaningChanged':False,'semanticConformanceComplete':True,'renderQualityAuditComplete':False,'publicationAdmissible':False,'authority':False}
+          Path('proof/encoding-proof.json').write_text(json.dumps(result,sort_keys=True,separators=(',',':'))+'\n')
+          PY
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Nix checks
+        working-directory: diagrams
+        run: |
+          nix flake check -L
+          nix build -L .#jsonl-diagram-core
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: official-user-object-encoding-proof
+          path: proof
+          if-no-files-found: error
