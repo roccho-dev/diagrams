@@ -1,12 +1,19 @@
 from __future__ import annotations
-import unittest, xml.etree.ElementTree as ET
-from jsonl_diagram_core.render_ast import render_ast
-from jsonl_diagram_core.svg_render_ast import render_svg_from_ast
+
+import unittest
+import xml.etree.ElementTree as ET
+
+from jsonl_diagram_core.mxgraph_model import build_model
+from jsonl_diagram_core.mxgraph_projection import render_svg
+
 
 class SvgRendererTest(unittest.TestCase):
-    def test_svg_from_render_ast_is_parseable(self):
-        ast = render_ast("d", [{"id":"a","type":"box","x":10,"y":20,"width":80,"height":40},{"id":"label","type":"text","x":20,"y":45,"width":10,"height":10,"label":"A"}])
-        svg = render_svg_from_ast(ast)
+    def test_svg_is_projected_directly_from_mxgraphmodel(self):
+        model = build_model([
+            {"op": "diagram.init", "id": "d", "kind": "flow", "label": "D"},
+            {"op": "node.upsert", "id": "a", "kind": "process", "label": "A"},
+        ])
+        svg = render_svg(model)
         root = ET.fromstring(svg)
         self.assertTrue(root.tag.endswith("svg"))
-        self.assertIn('id="a"', svg)
+        self.assertIn('data-jsonl-id="a"', svg)

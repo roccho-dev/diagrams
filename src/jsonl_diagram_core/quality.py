@@ -45,15 +45,15 @@ def validate_svg_quality(svg_text: str, *, expected_nodes: int | None = None, ex
     if root.attrib.get('data-authority') != 'events.jsonl':
         raise AssertionError('svg must declare data-authority=events.jsonl')
     provenance = parse_svg_provenance(root)
-    for key in ('schema', 'generatedFrom', 'authority', 'eventsSha256', 'dvmSha256'):
+    for key in ('schema', 'generatedFrom', 'authority', 'eventsSha256', 'modelSha256'):
         if key not in provenance:
             raise AssertionError(f'svg provenance missing {key}')
-    if provenance.get('schema') != 'SvgProvenance.v1':
+    if provenance.get('schema') != 'SvgProvenance.v2':
         raise AssertionError('unexpected svg provenance schema')
     if not re.fullmatch(r'[0-9a-f]{64}', str(provenance.get('eventsSha256', ''))):
         raise AssertionError('eventsSha256 must be sha256 hex')
-    if not re.fullmatch(r'[0-9a-f]{64}', str(provenance.get('dvmSha256', ''))):
-        raise AssertionError('dvmSha256 must be sha256 hex')
+    if not re.fullmatch(r'[0-9a-f]{64}', str(provenance.get('modelSha256', ''))):
+        raise AssertionError('modelSha256 must be sha256 hex')
     node_ids = provenance.get('nodeIds', [])
     edge_ids = provenance.get('edgeIds', [])
     group_ids = provenance.get('groupIds', [])
@@ -78,7 +78,7 @@ def validate_svg_quality(svg_text: str, *, expected_nodes: int | None = None, ex
         'groupCount': len(group_ids),
         'visibleElementCount': len(visible_shapes),
         'eventsSha256': provenance.get('eventsSha256'),
-        'dvmSha256': provenance.get('dvmSha256'),
+        'modelSha256': provenance.get('modelSha256'),
     }
 
 

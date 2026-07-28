@@ -5,7 +5,7 @@
 {"op":"node.upsert","id":"browser","kind":"service","group":"public","label":"Browser","meta":{"ports":["https"]},"order":0}
 {"op":"node.upsert","id":"gateway","kind":"service","group":"public","label":"API Gateway","meta":{"ports":["443","auth"]},"order":1}
 {"op":"node.upsert","id":"agent","kind":"service","group":"private","label":"Agent Worker","meta":{"ports":["jobs","events"]},"order":2}
-{"op":"node.upsert","id":"compiler","kind":"service","group":"private","label":"Diagram Compiler","meta":{"ports":["jsonl","dvm","svg"]},"order":3}
+{"op":"node.upsert","id":"compiler","kind":"service","group":"private","label":"Diagram Compiler","meta":{"ports":["jsonl","mxgraph","svg"]},"order":3}
 {"op":"node.upsert","id":"store","kind":"service","group":"data","label":"JSONL Store","meta":{"ports":["append","read"]},"order":4}
 {"op":"node.upsert","id":"proof","kind":"service","group":"data","label":"Proof Registry","meta":{"ports":["hash"]},"order":5}
 {"op":"edge.upsert","id":"p0","source":"browser","target":"gateway","kind":"port_edge","label":"request"}

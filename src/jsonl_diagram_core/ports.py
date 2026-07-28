@@ -17,22 +17,22 @@ class TokenizerPort(Protocol):
 
 @runtime_checkable
 class ReducerPort(Protocol):
-    def reduce(self, tokens: list[JsonObj]) -> JsonObj: ...
+    def reduce(self, tokens: list[JsonObj]) -> str: ...
 
 
 @runtime_checkable
 class D2CompilePort(Protocol):
-    def compile_d2(self, dvm: JsonObj) -> str: ...
+    def compile_d2(self, model_xml: str) -> str: ...
 
 
 @runtime_checkable
 class LayoutPort(Protocol):
-    def layout(self, dvm: JsonObj) -> JsonObj: ...
+    def inspect_layout(self, model_xml: str) -> JsonObj: ...
 
 
 @runtime_checkable
 class SvgRenderPort(Protocol):
-    def render_svg(self, dvm: JsonObj, layout: JsonObj | None = None) -> str: ...
+    def render_svg(self, model_xml: str) -> str: ...
 
 
 @runtime_checkable

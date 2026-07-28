@@ -1,46 +1,34 @@
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 from typing import Any
-from .d2_adapter import build_id_map, d2_quote
+
+from jsonl_diagram_core.mxgraph_projection import render_dot, semantic_snapshot
 
 JsonObj = dict[str, Any]
 
 
-def compile_dot(dvm: JsonObj) -> str:
-    nodes = dvm.get("nodes", [])
-    id_map = build_id_map((n["id"] for n in nodes), prefix="n")
-    lines = ["digraph G {", "  graph [rankdir=LR, splines=true, overlap=false];", "  node [shape=box];"]
-    for n in nodes:
-        lines.append(f"  {id_map[n['id']]} [label=\"{d2_quote(n.get('label', n['id']))}\"];")
-    for e in dvm.get("edges", []):
-        lines.append(f"  {id_map[e['source']]} -> {id_map[e['target']]};")
-    lines.append("}")
-    return "\n".join(lines) + "\n"
+def compile_dot(model_xml: str) -> str:
+    return render_dot(model_xml)
 
 
-def layout_graphviz(dvm: JsonObj) -> JsonObj:
-    if not shutil.which("dot"):
-        return {"engine": "graphviz", "available": False, "layoutOnly": True, "fallbackUsed": True, "nodes": {}, "edges": []}
-    nodes_list = dvm.get("nodes", [])
-    id_map = build_id_map((n["id"] for n in nodes_list), prefix="n")
-    raw_by_adapter = {v: k for k, v in id_map.items()}
-    dot = compile_dot(dvm)
-    proc = subprocess.run(["dot", "-Tplain"], input=dot, text=True, capture_output=True, check=True)
-    nodes: dict[str, JsonObj] = {}
-    scale = 110.0
-    min_x = min_y = 10**9
-    raw_positions: dict[str, tuple[float, float, float, float]] = {}
-    for line in proc.stdout.splitlines():
-        parts = line.split()
-        if len(parts) >= 6 and parts[0] == "node":
-            aid = parts[1]
-            sid = raw_by_adapter.get(aid, aid)
-            x, y, w, h = map(float, parts[2:6])
-            raw_positions[sid] = (x * scale, y * scale, max(w * scale, 96), max(h * scale, 44))
-            min_x = min(min_x, x * scale)
-            min_y = min(min_y, y * scale)
-    for sid, (x, y, w, h) in raw_positions.items():
-        nodes[sid] = {"x": round(x - min_x + 48, 2), "y": round(y - min_y + 48, 2), "w": round(w, 2), "h": round(h, 2)}
-    return {"engine": "graphviz", "available": True, "layoutOnly": True, "fallbackUsed": False, "nodes": nodes, "edges": []}
+def layout_graphviz(model_xml: str) -> JsonObj:
+    dot = compile_dot(model_xml)
+    executable = shutil.which("dot")
+    snapshot = semantic_snapshot(model_xml)
+    if executable is None:
+        return {"engine": "graphviz.dot", "available": False, "layoutOnly": True, "fallbackUsed": True, "nodes": {}}
+    proc = subprocess.run([executable, "-Tjson"], input=dot, text=True, capture_output=True)
+    if proc.returncode != 0:
+        return {"engine": "graphviz.dot", "available": False, "layoutOnly": True, "fallbackUsed": True, "error": proc.stderr, "nodes": {}}
+    value = json.loads(proc.stdout)
+    positions: dict[str, JsonObj] = {}
+    for obj in value.get("objects", []):
+        name = obj.get("name")
+        pos = obj.get("pos")
+        if isinstance(name, str) and isinstance(pos, str) and "," in pos:
+            x, y = (float(part) for part in pos.split(",", 1))
+            positions[name] = {"x": x, "y": y, "w": float(obj.get("width", 1)) * 72, "h": float(obj.get("height", 1)) * 72}
+    return {"engine": "graphviz.dot", "available": True, "layoutOnly": True, "fallbackUsed": False, "nodes": positions, "modelNodeCount": len(snapshot["nodes"])}

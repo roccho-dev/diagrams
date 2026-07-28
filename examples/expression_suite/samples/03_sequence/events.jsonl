@@ -10,6 +10,6 @@
 {"op":"edge.upsert","id":"m2","source":"compiler","target":"compiler","kind":"message","label":"tokenize + reduce","order":2}
 {"op":"edge.upsert","id":"m3","source":"compiler","target":"layout","kind":"message","label":"layout request","order":3}
 {"op":"edge.upsert","id":"m4","source":"layout","target":"compiler","kind":"message","label":"coords","order":4}
-{"op":"edge.upsert","id":"m5","source":"compiler","target":"svg","kind":"message","label":"DVM + tokens","order":5}
+{"op":"edge.upsert","id":"m5","source":"compiler","target":"svg","kind":"message","label":"mxGraphModel","order":5}
 {"op":"edge.upsert","id":"m6","source":"svg","target":"gate","kind":"message","label":"generated SVG","order":6}
 {"op":"edge.upsert","id":"m7","source":"gate","target":"agent","kind":"message","label":"proof OK","order":7}
