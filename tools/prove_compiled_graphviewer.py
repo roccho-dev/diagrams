@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import copy, hashlib, json, tempfile
+import hashlib, json, tempfile
 from pathlib import Path
-from jsonl_diagram_core.compiled_graphviewer import CompiledGraphViewerError, build_compiled_graphviewer
+from jsonl_diagram_core.compiled_graphviewer import build_compiled_graphviewer
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/'tests/fixtures/compiled_graphviewer/semantic-visibility.drawio'
@@ -41,17 +41,14 @@ def main():
     cases.append(expect('D08-nonnumeric-threshold',lambda:build(source=nonnumeric,name='d8')))
     negative=root/'negative.drawio'; negative.write_text(text.replace('minScreenHeightPx="36"','minScreenHeightPx="-1"'))
     cases.append(expect('D09-negative-threshold',lambda:build(source=negative,name='d9')))
-    missing_id=root/'missing-id.drawio'; missing_id.write_text(text.replace('<object id="middle"','<object').replace('semanticId="middle" ','',1))
+    missing_id=root/'missing-id.drawio'; missing_id.write_text(text.replace('<UserObject id="middle"','<UserObject').replace('semanticId="middle" ','',1))
     cases.append(expect('D10-threshold-without-id',lambda:build(source=missing_id,name='d10')))
     external_image=root/'external-image.drawio'; external_image.write_text(text.replace('style="rounded=0;','image="https://example.com/x.png" style="rounded=0;',1))
     cases.append(expect('D11-external-image',lambda:build(source=external_image,name='d11')))
-    external_href=root/'external-href.drawio'; external_href.write_text(text.replace('semanticId="overview"','semanticId="overview" href="https://example.com"'))
-    cases.append(expect('D12-external-link',lambda:build(source=external_href,name='d12')))
+    pin=json.loads(PIN.read_text()); pin['repository']='example/drawio'; bad_repo=root/'wrong-repo.json'; bad_repo.write_text(json.dumps(pin))
+    cases.append(expect('D12-wrong-runtime-repository',lambda:build(pin=bad_repo,name='d12')))
     pin=json.loads(PIN.read_text()); pin['tag']='latest'; bad_pin=root/'latest.json'; bad_pin.write_text(json.dumps(pin))
-    def reject_latest():
-      if json.loads(bad_pin.read_text()).get('tag')=='latest': raise CompiledGraphViewerError('latest forbidden')
-      build(pin=bad_pin,name='d13')
-    cases.append(expect('D13-latest-runtime',reject_latest))
+    cases.append(expect('D13-latest-runtime',lambda:build(pin=bad_pin,name='d13')))
     app=(root/'baseline/app.js').read_text()
     cases.append({'case':'D14-no-custom-renderer','status':'PASS' if not any(x in app for x in ('createElementNS(', 'getContext(', 'WebGLRenderingContext')) else 'FAIL'})
     index=(root/'baseline/index.html').read_text()
