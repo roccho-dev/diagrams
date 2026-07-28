@@ -1,0 +1,74 @@
+name: Semantic conformance
+
+on:
+  pull_request:
+    branches: [proposals]
+  push:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-conformance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install package and projection engines
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]'
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Run repository tests
+        run: python -m unittest discover -s tests -v
+      - name: Bind deterministic generation time
+        run: echo "GENERATED_AT=$(git show -s --format=%cI '${{ github.event.pull_request.head.sha || github.sha }}')" >> "$GITHUB_ENV"
+      - name: Build independent observed artifact and compare
+        run: |
+          mkdir -p ci-artifacts/semantic-conformance
+          python tools/build_semantic_conformance.py \
+            --expected tests/fixtures/semantic_conformance/expected.drawio \
+            --expected-contract tests/fixtures/semantic_conformance/expected-contract.json \
+            --events tests/fixtures/semantic_conformance/observed.events.jsonl \
+            --implementation-revision '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --generated-at "$GENERATED_AT" \
+            --observed-out ci-artifacts/semantic-conformance/observed.drawio \
+            --provenance-out ci-artifacts/semantic-conformance/observed-provenance.json \
+            --receipt-out ci-artifacts/semantic-conformance/receipt.json
+      - name: Prove 20 destructive cases and deterministic replay
+        run: |
+          python tools/prove_semantic_conformance.py \
+            --implementation-revision '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --generated-at "$GENERATED_AT" \
+            --out ci-artifacts/semantic-conformance/proof.json
+          test "$(python -c 'import json;print(json.load(open("ci-artifacts/semantic-conformance/proof.json"))["status"])')" = PASS
+          test "$(python -c 'import json;print(json.load(open("ci-artifacts/semantic-conformance/proof.json"))["destructiveCaseCount"])')" = 20
+      - name: Reject duplicate current-state and comparison IR
+        run: |
+          test ! -e src/jsonl_diagram_core/meaning_model.py
+          test ! -e src/jsonl_diagram_core/render_ast.py
+          test ! -e src/jsonl_diagram_core/drawio_render_ast.py
+          test "$(find . -type f \( -name 'dvm.json' -o -name '*comparison-ir*' -o -name '*semantic-state.json' \) -not -path './.git/*' | wc -l)" -eq 0
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Nix checks
+        run: |
+          nix flake check -L
+          nix build -L .#jsonl-diagram-core
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semantic-conformance-proof
+          path: ci-artifacts/semantic-conformance
+          if-no-files-found: error

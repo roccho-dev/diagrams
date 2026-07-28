@@ -1,0 +1,5 @@
+{"op":"diagram.init","id":"semantic-contract-v1","kind":"flow","label":"Semantic Contract V1"}
+{"op":"group.upsert","id":"scope","kind":"scope","label":"Scope","order":1}
+{"op":"node.upsert","id":"input","kind":"process","label":"Input","group":"scope","order":1}
+{"op":"node.upsert","id":"output","kind":"process","label":"Output","group":"scope","order":2}
+{"op":"edge.upsert","id":"flow","source":"input","target":"output","kind":"produces","label":"produces","order":1}

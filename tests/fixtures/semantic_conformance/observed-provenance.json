@@ -1,0 +1,10 @@
+{
+  "expectedContentSourceUsed": false,
+  "generatedArtifactSha256": "sha256:0c82f7b92535d53d72266fc110b652d4b417f3959145eabe6392f00da290ad7c",
+  "generatedAt": "2026-07-28T00:00:00Z",
+  "generatorDigest": "sha256:3261fd6735e85bda68d2364e0dd7a6295f52615315baa8fc8591cbe44aad5ee2",
+  "implementationRevision": "a293e39890aee692f70d4e8d114d4081733a937b",
+  "implementationSourceDigest": "sha256:251cfbbbf89c8fe514f4b426a291ca3a33516c399b05b72de348e910c266df17",
+  "kind": "diagram.observedProvenance.v1",
+  "origin": "implementation-derived"
+}
