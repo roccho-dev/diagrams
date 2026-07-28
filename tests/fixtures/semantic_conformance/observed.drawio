@@ -1,0 +1,35 @@
+<mxfile host="app.diagrams.net" agent="jsonl-diagram-core" version="mxgraph-current-state-v1">
+  <diagram id="semantic-contract-v1" name="Page-1">
+    <mxGraphModel page="1" pageWidth="1000" pageHeight="720" authority="events.jsonl">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <object id="diagram_semantic-contract-v1__0ac65c0761" label="Semantic Contract V1" jsonlType="diagram" jsonlId="semantic-contract-v1" semanticKind="flow" metaJson="{}">
+          <mxCell id="diagram_semantic-contract-v1__0ac65c0761" vertex="1" parent="1" style="text;html=1;opacity=0;">
+            <mxGeometry x="0" y="0" width="1" height="1" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="group_scope__5f161c9149" label="Scope" jsonlType="group" jsonlId="scope" semanticKind="scope" semanticOrder="1" eventSeq="1" metaJson="{}">
+          <mxCell id="group_scope__5f161c9149" vertex="1" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;fillOpacity=12;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;">
+            <mxGeometry x="40" y="86" width="820" height="160" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="node_input__c96c6d5be8" label="Input" jsonlType="node" jsonlId="input" semanticKind="process" semanticOrder="1" eventSeq="2" metaJson="{}" semanticGroup="scope" sourceOp="node.upsert">
+          <mxCell id="node_input__c96c6d5be8" vertex="1" parent="group_scope__5f161c9149" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#334155;strokeWidth=1.4;">
+            <mxGeometry x="170" y="54" width="132" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="node_output__e0ee8bb506" label="Output" jsonlType="node" jsonlId="output" semanticKind="process" semanticOrder="2" eventSeq="3" metaJson="{}" semanticGroup="scope" sourceOp="node.upsert">
+          <mxCell id="node_output__e0ee8bb506" vertex="1" parent="group_scope__5f161c9149" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#334155;strokeWidth=1.4;">
+            <mxGeometry x="330" y="54" width="132" height="50" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="edge_flow__3b21278178" label="produces" jsonlType="edge" jsonlId="flow" semanticKind="produces" semanticSource="input" semanticTarget="output" semanticOrder="1" eventSeq="4" metaJson="{}">
+          <mxCell id="edge_flow__3b21278178" edge="1" parent="1" source="node_input__c96c6d5be8" target="node_output__e0ee8bb506" style="endArrow=block;html=1;strokeColor=#334155;">
+            <mxGeometry x="0" y="0" width="0" height="0" as="geometry" relative="1" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
