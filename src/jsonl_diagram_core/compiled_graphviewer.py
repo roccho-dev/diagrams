@@ -213,9 +213,9 @@ def build_compiled_graphviewer(
     index = f"""<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; worker-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'">
-<title>Compiled GraphViewer</title><style>html,body,#viewer{{width:100%;height:100%;margin:0;overflow:hidden}}#viewer{{min-height:600px}}</style>
-<script src="app.js"></script><script src="viewer-static.min.js"></script></head>
-<body><div id="viewer" class="mxgraph" data-mxgraph="{data_attr}"></div></body></html>
+<title>Compiled GraphViewer</title><style>html,body,#viewer{{width:100%;height:100%;margin:0;overflow:hidden}}#viewer{{min-height:600px}}</style></head>
+<body><div id="viewer" class="mxgraph" data-mxgraph="{data_attr}"></div>
+<script src="app.js"></script><script src="viewer-static.min.js"></script></body></html>
 """
     (out_dir / "index.html").write_text(index, encoding="utf-8")
 
