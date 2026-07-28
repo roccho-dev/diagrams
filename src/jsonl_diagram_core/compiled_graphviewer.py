@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import re
 import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -73,7 +74,7 @@ def _inspect_source(xml_bytes: bytes) -> dict[str, Any]:
                     "minScreenHeightPx": float(height or 0),
                 }
                 threshold_count += 1
-            for key in ("image", "src", "href"):
+            for key in ("image", "src"):
                 value = elem.get(key, "")
                 if value.startswith(("http://", "https://", "//")):
                     external_assets.append(value)
@@ -108,8 +109,16 @@ window.onDrawioViewerLoad = function() {{
       const entry = id ? window.__semanticThresholds[id] : null;
       return entry && entry[name] != null ? Number(entry[name]) : 0;
     }};
+    const nativeVisible = function(cell) {{
+      let current = cell;
+      while (current) {{
+        if (!original(current)) return false;
+        current = model.getParent(current);
+      }}
+      return true;
+    }};
     const visibleVertex = function(cell) {{
-      if (!original(cell)) return false;
+      if (!nativeVisible(cell)) return false;
       const geometry = model.getGeometry(cell);
       if (!geometry) return true;
       const scale = graph.view.scale || 1;
@@ -117,7 +126,7 @@ window.onDrawioViewerLoad = function() {{
              geometry.height * scale >= threshold(cell, 'minScreenHeightPx');
     }};
     graph.isCellVisible = function(cell) {{
-      if (!original(cell)) return false;
+      if (!nativeVisible(cell)) return false;
       if (model.isEdge(cell)) {{
         const source = model.getTerminal(cell, true);
         const target = model.getTerminal(cell, false);
@@ -171,6 +180,14 @@ def build_compiled_graphviewer(
     pin = json.loads(runtime_pin.read_text(encoding="utf-8"))
     if pin.get("kind") != "drawioViewerRuntimePin.v1":
         raise CompiledGraphViewerError("invalid runtime pin kind")
+    if pin.get("repository") != "jgraph/drawio":
+        raise CompiledGraphViewerError("official jgraph/drawio runtime required")
+    if pin.get("tag") in {None, "", "latest"}:
+        raise CompiledGraphViewerError("immutable runtime tag required")
+    if re.fullmatch(r"[0-9a-f]{40}", str(pin.get("commit", ""))) is None:
+        raise CompiledGraphViewerError("exact runtime commit required")
+    if pin.get("viewerPath") != "src/main/webapp/js/viewer-static.min.js":
+        raise CompiledGraphViewerError("unexpected official viewer path")
     runtime_bytes = _verify_sha(runtime, pin["viewerSha256"], "viewer runtime")
     license_bytes = _verify_sha(license_path, pin["licenseSha256"], "viewer license")
     source_bytes = source.read_bytes()
