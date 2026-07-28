@@ -23,14 +23,18 @@ def parse_xml(path: Path, root_name: str | None = None) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default=".")
+    parser.add_argument("--samples-root")
     parser.add_argument("--out", default="ci-artifacts/diagram-gallery")
     args = parser.parse_args()
 
     root = Path(args.root)
     out = Path(args.out)
-    samples_root = root / "generated" / "expression-suite" / "samples"
+    samples_root = Path(args.samples_root) if args.samples_root else root / "generated" / "expression-suite" / "samples"
     report_path = must_file(root / "validation" / "artifact-quality-report.json")
     report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    if not samples_root.is_dir():
+        raise RuntimeError(f"missing samples directory: {samples_root}")
 
     out.mkdir(parents=True, exist_ok=True)
     artifact_dir = out / "artifacts"
@@ -42,11 +46,13 @@ def main() -> int:
         svg = must_file(sample_dir / "diagram.svg")
         native = must_file(sample_dir / "diagram.drawio")
         image = must_file(sample_dir / "diagram.image-exact.drawio")
+        model = must_file(sample_dir / "model.drawio")
         parse_xml(svg, "svg")
         parse_xml(native, "mxfile")
         parse_xml(image, "mxfile")
+        parse_xml(model, "mxfile")
         copied = {}
-        for label, src in [("svg", svg), ("native", native), ("image", image)]:
+        for label, src in [("svg", svg), ("native", native), ("image", image), ("model", model)]:
             name = f"{sample}.{label}{src.suffix}"
             shutil.copyfile(src, artifact_dir / name)
             copied[label] = f"artifacts/{name}"
@@ -57,7 +63,10 @@ def main() -> int:
         raise RuntimeError(f"sample count mismatch: {len(rows)} != {expected}")
 
     manifest = {
-        "schema": "DiagramArtifactGallery.v1",
+        "schema": "DiagramArtifactGallery.v2",
+        "authority": "events.jsonl",
+        "generatedIsAuthority": False,
+        "soleGeneratedCurrentState": "mxGraphModel",
         "sampleCount": len(rows),
         "samples": rows,
     }
@@ -69,7 +78,8 @@ def main() -> int:
         svg_text = (artifact_dir / Path(row["svg"]).name).read_text(encoding="utf-8")
         cards.append(
             f"<section><h2>{row['sample']}</h2>"
-            f"<p><a href='{row['svg']}'>svg</a> "
+            f"<p><a href='{row['model']}'>mxGraphModel</a> "
+            f"<a href='{row['svg']}'>svg</a> "
             f"<a href='{row['native']}'>native drawio</a> "
             f"<a href='{row['image']}'>image-exact drawio</a></p>"
             f"<div>{svg_text}</div></section>"
