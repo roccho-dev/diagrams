@@ -1,0 +1,89 @@
+name: Compiled official GraphViewer
+
+on:
+  pull_request:
+    branches: [proposals]
+  push:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compiled-graphviewer:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: diagrams
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: jgraph/drawio
+          ref: 88ee1f5ab4d40603a8f3aaa0d9d6dc3794c6b3f0
+          path: drawio
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: diagrams/package-lock.json
+      - name: Install package, projection and browser dependencies
+        working-directory: diagrams
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]' playwright==1.54.0
+          npm ci --ignore-scripts --no-audit --no-fund
+          python -m playwright install --with-deps chromium
+      - name: Run full repository and GraphViewer tests
+        working-directory: diagrams
+        env:
+          DRAWIO_VIEWER_RUNTIME: ../drawio/src/main/webapp/js/viewer-static.min.js
+          DRAWIO_VIEWER_LICENSE: ../drawio/LICENSE
+        run: |
+          python -m unittest discover -s tests -v
+          python -m unittest tests.unit.test_compiled_graphviewer -v
+          python tools/prove_compiled_graphviewer.py \
+            --viewer-runtime ../drawio/src/main/webapp/js/viewer-static.min.js \
+            --license ../drawio/LICENSE \
+            --out ../proof/destructive-proof.json
+      - name: Compile twice
+        working-directory: diagrams
+        run: |
+          python tools/build_compiled_graphviewer.py \
+            --source tests/fixtures/compiled_graphviewer/semantic-visibility.drawio \
+            --viewer-runtime ../drawio/src/main/webapp/js/viewer-static.min.js \
+            --license ../drawio/LICENSE \
+            --out ../proof/bundle-a
+          python tools/build_compiled_graphviewer.py \
+            --source tests/fixtures/compiled_graphviewer/semantic-visibility.drawio \
+            --viewer-runtime ../drawio/src/main/webapp/js/viewer-static.min.js \
+            --license ../drawio/LICENSE \
+            --out ../proof/bundle-b
+          diff -ru ../proof/bundle-a ../proof/bundle-b
+      - name: Prove official browser runtime
+        working-directory: diagrams
+        run: |
+          python tools/probe_compiled_graphviewer.py \
+            --bundle ../proof/bundle-a \
+            --out ../proof/browser-proof.json \
+            --screenshots ../proof/screenshots
+          test "$(python -c 'import json;print(json.load(open("../proof/browser-proof.json"))["status"])')" = PASS
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Preserve repository Nix closure
+        working-directory: diagrams
+        run: |
+          nix flake check -L
+          nix build -L .#jsonl-diagram-core
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compiled-official-graphviewer
+          path: proof
+          if-no-files-found: error
