@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, hashlib, json, re, shutil, threading, traceback
+import argparse, hashlib, json, re, shutil, threading, time, traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -49,7 +49,14 @@ def main() -> int:
           response=page.goto(base,wait_until='load',timeout=30000)
           if response is None or response.status != 200:
             raise RuntimeError(f'compiled bundle HTTP status was {None if response is None else response.status}')
-        page.wait_for_function("window.__compiledViewerProof && window.__compiledViewerProof.status === 'READY'",timeout=30000)
+        deadline=time.monotonic()+30
+        ready=False
+        while time.monotonic()<deadline:
+          ready=bool(page.evaluate("() => Boolean(window.__compiledViewerProof && window.__compiledViewerProof.status === 'READY')"))
+          if ready: break
+          page.wait_for_timeout(100)
+        if not ready:
+          raise RuntimeError('official GraphViewer did not reach READY within 30 seconds')
         for name,scale in [('far',0.3),('middle',0.7),('near',2.0)]:
           snapshots[name]=page.evaluate('(s)=>window.__setSemanticZoom(s)',scale)
           page.screenshot(path=str(a.screenshots/f'{name}.png'),full_page=True)
