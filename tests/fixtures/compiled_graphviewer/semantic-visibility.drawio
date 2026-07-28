@@ -1,34 +1,48 @@
-<mxfile host="app.diagrams.net" compressed="false" pages="1">
+<mxfile host="app.diagrams.net" compressed="false" pages="2">
   <diagram id="compiled-viewer-v1" name="Semantic visibility">
     <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" page="1" pageWidth="827" pageHeight="1169">
       <root>
         <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        <object id="overview" label="Overview" semanticId="overview">
-          <mxCell id="overview-cell" value="Overview" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;">
+        <mxCell id="layer-main" value="Main" parent="0"/>
+        <mxCell id="layer-detail" value="Detail" parent="0"/>
+        <UserObject id="overview" label="Overview" semanticId="overview" link="data:page/id,page-two">
+          <mxCell id="overview-cell" vertex="1" parent="layer-main" style="rounded=0;whiteSpace=wrap;html=1;">
             <mxGeometry x="80" y="100" width="220" height="100" as="geometry"/>
           </mxCell>
-        </object>
-        <object id="middle" label="Middle detail" semanticId="middle" minScreenWidthPx="90" minScreenHeightPx="36">
-          <mxCell id="middle-cell" value="Middle detail" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;">
+        </UserObject>
+        <UserObject id="middle" label="Middle detail" semanticId="middle" minScreenWidthPx="90" minScreenHeightPx="36">
+          <mxCell id="middle-cell" vertex="1" parent="layer-detail" style="rounded=0;whiteSpace=wrap;html=1;">
             <mxGeometry x="380" y="120" width="180" height="72" as="geometry"/>
           </mxCell>
-        </object>
-        <object id="near" label="Near detail" semanticId="near" minScreenWidthPx="240" minScreenHeightPx="96">
-          <mxCell id="near-cell" value="Near detail" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;">
+        </UserObject>
+        <UserObject id="near" label="Near detail" semanticId="near" minScreenWidthPx="240" minScreenHeightPx="96">
+          <mxCell id="near-cell" vertex="1" parent="layer-detail" style="rounded=0;whiteSpace=wrap;html=1;">
             <mxGeometry x="680" y="120" width="160" height="64" as="geometry"/>
           </mxCell>
-        </object>
-        <object id="edge-middle" label="overview_to_middle" semanticId="edge-middle">
-          <mxCell id="edge-middle-cell" value="overview_to_middle" edge="1" source="overview" target="middle" parent="1">
+        </UserObject>
+        <UserObject id="edge-middle" label="overview_to_middle" semanticId="edge-middle">
+          <mxCell id="edge-middle-cell" edge="1" source="overview" target="middle" parent="layer-detail">
             <mxGeometry relative="1" as="geometry"/>
           </mxCell>
-        </object>
-        <object id="edge-near" label="middle_to_near" semanticId="edge-near">
-          <mxCell id="edge-near-cell" value="middle_to_near" edge="1" source="middle" target="near" parent="1">
+        </UserObject>
+        <UserObject id="edge-near" label="middle_to_near" semanticId="edge-near">
+          <mxCell id="edge-near-cell" edge="1" source="middle" target="near" parent="layer-detail">
             <mxGeometry relative="1" as="geometry"/>
           </mxCell>
-        </object>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page-two" name="Linked page">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" page="1" pageWidth="827" pageHeight="1169">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <UserObject id="page-two-node" label="Linked page" semanticId="page-two-node">
+          <mxCell id="page-two-node-cell" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;">
+            <mxGeometry x="160" y="160" width="240" height="100" as="geometry"/>
+          </mxCell>
+        </UserObject>
       </root>
     </mxGraphModel>
   </diagram>
