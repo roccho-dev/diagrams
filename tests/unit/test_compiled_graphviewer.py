@@ -1,5 +1,5 @@
 from __future__ import annotations
-import hashlib, json, os, tempfile, unittest
+import hashlib, os, tempfile, unittest
 from pathlib import Path
 from jsonl_diagram_core.compiled_graphviewer import CompiledGraphViewerError, build_compiled_graphviewer
 
@@ -24,6 +24,12 @@ class CompiledGraphViewerTest(unittest.TestCase):
       root=Path(tmp); bad=root/'bad.js'; bad.write_text('bad')
       with self.assertRaisesRegex(CompiledGraphViewerError,'digest mismatch'):
         build_compiled_graphviewer(ROOT/'tests/fixtures/compiled_graphviewer/semantic-visibility.drawio',bad,LICENSE,ROOT/'contracts/compiled_graphviewer/v1/runtime-pin.json',root/'out')
+  def test_preserves_external_links_without_fetching_them(self):
+    if not RUNTIME.exists(): self.skipTest('local official runtime artifact unavailable')
+    with tempfile.TemporaryDirectory() as tmp:
+      manifest=build_compiled_graphviewer(ROOT/'tests/fixtures/compiled_graphviewer/semantic-visibility.drawio',RUNTIME,LICENSE,ROOT/'contracts/compiled_graphviewer/v1/runtime-pin.json',Path(tmp)/'out')
+      self.assertEqual(0,manifest['runtimeExternalRequestsAllowed'])
+      self.assertIn(b'data:page/id,page-two',(Path(tmp)/'out/source.drawio').read_bytes())
   def test_rejects_external_asset(self):
     if not RUNTIME.exists(): self.skipTest('local official runtime artifact unavailable')
     with tempfile.TemporaryDirectory() as tmp:
