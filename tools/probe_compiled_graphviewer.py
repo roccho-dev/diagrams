@@ -51,6 +51,24 @@ def main() -> int:
         for name,scale in [('far',0.3),('middle',0.7),('near',2.0)]:
           snapshots[name]=page.evaluate('(s)=>window.__setSemanticZoom(s)',scale)
           page.screenshot(path=str(a.screenshots/f'{name}.png'),full_page=True)
+        link_value=page.evaluate("window.__compiledViewer.graph.getLinkForCell(window.__compiledViewer.graph.getModel().getCell('overview'))")
+        layer_state=page.evaluate("""() => {
+          const viewer=window.__compiledViewer, graph=viewer.graph, model=graph.getModel();
+          const layer=model.getCell('layer-detail');
+          model.setVisible(layer,false); graph.refresh();
+          const hidden=window.__setSemanticZoom(2.0);
+          model.setVisible(layer,true); graph.refresh();
+          const restored=window.__setSemanticZoom(2.0);
+          return {hidden: hidden, restored: restored};
+        }""")
+        page_two=page.evaluate("""() => {
+          const viewer=window.__compiledViewer;
+          viewer.selectPageById('page-two');
+          const model=viewer.graph.getModel();
+          const present=!!model.getCell('page-two-node');
+          viewer.selectPageById('compiled-viewer-v1');
+          return {present:present,currentPage:viewer.currentPage};
+        }""")
         proof=page.evaluate('window.__compiledViewerProof')
         rendered_svg_count=page.locator('svg').count()
         browser.close()
@@ -60,7 +78,7 @@ def main() -> int:
     assertions={
       'officialGraphViewerInitialized': proof.get('officialGraphViewerInitialized') is True,
       'sourceDigestExact': proof.get('sourceSha256')==source_sha,
-      'pageCountExact': proof.get('pageCount')==1,
+      'pageCountExact': proof.get('pageCount')==2,
       'farExpected': visible['far']=={'overview'},
       'middleExpected': visible['middle']=={'overview','middle','edge-middle'},
       'nearExpected': visible['near']=={'overview','middle','near','edge-middle','edge-near'},
@@ -70,6 +88,9 @@ def main() -> int:
       'consoleErrorsZero': not console_errors,
       'runtimeExternalRequestsZero': not external,
       'renderedSvgPresent': rendered_svg_count > 0,
+      'nativePageSelectionPreserved': page_two.get('present') is True and page_two.get('currentPage')==0,
+      'nativeLayerVisibilityPreserved': set(layer_state['hidden']['visible'])=={'overview'} and set(layer_state['restored']['visible'])=={'overview','middle','near','edge-middle','edge-near'},
+      'nativeInternalPageLinkPreserved': link_value=='data:page/id,page-two',
     }
     result={
       'kind':'compiledGraphViewerBrowserProof.v1',
@@ -79,6 +100,9 @@ def main() -> int:
       'snapshots':snapshots,
       'consoleErrors':console_errors,
       'externalRequests':external,
+      'nativePageProof':page_two,
+      'nativeLayerProof':layer_state,
+      'nativeLink':link_value,
       'screenshots':{p.name:'sha256:'+hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(a.screenshots.glob('*.png'))},
       'authority':False,
     }
