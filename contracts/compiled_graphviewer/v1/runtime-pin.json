@@ -1,0 +1,9 @@
+{
+  "kind": "drawioViewerRuntimePin.v1",
+  "repository": "jgraph/drawio",
+  "tag": "v30.0.4",
+  "commit": "88ee1f5ab4d40603a8f3aaa0d9d6dc3794c6b3f0",
+  "viewerPath": "src/main/webapp/js/viewer-static.min.js",
+  "viewerSha256": "sha256:12c0c8b5828d3641dbd3d369d913069c6cf7e9a9e285a53449b9324e2029ca40",
+  "licenseSha256": "sha256:43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+}
