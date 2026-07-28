@@ -17,12 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.13'
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
 
       - name: Install system layout engine dependencies
         run: |
@@ -51,9 +60,21 @@ jobs:
         if: steps.tests.outputs.status == '0'
         run: python tools/build_semantic_roundtrip_poc.py --out ci-artifacts/semantic-roundtrip
 
+      - name: Build clean canonical suite
+        if: steps.tests.outputs.status == '0'
+        run: |
+          python examples/expression_suite/build_suite.py \
+            --out ci-artifacts/expression-suite \
+            --require-engines
+          node examples/expression_suite/tools/d2_elk_smoke.mjs ci-artifacts/expression-suite
+
       - name: Build artifact gallery
         if: steps.tests.outputs.status == '0'
-        run: python tools/build_ci_artifact_gallery.py --root . --out ci-artifacts/diagram-gallery
+        run: |
+          python tools/build_ci_artifact_gallery.py \
+            --root . \
+            --samples-root ci-artifacts/expression-suite/samples \
+            --out ci-artifacts/diagram-gallery
 
       - name: Upload diagram artifacts
         if: always()
