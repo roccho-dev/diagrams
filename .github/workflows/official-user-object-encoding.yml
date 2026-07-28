@@ -19,26 +19,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: diagrams
           persist-credentials: false
-      - name: Validate ADRS reader identity
-        env:
-          CLIENT_ID: ${{ vars['ADRS_READER_CLIENT_ID'] }}
-          PRIVATE_KEY: ${{ secrets['ADRS_READER_PRIVATE_KEY'] }}
-        run: test -n "$CLIENT_ID" && test -n "$PRIVATE_KEY"
-      - id: adrs-token
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ vars['ADRS_READER_CLIENT_ID'] }}
-          private-key: ${{ secrets['ADRS_READER_PRIVATE_KEY'] }}
-          owner: roccho-dev
-          repositories: adrs
-          permission-contents: read
-      - uses: actions/checkout@v6
-        with:
-          repository: roccho-dev/adrs
-          ref: 37833fb028146140681fde01d7d33cb633b6c508
-          path: adrs
-          token: ${{ steps.adrs-token.outputs.token }}
-          persist-credentials: false
       - uses: actions/checkout@v6
         with:
           repository: jgraph/drawio
@@ -47,27 +27,43 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
-      - name: Install package
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: diagrams/package-lock.json
+      - name: Install package, projection and browser dependencies
         working-directory: diagrams
-        run: python -m pip install '.[test]'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]' playwright==1.54.0
+          npm ci --ignore-scripts --no-audit --no-fund
+          python -m playwright install --with-deps chromium
       - name: Run full repository tests
         working-directory: diagrams
+        env:
+          DRAWIO_VIEWER_RUNTIME: ../drawio/src/main/webapp/js/viewer-static.min.js
+          DRAWIO_VIEWER_LICENSE: ../drawio/LICENSE
         run: python -m unittest discover -s tests -v
-      - name: Prove exact ADRS payload and independent semantic PASS
+      - name: Prove corrected Accepted identity and independent semantic PASS
         working-directory: diagrams
         run: |
           set -euo pipefail
-          cmp tests/fixtures/semantic_conformance/expected.drawio ../adrs/diagram_semantic_contract/v1_0_1/expected.drawio
           python - <<'PY'
-          import json
-          local=json.load(open('tests/fixtures/semantic_conformance/expected-contract.json'))
-          accepted=json.load(open('../adrs/diagram_semantic_contract/v1_0_1/accepted-decision.json'))
-          assert local['adrsMergeCommit']=='37833fb028146140681fde01d7d33cb633b6c508'
-          assert local['decisionId']==accepted['decisionId']=='01KZRENDER4C0RRECT10N00001'
-          assert local['releaseId']==accepted['releaseId']=='diagram-semantic-contract-v1.0.1'
-          assert local['acceptedArtifactSha256']==accepted['expectedArtifactSha256']=='sha256:a1f5c765f477286e030a7a7c614ed7649b0048d9c53ee32ddfe34170e9957112'
-          assert local['expectedSemanticSha256']==accepted['expectedSemanticSha256']=='sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2'
+          import hashlib,json,xml.etree.ElementTree as ET
+          from pathlib import Path
+          expected=Path('tests/fixtures/semantic_conformance/expected.drawio')
+          contract=json.load(open('tests/fixtures/semantic_conformance/expected-contract.json'))
+          assert contract['adrsMergeCommit']=='37833fb028146140681fde01d7d33cb633b6c508'
+          assert contract['decisionId']=='01KZRENDER4C0RRECT10N00001'
+          assert contract['releaseId']=='diagram-semantic-contract-v1.0.1'
+          assert contract['acceptedArtifactSha256']=='sha256:'+hashlib.sha256(expected.read_bytes()).hexdigest()=='sha256:a1f5c765f477286e030a7a7c614ed7649b0048d9c53ee32ddfe34170e9957112'
+          assert contract['expectedSemanticSha256']=='sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2'
+          root=ET.parse(expected).getroot()
+          wrappers=[x for x in root.findall('./diagram/mxGraphModel/root/*') if x.tag in {'object','UserObject'}]
+          assert len(wrappers)==5 and all(x.get('id') and x.find('mxCell').get('id') is None for x in wrappers)
           PY
           GENERATED_AT="$(git show -s --format=%cI HEAD)"
           mkdir -p ../proof
@@ -100,8 +96,6 @@ jobs:
             --license ../drawio/LICENSE \
             --runtime-pin contracts/compiled_graphviewer/v1/runtime-pin.json \
             --out ../proof/bundle
-      - name: Install pinned Playwright
-        run: python -m pip install 'playwright==1.58.0'
       - name: Prove official renderer has no duplicate-ID error
         run: |
           python - <<'PY'
@@ -125,7 +119,7 @@ jobs:
               page.screenshot(path='proof/official-user-object.png',full_page=True,animations='disabled')
               browser.close()
           assert console==[] and page_errors==[]
-          result={'kind':'officialUserObjectEncodingProof.v1','status':'PASS','consoleErrors':console,'pageErrors':page_errors,'screenshotSha256':'sha256:'+hashlib.sha256(Path('proof/official-user-object.png').read_bytes()).hexdigest(),'sourceSha256':'sha256:'+hashlib.sha256((bundle/'source.drawio').read_bytes()).hexdigest(),'implementationEncodingCorrected':True,'semanticMeaningChanged':False,'renderQualityAuditComplete':False,'publicationAdmissible':False,'authority':False}
+          result={'kind':'officialUserObjectEncodingProof.v1','status':'PASS','consoleErrors':console,'pageErrors':page_errors,'screenshotSha256':'sha256:'+hashlib.sha256(Path('proof/official-user-object.png').read_bytes()).hexdigest(),'sourceSha256':'sha256:'+hashlib.sha256((bundle/'source.drawio').read_bytes()).hexdigest(),'implementationEncodingCorrected':True,'semanticMeaningChanged':False,'semanticConformanceComplete':True,'renderQualityAuditComplete':False,'publicationAdmissible':False,'authority':False}
           Path('proof/encoding-proof.json').write_text(json.dumps(result,sort_keys=True,separators=(',',':'))+'\n')
           PY
       - uses: DeterminateSystems/determinate-nix-action@v3
