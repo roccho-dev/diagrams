@@ -1,0 +1,16 @@
+{
+  "kind": "mxGraphCurrentStateAcceptedIdentity.v1",
+  "status": "ACCEPTED_ARCHITECTURE",
+  "adrsIssue": "roccho-dev/adrs#259",
+  "adrsPullRequest": "roccho-dev/adrs#262",
+  "adrsMergedCommit": "2ae2830c211057274e0900440ea7b9a1c9e0e9ad",
+  "decisionId": "01KYEW52E0ADNQ2Q0RCJ4JP294",
+  "releaseId": "mxgraph-current-state-v1.0.0",
+  "eventsJsonlAuthority": true,
+  "mxGraphModelSoleGeneratedCurrentState": true,
+  "generatedStateAuthority": false,
+  "prAProofMerge": "e78180f9e5c7242fb9f1534c0fbbbc05e3b48a13",
+  "prAProofArtifactDigest": "sha256:f0d54cc4d2a2d9a4dfe0b10dfa899d4ae96ae9c12ece2f03d2e3e21e22884767",
+  "businessOutcomeAchieved": false,
+  "corporateSaleOutcomeAchieved": false
+}

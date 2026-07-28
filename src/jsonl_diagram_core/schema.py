@@ -99,14 +99,6 @@ class EventValidationError(Exception):
         return f"event[{self.index}]: {self.message}"
 
 
-@dataclass(frozen=True)
-class DvmValidationError(Exception):
-    message: str
-
-    def __str__(self) -> str:  # pragma: no cover - trivial
-        return self.message
-
-
 def _is_bool(value: Any) -> bool:
     return isinstance(value, bool)
 
@@ -234,132 +226,93 @@ def _id_namespace(op: str) -> str:
 
 
 def _compatible_id_reuse(prev_op: str, next_op: str) -> bool:
-    prev_ns = _id_namespace(prev_op)
-    next_ns = _id_namespace(next_op)
-    if prev_ns == next_ns:
-        return True
-    # Node and edge identifiers live in separate DVM collections. Allowing
-    # the same raw string in both namespaces preserves legacy fixtures such as
-    # node id d2 plus edge id d2 without forcing a semantic edge rename.
-    return {prev_ns, next_ns} == {"node", "edge"}
+    # Semantic IDs share one global namespace across diagram, group, node and
+    # edge objects. Re-upsert within the same namespace is allowed; cross-kind
+    # reuse is rejected before reduction.
+    return _id_namespace(prev_op) == _id_namespace(next_op)
 
 
 def validate_events(events: list[JsonObj], *, strict: bool = True) -> None:
     diagram_init_count = 0
     seen_ids: dict[str, str] = {}
+    groups: set[str] = set()
+    nodes: set[str] = set()
+    edges: set[str] = set()
+    diagram_id: str | None = None
+    group_parents: dict[str, str | None] = {}
+
+    def reject(index: int, message: str, event: JsonObj) -> None:
+        raise EventValidationError(index, message, event)
+
+    def vertex_exists(value: str) -> bool:
+        return value in groups or value in nodes
+
     for i, event in enumerate(events):
         errs = validate_event(event, i, strict=strict)
         if errs:
-            raise EventValidationError(i, "; ".join(errs), event)
+            reject(i, "; ".join(errs), event)
         op = event["op"]
         if op == "diagram.init":
             diagram_init_count += 1
-        if "id" in event:
+            diagram_id = str(event["id"])
+        if "id" in event and op in {"diagram.init", "group.upsert", "node.upsert", "task.upsert", "entity.upsert", "milestone.upsert", "edge.upsert"}:
             raw_id = str(event["id"])
             prev = seen_ids.get(raw_id)
             if prev and not _compatible_id_reuse(prev, op):
-                raise EventValidationError(i, f"id {raw_id!r} reused across incompatible ops: {prev} then {op}", event)
+                reject(i, f"id {raw_id!r} reused across incompatible ops: {prev} then {op}", event)
             seen_ids[raw_id] = op
+
+        if op == "group.upsert":
+            groups.add(str(event["id"]))
+            group_parents[str(event["id"])] = event.get("group")
+        elif op in {"node.upsert", "task.upsert", "entity.upsert", "milestone.upsert"}:
+            nodes.add(str(event["id"]))
+        elif op == "edge.upsert":
+            edges.add(str(event["id"]))
+        elif op in {"style.intent", "layout.intent", "label.update"}:
+            target = str(event["target"])
+            matches = sum((target == diagram_id, target in groups, target in nodes, target in edges))
+            if matches != 1:
+                reject(i, f"target must resolve exactly once: {target}", event)
+        elif op == "visual.position.set":
+            if not vertex_exists(str(event["target"])):
+                reject(i, f"visual position target missing: {event['target']}", event)
+        elif op == "edge.reconnect":
+            if str(event["id"]) not in edges:
+                reject(i, f"edge.reconnect target missing: {event['id']}", event)
+            if not vertex_exists(str(event["source"])) or not vertex_exists(str(event["target"])):
+                reject(i, "edge.reconnect source/target missing", event)
+        elif op == "lane.assign":
+            if str(event["id"]) not in nodes or str(event["lane"]) not in groups:
+                reject(i, "lane.assign target or lane missing", event)
+        elif op == "span.update" and str(event["id"]) not in nodes:
+            reject(i, f"span.update target missing: {event['id']}", event)
+        elif op == "visual.edge.bendpoint.set" and str(event["id"]) not in edges:
+            reject(i, f"edge bendpoint target missing: {event['id']}", event)
+
     if diagram_init_count != 1:
-        raise EventValidationError(0, f"expected exactly one diagram.init, got {diagram_init_count}", events[0] if events else {})
+        reject(0, f"expected exactly one diagram.init, got {diagram_init_count}", events[0] if events else {})
 
+    # Upsert references may point to objects declared later, so validate them
+    # against the final object sets after the append stream is known.
+    for i, event in enumerate(events):
+        op = event["op"]
+        if op == "edge.upsert":
+            if not vertex_exists(str(event["source"])) or not vertex_exists(str(event["target"])):
+                reject(i, "edge source/target missing", event)
+        if op in {"group.upsert", "node.upsert", "task.upsert", "entity.upsert", "milestone.upsert"}:
+            parent = event.get("group") or event.get("lane")
+            if parent and str(parent) not in groups:
+                reject(i, f"parent group missing: {parent}", event)
 
-def validate_dvm(dvm: JsonObj) -> None:
-    errors: list[str] = []
-    diagram = dvm.get("diagram")
-    if not isinstance(diagram, dict) or not _is_safe_id(diagram.get("id")):
-        errors.append("dvm.diagram.id must exist")
-    groups = dvm.get("groups", [])
-    nodes = dvm.get("nodes", [])
-    edges = dvm.get("edges", [])
-    if not isinstance(groups, list) or not isinstance(nodes, list) or not isinstance(edges, list):
-        errors.append("dvm groups/nodes/edges must be lists")
-        raise DvmValidationError("; ".join(errors))
-
-    group_ids: set[str] = set()
-    node_ids: set[str] = set()
-    for g in groups:
-        gid = g.get("id") if isinstance(g, dict) else None
-        if not _is_safe_id(gid):
-            errors.append("group id must be non-empty string")
-            continue
-        if gid in group_ids:
-            errors.append(f"duplicate group id: {gid}")
-        group_ids.add(gid)
-    for n in nodes:
-        nid = n.get("id") if isinstance(n, dict) else None
-        if not _is_safe_id(nid):
-            errors.append("node id must be non-empty string")
-            continue
-        if nid in node_ids:
-            errors.append(f"duplicate node id: {nid}")
-        if nid in group_ids:
-            errors.append(f"node id collides with group id: {nid}")
-        node_ids.add(nid)
-
-    for g in groups:
-        if not isinstance(g, dict):
-            continue
-        parent = g.get("group")
-        if parent:
-            if parent == g.get("id"):
-                errors.append(f"group {g.get('id')} cannot parent itself")
-            elif parent not in group_ids:
-                errors.append(f"group {g.get('id')} references missing parent group {parent}")
-    for n in nodes:
-        if not isinstance(n, dict):
-            continue
-        for key in ("group", "lane"):
-            ref = n.get(key)
-            if ref and ref not in group_ids:
-                errors.append(f"node {n.get('id')} references missing {key} {ref}")
-        if ("start" in n or "end" in n) and not (n.get("lane") or n.get("group")):
-            errors.append(f"scheduled task {n.get('id')} must have lane or group")
-    edge_ids: set[str] = set()
-    for e in edges:
-        if not isinstance(e, dict):
-            errors.append("edge must be object")
-            continue
-        eid = e.get("id")
-        if not _is_safe_id(eid):
-            errors.append("edge id must be non-empty string")
-        elif eid in edge_ids:
-            errors.append(f"duplicate edge id: {eid}")
-        edge_ids.add(str(eid))
-        src = e.get("source")
-        tgt = e.get("target")
-        if src not in node_ids:
-            errors.append(f"edge {eid} references missing source node {src}")
-        if tgt not in node_ids:
-            errors.append(f"edge {eid} references missing target node {tgt}")
-    target_namespace_counts: dict[str, int] = {}
-    for collection in (node_ids, group_ids, edge_ids):
-        for item_id in collection:
-            target_namespace_counts[item_id] = target_namespace_counts.get(item_id, 0) + 1
-    if isinstance(diagram, dict) and diagram.get("id"):
-        target_namespace_counts[str(diagram["id"])] = target_namespace_counts.get(str(diagram["id"]), 0) + 1
-    valid_targets = set(target_namespace_counts)
-    for collection_name in ("styleIntents", "layoutIntents"):
-        for item in dvm.get(collection_name, []) or []:
-            target = item.get("target") if isinstance(item, dict) else None
-            if target not in valid_targets:
-                errors.append(f"{collection_name} target missing: {target}")
-            elif target_namespace_counts.get(str(target), 0) > 1:
-                errors.append(f"{collection_name} target ambiguous across DVM namespaces: {target}")
-    for patch in dvm.get("visualPatches", []) or []:
-        if not isinstance(patch, dict):
-            errors.append("visualPatches item must be object")
-            continue
-        if patch.get("kind") == "edge_bendpoint":
-            edge_id = patch.get("edge")
-            if edge_id not in edge_ids:
-                errors.append(f"visual edge_bendpoint target missing: {edge_id}")
-        else:
-            target = patch.get("target")
-            if target not in valid_targets:
-                errors.append(f"visual patch target missing: {target}")
-    if errors:
-        raise DvmValidationError("; ".join(errors))
+    for group in sorted(groups):
+        seen: set[str] = set()
+        current: str | None = group
+        while current is not None:
+            if current in seen:
+                reject(0, f"group parent cycle: {group} -> {current}", events[0] if events else {})
+            seen.add(current)
+            current = group_parents.get(current)
 
 
 def packaged_schema_path() -> Path | None:

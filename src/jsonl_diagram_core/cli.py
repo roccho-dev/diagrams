@@ -104,9 +104,9 @@ def main(argv: list[str] | None = None) -> int:
         write_jsonl(args.out, tokens)
         return 0
     if args.cmd == "reduce":
-        dvm = reduce_tokens(tokens)
+        model_xml = reduce_tokens(tokens)
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.out).write_text(json.dumps(dvm, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+        Path(args.out).write_text(model_xml, encoding="utf-8")
         return 0
     if args.cmd == "compile-bundle":
         from .one_shot import compile_one_shot

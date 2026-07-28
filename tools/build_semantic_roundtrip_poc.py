@@ -28,13 +28,13 @@ GRAPH_EVENTS = [
     {"op": "group.upsert", "id": "pkg.core", "kind": "package", "label": "Core"},
     {"op": "node.upsert", "id": "n.api", "kind": "component", "label": "API", "group": "pkg.core", "meta": {"ports": ["out"]}},
     {"op": "node.upsert", "id": "n.reducer", "kind": "component", "label": "Reducer", "group": "pkg.core", "meta": {"ports": ["in", "out"]}},
-    {"op": "node.upsert", "id": "n.dvm", "kind": "component", "label": "DVM", "group": "pkg.core"},
+    {"op": "node.upsert", "id": "n.model", "kind": "component", "label": "mxGraphModel", "group": "pkg.core"},
     {"op": "node.upsert", "id": "n.adapter", "kind": "component", "label": "Adapter"},
     {"op": "node.upsert", "id": "n.proof", "kind": "component", "label": "Proof"},
     {"op": "edge.upsert", "id": "e.api_reducer", "source": "n.api", "target": "n.reducer"},
-    {"op": "edge.upsert", "id": "e.reducer_dvm", "source": "n.reducer", "target": "n.dvm"},
-    {"op": "edge.upsert", "id": "e.dvm_adapter", "source": "n.dvm", "target": "n.adapter"},
-    {"op": "edge.upsert", "id": "e.dvm_proof", "source": "n.dvm", "target": "n.proof"},
+    {"op": "edge.upsert", "id": "e.reducer_model", "source": "n.reducer", "target": "n.model"},
+    {"op": "edge.upsert", "id": "e.model_adapter", "source": "n.model", "target": "n.adapter"},
+    {"op": "edge.upsert", "id": "e.model_proof", "source": "n.model", "target": "n.proof"},
     {"op": "edge.upsert", "id": "e.adapter_proof", "source": "n.adapter", "target": "n.proof"},
 ]
 
@@ -63,7 +63,7 @@ def write_fixture(out: Path, name: str, before: list[dict], result: dict) -> dic
     d.mkdir(parents=True, exist_ok=True)
     write_jsonl(d / "events.before.jsonl", before)
     write_jsonl(d / "events.after.jsonl", result["events"])
-    write_json(d / "dvm.after.json", result["dvm"])
+    (d / "model.after.drawio").write_text(result["model"], encoding="utf-8")
     write_json(d / "proof.json", result["proof"])
     return {"fixture": name, "accepted": result["proof"].get("accepted"), "proof": str(d.relative_to(out) / "proof.json")}
 
@@ -87,7 +87,7 @@ def main(argv: list[str] | None = None) -> int:
 
     graph = apply_edit_command(
         GRAPH_EVENTS,
-        {"schema": "EditCommand.v1", "commandId": "cmd.reconnect.graph", "type": "ReconnectEdge", "edgeId": "e.adapter_proof", "source": "n.adapter", "target": "n.dvm"},
+        {"schema": "EditCommand.v1", "commandId": "cmd.reconnect.graph", "type": "ReconnectEdge", "edgeId": "e.adapter_proof", "source": "n.adapter", "target": "n.model"},
         projection_profiles=["graph"],
     )
     graph_reject = reject_edit_command(
@@ -104,17 +104,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     summary.append(write_fixture(out, "visual-patch-isolation", TRIPTYCH_EVENTS, visual))
 
-    erd_dvm = reduce_events(ERD_EVENTS)
-    venn_dvm = reduce_events(VENN_EVENTS)
+    erd_model = reduce_events(ERD_EVENTS)
+    venn_model = reduce_events(VENN_EVENTS)
     boundary = {
         "schema": "TableRegionBoundaryProof.v1",
         "authority": "events.jsonl",
         "generatedIsAuthority": False,
-        "table": {"layoutIntent": classify_plane(erd_dvm), "semanticHash": semantic_hash(erd_dvm), "visualHash": visual_hash(erd_dvm)},
-        "region": {"layoutIntent": classify_plane(venn_dvm), "semanticHash": semantic_hash(venn_dvm), "visualHash": visual_hash(venn_dvm)},
+        "table": {"layoutIntent": classify_plane(erd_model), "semanticHash": semantic_hash(erd_model), "visualHash": visual_hash(erd_model)},
+        "region": {"layoutIntent": classify_plane(venn_model), "semanticHash": semantic_hash(venn_model), "visualHash": visual_hash(venn_model)},
         "projectionFingerprints": {
-            "table": projection_fingerprint(erd_dvm, profile="table-relation"),
-            "region": projection_fingerprint(venn_dvm, profile="set-overlap"),
+            "table": projection_fingerprint(erd_model, profile="table-relation"),
+            "region": projection_fingerprint(venn_model, profile="set-overlap"),
         },
     }
     boundary["ok"] = boundary["table"]["layoutIntent"]["plane"] == "TablePlane" and boundary["region"]["layoutIntent"]["plane"] == "RegionPlane"

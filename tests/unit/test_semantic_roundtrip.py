@@ -17,12 +17,12 @@ BASE_EVENTS = [
 
 class SemanticRoundtripTest(unittest.TestCase):
     def test_lane_progress_profiles_share_stable_ids(self):
-        dvm = reduce_events(BASE_EVENTS)
-        self.assertEqual(classify_plane(dvm)["plane"], "LaneProgressPlane")
+        model = reduce_events(BASE_EVENTS)
+        self.assertEqual(classify_plane(model)["plane"], "LaneProgressPlane")
         fps = [
-            projection_fingerprint(dvm, profile="swimlane-lr"),
-            projection_fingerprint(dvm, profile="gantt-like"),
-            projection_fingerprint(dvm, profile="horizontal-sequence"),
+            projection_fingerprint(model, profile="swimlane-lr"),
+            projection_fingerprint(model, profile="gantt-like"),
+            projection_fingerprint(model, profile="horizontal-sequence"),
         ]
         self.assertEqual(fps[0]["nodeIds"], fps[1]["nodeIds"])
         self.assertEqual(fps[1]["nodeIds"], fps[2]["nodeIds"])

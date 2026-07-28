@@ -1,7 +1,7 @@
 {"op":"diagram.init","id":"state","kind":"state","label":"State: Diagram Artifact Lifecycle"}
 {"op":"node.upsert","id":"draft","kind":"state","label":"Draft JSONL","order":0}
 {"op":"node.upsert","id":"tokenized","kind":"state","label":"Tokenized","order":1}
-{"op":"node.upsert","id":"reduced","kind":"state","label":"DVM Ready","order":2}
+{"op":"node.upsert","id":"reduced","kind":"state","label":"mxGraphModel Ready","order":2}
 {"op":"node.upsert","id":"rendered","kind":"state","label":"SVG Rendered","order":3}
 {"op":"node.upsert","id":"verified","kind":"state","label":"Proof Verified","order":4}
 {"op":"node.upsert","id":"published","kind":"state","label":"Published","order":5}

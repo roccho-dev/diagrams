@@ -1,0 +1,71 @@
+name: Canonical mxGraphModel cutover
+
+on:
+  pull_request:
+    branches: [proposals]
+  push:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-cutover:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install projection dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]'
+          npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Run all tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build twice from clean inputs
+        run: |
+          python examples/expression_suite/build_suite.py --out ci-artifacts/suite-a --require-engines
+          python examples/expression_suite/build_suite.py --out ci-artifacts/suite-b --require-engines
+          node examples/expression_suite/tools/d2_elk_smoke.mjs ci-artifacts/suite-a
+          node examples/expression_suite/tools/d2_elk_smoke.mjs ci-artifacts/suite-b
+          diff -ru ci-artifacts/suite-a ci-artifacts/suite-b
+
+      - name: Prove canonical cutover and claim ceiling
+        run: |
+          python tools/check_canonical_cutover.py \
+            --suite ci-artifacts/suite-a \
+            --candidate '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --out ci-artifacts/canonical-cutover-receipt.json
+          test "$(python -c 'import json;print(json.load(open("ci-artifacts/canonical-cutover-receipt.json"))["status"])')" = PASS
+          test "$(python -c 'import json;print(json.load(open("ci-artifacts/canonical-cutover-receipt.json"))["duplicateIrCountZero"])')" = True
+
+      - name: Run Nix closure
+        uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Nix checks and package
+        run: |
+          nix flake check -L
+          nix build -L .#jsonl-diagram-core
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: canonical-mxgraph-cutover
+          path: ci-artifacts
+          if-no-files-found: error

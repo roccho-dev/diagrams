@@ -165,7 +165,10 @@ jobs:
       - name: Reject competing state, provider logic and dual approval paths
         run: |
           test "$(grep -RIlE 'overlay-state\.json|review-state\.json|decision-current-state\.json' src tests examples docs 2>/dev/null | wc -l)" -eq 0
-          test "$(grep -RIlE 'meaning_model|render_ast|drawio_render_ast|RenderingIR' src/jsonl_diagram_core/policy_gate.py src/jsonl_diagram_core/decision_overlay.py src/jsonl_diagram_core/approval_receipt.py src/jsonl_diagram_core/receipt_overlay.py | wc -l)" -eq 0
+          test ! -e src/jsonl_diagram_core/meaning_model.py
+          test ! -e src/jsonl_diagram_core/render_ast.py
+          test ! -e src/jsonl_diagram_core/drawio_render_ast.py
+          test ! -e src/jsonl_diagram_core/svg_render_ast.py
           python - <<'PY'
           import ast,json
           from pathlib import Path

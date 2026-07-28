@@ -2,7 +2,7 @@
 {"op":"node.upsert","id":"start","kind":"start","label":"append JSONL"}
 {"op":"node.upsert","id":"tokenize","kind":"process","label":"tokenize"}
 {"op":"node.upsert","id":"schema","kind":"decision","label":"schema ok?"}
-{"op":"node.upsert","id":"reduce","kind":"process","label":"reduce to DVM"}
+{"op":"node.upsert","id":"reduce","kind":"process","label":"reduce to mxGraphModel"}
 {"op":"node.upsert","id":"render","kind":"process","label":"render SVG"}
 {"op":"node.upsert","id":"proof","kind":"process","label":"proof gate"}
 {"op":"node.upsert","id":"stop","kind":"end","label":"publish artifact"}

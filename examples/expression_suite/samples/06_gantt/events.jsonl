@@ -6,7 +6,7 @@
 {"op":"task.upsert","id":"schema","kind":"task","lane":"core","label":"Schema","start":1,"end":2,"order":0}
 {"op":"task.upsert","id":"tokenizer","kind":"task","lane":"core","label":"Tokenizer","start":2,"end":4,"order":1}
 {"op":"task.upsert","id":"reducer","kind":"task","lane":"core","label":"Reducer","start":3,"end":5,"order":2}
-{"op":"task.upsert","id":"dvm","kind":"task","lane":"core","label":"DVM","start":5,"end":6,"order":3}
+{"op":"task.upsert","id":"mxgraph","kind":"task","lane":"core","label":"mxGraphModel","start":5,"end":6,"order":3}
 {"op":"task.upsert","id":"d2","kind":"task","lane":"render","label":"D2 target","start":4,"end":6,"order":4}
 {"op":"task.upsert","id":"tokens","kind":"task","lane":"render","label":"Design tokens","start":5,"end":7,"order":5}
 {"op":"task.upsert","id":"svg","kind":"task","lane":"render","label":"Single SVG","start":7,"end":9,"order":6}
@@ -17,8 +17,8 @@
 {"op":"task.upsert","id":"publish","kind":"task","lane":"release","label":"Publish SVG","start":11,"end":12,"order":11}
 {"op":"edge.upsert","id":"g0","source":"schema","target":"tokenizer","kind":"dependency","label":""}
 {"op":"edge.upsert","id":"g1","source":"tokenizer","target":"reducer","kind":"dependency","label":""}
-{"op":"edge.upsert","id":"g2","source":"reducer","target":"dvm","kind":"dependency","label":""}
-{"op":"edge.upsert","id":"g3","source":"dvm","target":"d2","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g2","source":"reducer","target":"mxgraph","kind":"dependency","label":""}
+{"op":"edge.upsert","id":"g3","source":"mxgraph","target":"d2","kind":"dependency","label":""}
 {"op":"edge.upsert","id":"g4","source":"tokens","target":"svg","kind":"dependency","label":""}
 {"op":"edge.upsert","id":"g5","source":"svg","target":"proof","kind":"dependency","label":""}
 {"op":"edge.upsert","id":"g6","source":"proof","target":"publish","kind":"dependency","label":""}
