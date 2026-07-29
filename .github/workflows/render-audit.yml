@@ -1,0 +1,186 @@
+name: Pinned official render audit
+
+on:
+  pull_request:
+    branches: [proposals]
+  push:
+    branches: [proposals]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: diagrams
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: jgraph/drawio
+          ref: 88ee1f5ab4d40603a8f3aaa0d9d6dc3794c6b3f0
+          path: drawio
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: diagrams/package-lock.json
+      - name: Install package and projection engines
+        working-directory: diagrams
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install '.[test]'
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Run full repository tests
+        working-directory: diagrams
+        run: python -m unittest discover -s tests -v
+      - name: Bind exact accepted source and semantic PASS
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          mkdir -p ci-artifacts/render-audit
+          test "$(sha256sum tests/fixtures/render_audit/accepted-v1.0.2.drawio | cut -d' ' -f1)" = 7c70ae9cf6827205c4c15e77f4eb21b2faf17d81417cae3da9f57a24e83521b9
+          python - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('.')
+          contract=json.load(open(root/'tests/fixtures/render_audit/source-contract.json'))
+          source=root/'tests/fixtures/render_audit/accepted-v1.0.2.drawio'
+          assert contract['adrsMergeCommit']=='e2b2251160b4178f51fc00392d8e3a5dd686b4ad'
+          assert contract['decisionId']=='01KZV5A1C0RRECT10N00000200'
+          assert contract['releaseId']=='diagram-semantic-contract-v1.0.2'
+          assert contract['mxfileSha256']=='sha256:'+hashlib.sha256(source.read_bytes()).hexdigest()
+          assert contract['semanticDigest']=='sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2'
+          PY
+          GENERATED_AT="$(git show -s --format=%cI '${{ github.event.pull_request.head.sha || github.sha }}')"
+          python tools/build_semantic_conformance.py \
+            --expected tests/fixtures/render_audit/accepted-v1.0.2.drawio \
+            --expected-contract tests/fixtures/render_audit/semantic-expected-contract.json \
+            --events tests/fixtures/semantic_conformance/observed.events.jsonl \
+            --implementation-revision '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --generated-at "$GENERATED_AT" \
+            --observed-out ci-artifacts/render-audit/observed.drawio \
+            --provenance-out ci-artifacts/render-audit/semantic-provenance.json \
+            --receipt-out ci-artifacts/render-audit/semantic-receipt.json
+          test "$(python -c 'import json;print(json.load(open("ci-artifacts/render-audit/semantic-receipt.json"))["comparison"]["status"])')" = PASS
+      - name: Build exact official GraphViewer bundle
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          test "$(sha256sum ../drawio/src/main/webapp/js/viewer-static.min.js | cut -d' ' -f1)" = 12c0c8b5828d3641dbd3d369d913069c6cf7e9a9e285a53449b9324e2029ca40
+          test "$(sha256sum ../drawio/LICENSE | cut -d' ' -f1)" = 43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1
+          python tools/build_compiled_graphviewer.py \
+            --source tests/fixtures/render_audit/accepted-v1.0.2.drawio \
+            --viewer-runtime ../drawio/src/main/webapp/js/viewer-static.min.js \
+            --license ../drawio/LICENSE \
+            --runtime-pin contracts/compiled_graphviewer/v1/runtime-pin.json \
+            --out ci-artifacts/render-audit/bundle
+      - name: Resolve exact Playwright wheels
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          mkdir -p ci-artifacts/render-audit/wheels
+          python -m pip download --only-binary=:all: --dest ci-artifacts/render-audit/wheels 'playwright==1.58.0'
+          cat > ci-artifacts/render-audit/wheels/SHA256SUMS <<'EOF'
+          f88193799d43dbf8c8a806d6405c9c52fe2af40bf75072a606357b33cc336c7f  greenlet-3.5.4-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+          c95568ba1eda83812598c1dc9be60b4406dffd60b149bc1536180ad108723d6b  playwright-1.58.0-py3-none-manylinux1_x86_64.whl
+          af2f8fede4171ef667dfded53f96e2ed0d6e6bd7ee3bb46437f77e3b57689228  pyee-13.0.1-py3-none-any.whl
+          481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8  typing_extensions-4.16.0-py3-none-any.whl
+          EOF
+          (cd ci-artifacts/render-audit/wheels && sha256sum -c SHA256SUMS)
+      - name: Observe two clean fixed-runtime renders
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          image='mcr.microsoft.com/playwright/python@sha256:678457c4c323b981d8b4befc57b95366bb1bb6aa30057b1269f6b171e8d9975a'
+          docker pull "$image"
+          for run in a b; do
+            docker run --rm --network none -v "$PWD:/work" -w /work "$image" bash -lc "
+              set -euo pipefail
+              python -m pip install --no-index --find-links=/work/ci-artifacts/render-audit/wheels playwright==1.58.0
+              test \"\$(sha256sum /ms-playwright/chromium-1208/chrome-linux64/chrome | cut -d' ' -f1)\" = 481fea1516a1f2b76454664272f12cd9dd1f20117b21e1f1498e08bc7f872c00
+              test \"\$(sha256sum /usr/share/fonts/truetype/wqy/wqy-zenhei.ttc | cut -d' ' -f1)\" = 79c18ebe7b811951e8311bad7103ebeae8c337ed9988ea69e8a78a66cfe029b9
+              test \"\$(sha256sum /etc/os-release | cut -d' ' -f1)\" = 3e5851448bae5b36f351becde037a8b13b77307279f484eda808f8177d9a4293
+              python tools/probe_render_audit.py \
+                --bundle ci-artifacts/render-audit/bundle \
+                --policy contracts/render_audit/v1/policy.json \
+                --runtime contracts/render_audit/v1/runtime-lock.json \
+                --semantic-receipt ci-artifacts/render-audit/semantic-receipt.json \
+                --repo-root . \
+                --browser /ms-playwright/chromium-1208/chrome-linux64/chrome \
+                --screenshot ci-artifacts/render-audit/render-${run}.png \
+                --out ci-artifacts/render-audit/observations-${run}.json
+            "
+          done
+      - name: Build deterministic receipt and prove 21 destructive cases
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          python tools/build_render_audit.py \
+            --observations-a ci-artifacts/render-audit/observations-a.json \
+            --observations-b ci-artifacts/render-audit/observations-b.json \
+            --policy contracts/render_audit/v1/policy.json \
+            --runtime contracts/render_audit/v1/runtime-lock.json \
+            --out ci-artifacts/render-audit/receipt-a.json
+          python tools/build_render_audit.py \
+            --observations-a ci-artifacts/render-audit/observations-a.json \
+            --observations-b ci-artifacts/render-audit/observations-b.json \
+            --policy contracts/render_audit/v1/policy.json \
+            --runtime contracts/render_audit/v1/runtime-lock.json \
+            --out ci-artifacts/render-audit/receipt-b.json
+          cmp ci-artifacts/render-audit/receipt-a.json ci-artifacts/render-audit/receipt-b.json
+          python tools/prove_render_audit.py \
+            --observations-a ci-artifacts/render-audit/observations-a.json \
+            --observations-b ci-artifacts/render-audit/observations-b.json \
+            --policy contracts/render_audit/v1/policy.json \
+            --runtime contracts/render_audit/v1/runtime-lock.json \
+            --out ci-artifacts/render-audit/proof-a.json
+          python tools/prove_render_audit.py \
+            --observations-a ci-artifacts/render-audit/observations-a.json \
+            --observations-b ci-artifacts/render-audit/observations-b.json \
+            --policy contracts/render_audit/v1/policy.json \
+            --runtime contracts/render_audit/v1/runtime-lock.json \
+            --out ci-artifacts/render-audit/proof-b.json
+          cmp ci-artifacts/render-audit/proof-a.json ci-artifacts/render-audit/proof-b.json
+          python - <<'PY'
+          import json
+          receipt=json.load(open('ci-artifacts/render-audit/receipt-a.json'))
+          proof=json.load(open('ci-artifacts/render-audit/proof-a.json'))
+          assert receipt['result']['verification']=='COMPLETE'
+          assert receipt['result']['gateStatus']=='VALID'
+          assert receipt['result']['decision']=='ALLOW'
+          assert receipt['result']['risk']=='CLEAN'
+          assert receipt['result']['findings']==[]
+          assert receipt['renderQualityAuditComplete'] is True
+          assert receipt['semantic_channel_unchanged'] is True
+          assert receipt['source_model_unchanged'] is True
+          assert proof['status']=='PASS' and proof['destructiveCaseCount']==21
+          PY
+      - name: Reject duplicate current-state or render-state artifacts
+        working-directory: diagrams
+        run: |
+          set -euo pipefail
+          test ! -e src/jsonl_diagram_core/meaning_model.py
+          test ! -e src/jsonl_diagram_core/render_ast.py
+          test ! -e src/jsonl_diagram_core/drawio_render_ast.py
+          test "$(find . -type f \( -name 'dvm.json' -o -name '*comparison-ir*' -o -name '*semantic-state.json' -o -name '*render-state*' -o -name '*rendering-ir*' \) -not -path './.git/*' -not -path './ci-artifacts/*' | wc -l)" -eq 0
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Preserve repository Nix closure
+        working-directory: diagrams
+        run: |
+          nix flake check -L
+          nix build -L .#jsonl-diagram-core
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pinned-render-audit-proof
+          path: diagrams/ci-artifacts/render-audit
+          if-no-files-found: error
