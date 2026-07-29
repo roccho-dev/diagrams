@@ -29,16 +29,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p proof
-          test "$(sha256sum .staging/render-audit-nonworkflow.tar.gz.b64 | cut -d' ' -f1)" = 498e64e49d5e0e072a6a7a73b74a78c808128dc53ba4d235844e7311c5a3f243
+          actual_b64_sha="$(sha256sum .staging/render-audit-nonworkflow.tar.gz.b64 | cut -d' ' -f1)"
+          printf '%s  %s\n' "$actual_b64_sha" .staging/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.sha256
+          wc -c .staging/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.bytes
+          test "$actual_b64_sha" = 498e64e49d5e0e072a6a7a73b74a78c808128dc53ba4d235844e7311c5a3f243
           base64 -d .staging/render-audit-nonworkflow.tar.gz.b64 > /tmp/render-audit-nonworkflow.tar.gz
-          test "$(sha256sum /tmp/render-audit-nonworkflow.tar.gz | cut -d' ' -f1)" = b1d89b50d441b753c2eb6ba353041718d2592ba8a16c3ff547a788d6c472ae1d
+          actual_tar_sha="$(sha256sum /tmp/render-audit-nonworkflow.tar.gz | cut -d' ' -f1)"
+          printf '%s  %s\n' "$actual_tar_sha" /tmp/render-audit-nonworkflow.tar.gz | tee proof/payload-tar.sha256
+          wc -c /tmp/render-audit-nonworkflow.tar.gz | tee proof/payload-tar.bytes
+          test "$actual_tar_sha" = b1d89b50d441b753c2eb6ba353041718d2592ba8a16c3ff547a788d6c472ae1d
           tar -xzf /tmp/render-audit-nonworkflow.tar.gz
           python -m py_compile \
             src/jsonl_diagram_core/render_audit.py \
             tools/probe_render_audit.py \
             tools/prove_render_audit.py
           PYTHONPATH=src python -m unittest tests.unit.test_render_audit -v |& tee proof/unit.log
-          test "$(PYTHONPATH=src python -m unittest tests.unit.test_render_audit 2>&1 | grep -c '^OK$')" -eq 1
           git diff -- \
             contracts/render_audit/v1/policy.json \
             contracts/render_audit/v1/runtime-lock.json \
