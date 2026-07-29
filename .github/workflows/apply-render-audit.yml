@@ -21,7 +21,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: true
-      - name: Reconstruct exact implementation payload
+      - name: Reconstruct exact non-workflow implementation payload
         run: |
           set -euo pipefail
           cat .staging/render-audit-payload.01 \
@@ -37,17 +37,17 @@ jobs:
             tools/prove_render_audit.py \
             tests/unit/test_render_audit.py
           PYTHONPATH=src python -m unittest tests.unit.test_render_audit -v
-          rm -rf .staging .github/workflows/apply-render-audit.yml
-          test -f src/jsonl_diagram_core/render_audit.py
-          test -f tools/probe_render_audit.py
-          test -f tools/prove_render_audit.py
-          test -f tests/unit/test_render_audit.py
           test -f .github/workflows/render-audit.yml
-      - name: Commit final candidate only
+          rm .github/workflows/render-audit.yml
+      - name: Commit non-workflow implementation
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A
-          git commit -m 'Add pinned official draw.io render audit'
+          git add \
+            src/jsonl_diagram_core/render_audit.py \
+            tools/probe_render_audit.py \
+            tools/prove_render_audit.py \
+            tests/unit/test_render_audit.py
+          git commit -m 'Add deterministic render audit engine and proof'
           git push origin HEAD:proposal/14-pinned-render-audit
