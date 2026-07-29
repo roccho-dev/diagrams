@@ -5,12 +5,16 @@ on:
     branches: [staging/14-apply-base]
     paths:
       - .github/workflows/apply-render-audit-final.yml
-      - .staging/render-audit-nonworkflow.tar.gz.b64
+      - .staging/render-audit-nonworkflow.part00
+      - .staging/render-audit-nonworkflow.part01
+      - .staging/render-audit-nonworkflow.part02
   push:
     branches: [staging/14-render-audit-final]
     paths:
       - .github/workflows/apply-render-audit-final.yml
-      - .staging/render-audit-nonworkflow.tar.gz.b64
+      - .staging/render-audit-nonworkflow.part00
+      - .staging/render-audit-nonworkflow.part01
+      - .staging/render-audit-nonworkflow.part02
   workflow_dispatch:
 
 permissions:
@@ -29,11 +33,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p proof
-          actual_b64_sha="$(sha256sum .staging/render-audit-nonworkflow.tar.gz.b64 | cut -d' ' -f1)"
-          printf '%s  %s\n' "$actual_b64_sha" .staging/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.sha256
-          wc -c .staging/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.bytes
+          test "$(wc -c < .staging/render-audit-nonworkflow.part00)" -eq 7600
+          test "$(wc -c < .staging/render-audit-nonworkflow.part01)" -eq 7600
+          test "$(wc -c < .staging/render-audit-nonworkflow.part02)" -eq 7584
+          test "$(sha256sum .staging/render-audit-nonworkflow.part00 | cut -d' ' -f1)" = 92e72f12312aa2d18e2d2bcf31019ed69422ec4461a7de6541bde79767517cca
+          test "$(sha256sum .staging/render-audit-nonworkflow.part01 | cut -d' ' -f1)" = c8a173cac9c94275879ee00a47d83ab1f1b6f71f50dc029c762fcffe95c4eea7
+          test "$(sha256sum .staging/render-audit-nonworkflow.part02 | cut -d' ' -f1)" = 782d0f256a756121beaa4353ccaae38ce3e2f52ae521edf667a372a760e9f253
+          cat .staging/render-audit-nonworkflow.part00 \
+              .staging/render-audit-nonworkflow.part01 \
+              .staging/render-audit-nonworkflow.part02 \
+              > /tmp/render-audit-nonworkflow.tar.gz.b64
+          actual_b64_sha="$(sha256sum /tmp/render-audit-nonworkflow.tar.gz.b64 | cut -d' ' -f1)"
+          printf '%s  %s\n' "$actual_b64_sha" /tmp/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.sha256
+          wc -c /tmp/render-audit-nonworkflow.tar.gz.b64 | tee proof/payload-b64.bytes
           test "$actual_b64_sha" = 498e64e49d5e0e072a6a7a73b74a78c808128dc53ba4d235844e7311c5a3f243
-          base64 -d .staging/render-audit-nonworkflow.tar.gz.b64 > /tmp/render-audit-nonworkflow.tar.gz
+          base64 -d /tmp/render-audit-nonworkflow.tar.gz.b64 > /tmp/render-audit-nonworkflow.tar.gz
           actual_tar_sha="$(sha256sum /tmp/render-audit-nonworkflow.tar.gz | cut -d' ' -f1)"
           printf '%s  %s\n' "$actual_tar_sha" /tmp/render-audit-nonworkflow.tar.gz | tee proof/payload-tar.sha256
           wc -c /tmp/render-audit-nonworkflow.tar.gz | tee proof/payload-tar.bytes
