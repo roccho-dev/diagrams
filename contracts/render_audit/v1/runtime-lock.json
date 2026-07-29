@@ -2,7 +2,7 @@
   "browser": {
     "executableSha256": "sha256:481fea1516a1f2b76454664272f12cd9dd1f20117b21e1f1498e08bc7f872c00",
     "path": "/ms-playwright/chromium-1208/chrome-linux64/chrome",
-    "version": "Google Chrome for Testing 145.0.7632.6"
+    "version": "145.0.7632.6"
   },
   "container": {
     "digest": "mcr.microsoft.com/playwright/python@sha256:678457c4c323b981d8b4befc57b95366bb1bb6aa30057b1269f6b171e8d9975a",
