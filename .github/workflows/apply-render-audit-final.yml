@@ -33,6 +33,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p proof
+          for part in 00 01 02; do
+            file=".staging/render-audit-nonworkflow.part${part}"
+            wc -c "$file" | tee -a proof/parts.bytes
+            sha256sum "$file" | tee -a proof/parts.sha256
+          done
           test "$(wc -c < .staging/render-audit-nonworkflow.part00)" -eq 7600
           test "$(wc -c < .staging/render-audit-nonworkflow.part01)" -eq 7600
           test "$(wc -c < .staging/render-audit-nonworkflow.part02)" -eq 7584
