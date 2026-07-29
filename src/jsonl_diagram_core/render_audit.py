@@ -6,6 +6,7 @@ import json
 import math
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Iterable
 
 Json = dict[str, Any]
@@ -88,14 +89,6 @@ def _rect_inside(inner: tuple[float, float, float, float], outer: tuple[float, f
         and ix + iw <= ox + ow + tolerance
         and iy + ih <= oy + oh + tolerance
     )
-
-
-def _rect_intersects(a: tuple[float, float, float, float], b: tuple[float, float, float, float], *, strict: bool = True) -> bool:
-    ax, ay, aw, ah = a
-    bx, by, bw, bh = b
-    if strict:
-        return max(ax, bx) < min(ax + aw, bx + bw) and max(ay, by) < min(ay + ah, by + bh)
-    return max(ax, bx) <= min(ax + aw, bx + bw) and max(ay, by) <= min(ay + ah, by + bh)
 
 
 def _segment_intersects_rect(a: list[float], b: list[float], rect: tuple[float, float, float, float], clearance: float) -> bool:
@@ -192,35 +185,98 @@ def _finding(code: str, subjects: Iterable[str], **evidence: Any) -> Finding:
     return Finding(code=code, subjects=tuple(sorted(str(subject) for subject in subjects)), evidence=evidence)
 
 
-def _runtime_complete(runtime: Any) -> bool:
-    if not isinstance(runtime, dict):
-        return False
+def _timestamp(value: Any, name: str) -> datetime:
+    _require(isinstance(value, str) and value, "RENDERER_IDENTITY_MISSING", f"missing {name}")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise RenderAuditInputError("RENDERER_IDENTITY_MISSING", f"invalid {name}") from exc
+    _require(parsed.tzinfo is not None, "RENDERER_IDENTITY_MISSING", f"timezone required for {name}")
+    return parsed
+
+
+def _runtime_identity(runtime: Any) -> Json:
+    _require(isinstance(runtime, dict) and runtime.get("kind") == "diagram.renderAuditRuntimePin.v2", "RENDERER_IDENTITY_MISSING", "runtime identity missing")
     renderer = runtime.get("renderer")
     container = runtime.get("container")
     browser = runtime.get("browser")
     font = runtime.get("font")
     viewport = runtime.get("viewport")
-    return bool(
+    playwright_python = runtime.get("playwrightPython")
+    _require(
         isinstance(renderer, dict)
         and renderer.get("product") == "draw.io GraphViewer"
-        and renderer.get("version")
+        and renderer.get("repository") == "jgraph/drawio"
+        and isinstance(renderer.get("tag"), str) and renderer.get("tag")
+        and isinstance(renderer.get("version"), str) and renderer.get("version")
+        and isinstance(renderer.get("commit"), str) and re.fullmatch(r"[0-9a-f]{40}", renderer["commit"])
         and HEX_DIGEST.fullmatch(str(renderer.get("sha256", "")))
-        and isinstance(container, dict)
-        and container.get("digest")
-        and HEX_DIGEST.fullmatch(str(container.get("osReleaseSha256", "")))
-        and isinstance(browser, dict)
-        and browser.get("version")
-        and HEX_DIGEST.fullmatch(str(browser.get("executableSha256", "")))
-        and isinstance(font, dict)
-        and font.get("family")
-        and HEX_DIGEST.fullmatch(str(font.get("sha256", "")))
-        and isinstance(viewport, dict)
-        and int(viewport.get("width", 0)) > 0
-        and int(viewport.get("height", 0)) > 0
-        and float(viewport.get("devicePixelRatio", 0)) > 0
-        and runtime.get("theme") in {"light", "dark"}
+        and HEX_DIGEST.fullmatch(str(renderer.get("licenseSha256", ""))),
+        "RENDERER_IDENTITY_MISSING",
+        "renderer identity incomplete",
     )
+    _require(
+        isinstance(container, dict)
+        and isinstance(container.get("digest"), str)
+        and re.fullmatch(r"[^\s]+@sha256:[0-9a-f]{64}", container["digest"])
+        and isinstance(container.get("tag"), str) and container.get("tag")
+        and HEX_DIGEST.fullmatch(str(container.get("osReleaseSha256", ""))),
+        "RENDERER_IDENTITY_MISSING",
+        "container identity incomplete",
+    )
+    _require(
+        isinstance(browser, dict)
+        and isinstance(browser.get("path"), str) and browser.get("path")
+        and isinstance(browser.get("version"), str) and browser.get("version")
+        and HEX_DIGEST.fullmatch(str(browser.get("executableSha256", ""))),
+        "RENDERER_IDENTITY_MISSING",
+        "browser identity incomplete",
+    )
+    _require(
+        isinstance(font, dict)
+        and isinstance(font.get("family"), str) and font.get("family")
+        and isinstance(font.get("path"), str) and font.get("path")
+        and HEX_DIGEST.fullmatch(str(font.get("sha256", ""))),
+        "FONT_OR_VIEWPORT_IDENTITY_MISSING",
+        "font identity incomplete",
+    )
+    _require(
+        isinstance(viewport, dict)
+        and isinstance(viewport.get("width"), int) and viewport["width"] > 0
+        and isinstance(viewport.get("height"), int) and viewport["height"] > 0
+        and isinstance(viewport.get("devicePixelRatio"), (int, float)) and math.isfinite(float(viewport["devicePixelRatio"])) and float(viewport["devicePixelRatio"]) > 0
+        and runtime.get("theme") in {"light", "dark"},
+        "FONT_OR_VIEWPORT_IDENTITY_MISSING",
+        "viewport/theme identity incomplete",
+    )
+    _require(
+        isinstance(playwright_python, dict)
+        and isinstance(playwright_python.get("version"), str) and playwright_python.get("version")
+        and HEX_DIGEST.fullmatch(str(playwright_python.get("wheelSha256", "")))
+        and isinstance(playwright_python.get("dependencyWheelSha256"), list)
+        and len(playwright_python["dependencyWheelSha256"]) >= 1
+        and all(HEX_DIGEST.fullmatch(str(item)) for item in playwright_python["dependencyWheelSha256"]),
+        "RENDERER_IDENTITY_MISSING",
+        "Playwright identity incomplete",
+    )
+    return runtime
 
+
+def _observed_runtime_findings(observation: Json, runtime: Json, observation_name: str) -> list[Finding]:
+    actual = observation.get("runtimeObserved")
+    if not isinstance(actual, dict):
+        return [_finding("RENDERER_IDENTITY_MISSING", ["runtime"], observation=observation_name, reason="runtime observation missing")]
+    findings: list[Finding] = []
+    expected_viewport = runtime["viewport"]
+    if actual.get("browserVersion") != runtime["browser"]["version"] or actual.get("browserExecutableSha256") != runtime["browser"]["executableSha256"]:
+        findings.append(_finding("RENDERER_IDENTITY_MISSING", ["browser"], observation=observation_name, expected=runtime["browser"], actual=actual))
+    if actual.get("osReleaseSha256") != runtime["container"]["osReleaseSha256"]:
+        findings.append(_finding("RENDERER_IDENTITY_MISSING", ["container"], observation=observation_name, expected=runtime["container"]["osReleaseSha256"], actual=actual.get("osReleaseSha256")))
+    if actual.get("fontSha256") != runtime["font"]["sha256"] or actual.get("fontLoaded") is not True:
+        findings.append(_finding("FONT_OR_VIEWPORT_IDENTITY_MISSING", ["font"], observation=observation_name, expected=runtime["font"], actual=actual))
+    if actual.get("viewport") != expected_viewport or actual.get("theme") != runtime.get("theme"):
+        findings.append(_finding("FONT_OR_VIEWPORT_IDENTITY_MISSING", ["viewport"], observation=observation_name, expected={"viewport": expected_viewport, "theme": runtime.get("theme")}, actual=actual))
+    return findings
 
 def _normalized_facts(observation: Json) -> Json:
     return {
@@ -237,6 +293,9 @@ def _normalized_facts(observation: Json) -> Json:
         "pageErrors": observation.get("pageErrors"),
         "unsupported": observation.get("unsupported"),
         "duplicateRenderStatePaths": observation.get("duplicateRenderStatePaths"),
+        "modelBeforeSha256": observation.get("modelBeforeSha256"),
+        "modelAfterSha256": observation.get("modelAfterSha256"),
+        "runtimeObserved": observation.get("runtimeObserved"),
         "screenshot": observation.get("screenshot"),
     }
 
@@ -263,45 +322,24 @@ def evaluate_render_audit(
         semantic_digest = _digest(source.get("semanticDigest"), "semantic digest")
         page_ids = source.get("pageIds")
         _require(isinstance(page_ids, list) and all(isinstance(item, str) for item in page_ids), "RENDERER_IDENTITY_MISSING", "page identities")
-        _require(isinstance(runtime, dict), "RENDERER_IDENTITY_MISSING", "runtime identity missing")
-        renderer = runtime.get("renderer")
-        container = runtime.get("container")
-        browser = runtime.get("browser")
-        _require(
-            isinstance(renderer, dict)
-            and renderer.get("product") == "draw.io GraphViewer"
-            and renderer.get("version")
-            and HEX_DIGEST.fullmatch(str(renderer.get("sha256", "")))
-            and isinstance(container, dict)
-            and container.get("digest")
-            and HEX_DIGEST.fullmatch(str(container.get("osReleaseSha256", "")))
-            and isinstance(browser, dict)
-            and browser.get("version")
-            and HEX_DIGEST.fullmatch(str(browser.get("executableSha256", ""))),
-            "RENDERER_IDENTITY_MISSING",
-            "renderer/container/browser identity incomplete",
-        )
-        font = runtime.get("font")
-        viewport = runtime.get("viewport")
-        _require(
-            isinstance(font, dict)
-            and font.get("family")
-            and HEX_DIGEST.fullmatch(str(font.get("sha256", "")))
-            and isinstance(viewport, dict)
-            and int(viewport.get("width", 0)) > 0
-            and int(viewport.get("height", 0)) > 0
-            and float(viewport.get("devicePixelRatio", 0)) > 0
-            and runtime.get("theme") in {"light", "dark"},
-            "FONT_OR_VIEWPORT_IDENTITY_MISSING",
-            "font/viewport/theme identity incomplete",
-        )
-        _require(policy.get("asOf"), "RENDERER_IDENTITY_MISSING", "as_of missing")
+        runtime = _runtime_identity(runtime)
+        as_of = _timestamp(policy.get("asOf"), "as_of")
+        waiver_maximum_days = int(policy.get("waiverMaximumDays", 31))
+        _require(0 <= waiver_maximum_days <= 366, "UNSUPPORTED_RENDER_EXACTNESS", "invalid waiverMaximumDays")
 
         findings: list[Finding] = []
         errors: list[Json] = []
         coverage: list[Json] = []
 
         for observation_name, observation in (("a", observation_a), ("b", observation_b)):
+            _require(isinstance(observation, dict) and observation.get("kind") == "diagram.renderObservations.v1", "UNSUPPORTED_RENDER_EXACTNESS", f"observation {observation_name} kind")
+            findings.extend(_observed_runtime_findings(observation, runtime, observation_name))
+            before_digest = observation.get("modelBeforeSha256")
+            after_digest = observation.get("modelAfterSha256")
+            if not (isinstance(before_digest, str) and HEX_DIGEST.fullmatch(before_digest) and isinstance(after_digest, str) and HEX_DIGEST.fullmatch(after_digest)):
+                findings.append(_finding("MODEL_MUTATED_BY_RENDER", ["source"], observation=observation_name, reason="model snapshot digest missing"))
+            elif before_digest != after_digest:
+                findings.append(_finding("MODEL_MUTATED_BY_RENDER", ["source"], observation=observation_name, before=before_digest, after=after_digest))
             if observation.get("sourceMxfileSha256") != source_digest:
                 findings.append(_finding("MODEL_MUTATED_BY_RENDER", ["source"], observation=observation_name, expected=source_digest, actual=observation.get("sourceMxfileSha256")))
             if observation.get("semanticDigest") != semantic_digest or observation.get("semanticStatus") != "PASS":
@@ -342,8 +380,14 @@ def evaluate_render_audit(
                 findings.append(_finding("REQUIRED_SUBJECT_MISSING", [subject_id]))
                 continue
             exactness = subject.get("exactness")
-            if exactness not in {"renderer-exact", "model-exact"}:
-                findings.append(_finding("UNSUPPORTED_RENDER_EXACTNESS", [subject_id], exactness=exactness))
+            if exactness != "renderer-exact":
+                findings.append(_finding("UNSUPPORTED_RENDER_EXACTNESS", [subject_id], exactness=exactness, required="renderer-exact"))
+            if subject.get("labelPresent") is not True:
+                findings.append(_finding("REQUIRED_SUBJECT_MISSING", [subject_id, "label"], reason="required label missing"))
+            expected_font = str(runtime["font"]["family"])
+            actual_font = str(subject.get("fontFamily", ""))
+            if expected_font.lower() not in actual_font.lower():
+                findings.append(_finding("FONT_OR_VIEWPORT_IDENTITY_MISSING", [subject_id, "font"], expected=expected_font, actual=actual_font))
             subject_bounds = _rect(subject.get("bounds"), f"{subject_id} bounds")
             label_bounds = _rect(subject.get("labelBounds"), f"{subject_id} label bounds")
             clip_bounds = _rect(subject.get("clipBounds", subject.get("bounds")), f"{subject_id} clip bounds")
@@ -377,6 +421,9 @@ def evaluate_render_audit(
                 findings.append(_finding("EDGE_ROUTE_NOT_RENDERER_EXACT", [edge_id], exactness=edge.get("exactness")))
                 continue
             source_id, target_id = str(edge.get("source")), str(edge.get("target"))
+            expected_source, expected_target = edge_policy.get("source"), edge_policy.get("target")
+            if source_id != expected_source or target_id != expected_target:
+                findings.append(_finding("SEMANTIC_CHANNEL_CONTAMINATED", [edge_id], expectedSource=expected_source, expectedTarget=expected_target, actualSource=source_id, actualTarget=target_id))
             related_subjects = {source_id, target_id, *(str(item) for item in edge_policy.get("relatedSubjects", []))}
             for subject_id in protected_labels:
                 subject = subjects.get(subject_id)
@@ -410,24 +457,6 @@ def evaluate_render_audit(
         }
         facts_digest = sha256_json(facts)
 
-        dispositions: list[Json] = []
-        accepted_keys: set[str] = set()
-        for waiver in waivers or []:
-            if not isinstance(waiver, dict) or waiver.get("kind") != "diagram.renderWaiver.v1":
-                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", ["waiver"], reason="invalid waiver shape").as_json())
-                continue
-            if waiver.get("factsSha256") != facts_digest or waiver.get("changesObservation") or waiver.get("removesFinding"):
-                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [str(waiver.get("findingKey", "waiver"))], waiver=waiver).as_json())
-                continue
-            finding_key = waiver.get("findingKey")
-            matches = [item for item in findings_json if sha256_json(item) == finding_key]
-            if len(matches) != 1:
-                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [str(finding_key)], reason="finding key mismatch").as_json())
-                continue
-            accepted_keys.add(str(finding_key))
-            dispositions.append({"kind": "diagram.renderDisposition.v1", "findingKey": finding_key, "state": "accepted", "approvalRef": waiver.get("approvalRef"), "expires": waiver.get("expires")})
-
-        findings_json = sorted({sha256_json(item): item for item in findings_json}.values(), key=canonical_json)
         integrity_codes = {
             "RENDERER_IDENTITY_MISSING",
             "FONT_OR_VIEWPORT_IDENTITY_MISSING",
@@ -436,7 +465,43 @@ def evaluate_render_audit(
             "WAIVER_CHANGED_OBSERVATION",
             "DUPLICATE_RENDER_STATE",
             "RENDER_NONDETERMINISTIC",
+            "UNSUPPORTED_RENDER_EXACTNESS",
+            "EDGE_ROUTE_NOT_RENDERER_EXACT",
         }
+        dispositions: list[Json] = []
+        accepted_keys: set[str] = set()
+        seen_waiver_keys: set[str] = set()
+        allowed_waiver_keys = {"kind", "findingKey", "factsSha256", "approvalRef", "issuedAt", "expires"}
+        for waiver in waivers or []:
+            if not isinstance(waiver, dict) or set(waiver) != allowed_waiver_keys or waiver.get("kind") != "diagram.renderWaiver.v1":
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", ["waiver"], reason="invalid waiver shape").as_json())
+                continue
+            finding_key = waiver.get("findingKey")
+            if not isinstance(finding_key, str) or finding_key in seen_waiver_keys:
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [str(finding_key)], reason="duplicate or invalid finding key").as_json())
+                continue
+            seen_waiver_keys.add(finding_key)
+            if waiver.get("factsSha256") != facts_digest or not isinstance(waiver.get("approvalRef"), str) or not waiver.get("approvalRef"):
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [finding_key], reason="waiver binding incomplete").as_json())
+                continue
+            try:
+                issued_at = _timestamp(waiver.get("issuedAt"), "waiver issuedAt")
+                expires = _timestamp(waiver.get("expires"), "waiver expires")
+            except RenderAuditInputError:
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [finding_key], reason="invalid waiver time").as_json())
+                continue
+            duration_days = (expires - issued_at).total_seconds() / 86400
+            if issued_at > as_of or expires < as_of or expires <= issued_at or duration_days > waiver_maximum_days:
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [finding_key], reason="waiver time outside policy", issuedAt=waiver.get("issuedAt"), expires=waiver.get("expires"), asOf=policy.get("asOf"), maximumDays=waiver_maximum_days).as_json())
+                continue
+            matches = [item for item in findings_json if sha256_json(item) == finding_key]
+            if len(matches) != 1 or matches[0].get("code") in integrity_codes:
+                findings_json.append(_finding("WAIVER_CHANGED_OBSERVATION", [finding_key], reason="finding is missing, ambiguous, or non-waivable").as_json())
+                continue
+            accepted_keys.add(finding_key)
+            dispositions.append({"kind": "diagram.renderDisposition.v1", "findingKey": finding_key, "state": "accepted", "approvalRef": waiver["approvalRef"], "issuedAt": waiver["issuedAt"], "expires": waiver["expires"]})
+
+        findings_json = sorted({sha256_json(item): item for item in findings_json}.values(), key=canonical_json)
         finding_keys = {sha256_json(item) for item in findings_json}
         open_keys = finding_keys - accepted_keys
         verification = "ERROR" if any(item["code"] in integrity_codes for item in findings_json) else "PARTIAL" if coverage else "COMPLETE"
@@ -476,6 +541,7 @@ def evaluate_render_audit(
             "screenshots": screenshots,
             "source_model_unchanged": bool(observation_a.get("sourceModelUnchanged") and observation_b.get("sourceModelUnchanged")),
             "semantic_channel_unchanged": observation_a.get("semanticDigest") == semantic_digest and observation_b.get("semanticDigest") == semantic_digest and observation_a.get("semanticStatus") == observation_b.get("semanticStatus") == "PASS",
+            "auditExecutionComplete": verification == "COMPLETE" and gate_status == "VALID",
             "renderQualityAuditComplete": verification == "COMPLETE" and gate_status == "VALID" and decision == "ALLOW",
             "publicationAdmissible": False,
             "businessOutcomeAchieved": False,
@@ -496,6 +562,7 @@ def evaluate_render_audit(
                 "dispositions": [],
                 "errors": [{"code": exc.code, "message": str(exc)}],
             },
+            "auditExecutionComplete": False,
             "renderQualityAuditComplete": False,
             "publicationAdmissible": False,
             "businessOutcomeAchieved": False,

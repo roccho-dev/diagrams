@@ -20,7 +20,9 @@
       "id": "flow",
       "relatedSubjects": [
         "scope"
-      ]
+      ],
+      "source": "input",
+      "target": "output"
     }
   ],
   "requiredSubjects": [
@@ -47,5 +49,6 @@
     "releaseId": "diagram-semantic-contract-v1.0.2",
     "semanticDigest": "sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2"
   },
-  "unsupportedExactness": "ERROR"
+  "unsupportedExactness": "ERROR",
+  "waiverMaximumDays": 31
 }

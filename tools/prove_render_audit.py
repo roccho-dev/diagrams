@@ -68,12 +68,12 @@ def main() -> int:
     add("R09-low-contrast", "CONTRAST_BELOW_POLICY", lambda a,b,p,r: a["subjects"]["input"].update(textColor="rgb(120,120,120)",backgroundColor="rgb(130,130,130)"))
     add("R10-external-request", "RUNTIME_EXTERNAL_REQUEST", lambda a,b,p,r: a["externalRequests"].append("https://example.invalid/font.woff2"))
     add("R11-console-error", "RENDERER_CONSOLE_ERROR", lambda a,b,p,r: a["consoleErrors"].append("renderer failed"))
-    add("R12-model-mutated", "MODEL_MUTATED_BY_RENDER", lambda a,b,p,r: a.update(sourceModelUnchanged=False))
+    add("R12-model-mutated", "MODEL_MUTATED_BY_RENDER", lambda a,b,p,r: a.update(sourceModelUnchanged=False, modelAfterSha256="sha256:"+"7"*64))
     add("R13-screenshot-empty", "SCREENSHOT_EVIDENCE_EMPTY", lambda a,b,p,r: a.update(screenshot={"sha256":"sha256:"+"0"*64,"byteLength":0,"nonEmpty":False}))
     add("R14-nondeterministic", "RENDER_NONDETERMINISTIC", lambda a,b,p,r: b["screenshot"].update(sha256="sha256:"+"9"*64))
     add("R15-renderer-identity-missing", "RENDERER_IDENTITY_MISSING", lambda a,b,p,r: r["renderer"].pop("sha256"))
     add("R16-font-identity-missing", "FONT_OR_VIEWPORT_IDENTITY_MISSING", lambda a,b,p,r: r["font"].pop("sha256"))
-    add("R17-unsupported-exactness", "UNSUPPORTED_RENDER_EXACTNESS", lambda a,b,p,r: a["subjects"]["input"].update(exactness="approximate"))
+    add("R17-unsupported-exactness", "UNSUPPORTED_RENDER_EXACTNESS", lambda a,b,p,r: a["subjects"]["input"].update(exactness="model-exact"))
     add("R18-edge-route-not-exact", "EDGE_ROUTE_NOT_RENDERER_EXACT", lambda a,b,p,r: a["edges"]["flow"].update(exactness="model-exact"))
     add("R19-semantic-contaminated", "SEMANTIC_CHANNEL_CONTAMINATED", lambda a,b,p,r: a.update(semanticDigest="sha256:"+"8"*64))
 
@@ -84,6 +84,8 @@ def main() -> int:
         return [{"kind":"diagram.renderWaiver.v1","findingKey":sha256_json(finding),"factsSha256":pre["facts_sha256"],"changesObservation":True,"approvalRef":"adrs#bad"}]
     add("R20-waiver-changed-observation", "WAIVER_CHANGED_OBSERVATION", bad_waiver)
     add("R21-duplicate-render-state", "DUPLICATE_RENDER_STATE", lambda a,b,p,r: a["duplicateRenderStatePaths"].append("state/render-state.json"))
+    add("R22-custom-renderer", "RENDERER_IDENTITY_MISSING", lambda a,b,p,r: r["renderer"].update(product="custom renderer"))
+    add("R23-actual-font-mismatch", "FONT_OR_VIEWPORT_IDENTITY_MISSING", lambda a,b,p,r: a["runtimeObserved"].update(fontSha256="sha256:"+"6"*64))
 
     matrix=[]
     for name,expected,mutate in cases:

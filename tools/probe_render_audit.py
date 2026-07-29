@@ -7,6 +7,7 @@ import html
 import json
 import re
 import time
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
@@ -34,12 +35,36 @@ def duplicate_state_paths(root: Path) -> list[str]:
     patterns = ("dvm.json", "comparison-ir", "semantic-state.json", "render-state", "rendering-ir")
     result: list[str] = []
     for path in root.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
+        if not path.is_file() or ".git" in path.parts or "ci-artifacts" in path.parts:
             continue
         relative = path.relative_to(root).as_posix().lower()
         if any(pattern in relative for pattern in patterns):
             result.append(path.relative_to(root).as_posix())
     return sorted(result)
+
+
+def source_page_ids(xml_bytes: bytes) -> list[str]:
+    root = ET.fromstring(xml_bytes)
+    if root.tag.rsplit("}", 1)[-1] != "mxfile":
+        raise ValueError("source root must be mxfile")
+    result = []
+    for child in root:
+        if child.tag.rsplit("}", 1)[-1] != "diagram":
+            continue
+        page_id = child.get("id")
+        if not page_id or page_id in result:
+            raise ValueError("source page IDs must be present and unique")
+        result.append(page_id)
+    if not result:
+        raise ValueError("source has no pages")
+    return result
+
+
+def require_digest(path: Path, expected: str, name: str) -> str:
+    actual = sha256(path.read_bytes())
+    if actual != expected:
+        raise ValueError(f"{name} digest mismatch: {actual}")
+    return actual
 
 
 def main() -> int:
@@ -62,6 +87,12 @@ def main() -> int:
     source_sha = sha256(source_bytes)
     if source_sha != policy["source"]["mxfileSha256"]:
         raise ValueError("source digest mismatch")
+    actual_page_ids = source_page_ids(source_bytes)
+
+    browser_sha = require_digest(args.browser, runtime["browser"]["executableSha256"], "browser")
+    font_path = Path(runtime["font"]["path"])
+    font_sha = require_digest(font_path, runtime["font"]["sha256"], "font")
+    os_release_sha = require_digest(Path("/etc/os-release"), runtime["container"]["osReleaseSha256"], "os-release")
 
     index = (args.bundle / "index.html").read_text(encoding="utf-8")
     match = re.search(r'<div id="viewer" class="mxgraph" data-mxgraph="([^"]*)"></div>', index)
@@ -71,9 +102,16 @@ def main() -> int:
     external_requests: list[str] = []
     console_errors: list[str] = []
     page_errors: list[str] = []
+    font_family = str(runtime["font"]["family"])
+    probe_config = {
+        "subjectIds": [str(item["id"]) for item in policy["requiredSubjects"]],
+        "edgeIds": [str(item["id"]) for item in policy["requiredEdges"]],
+        "fontFamily": font_family,
+    }
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True, executable_path=str(args.browser))
+        browser_version = browser.version
         page = browser.new_page(
             viewport={"width": runtime["viewport"]["width"], "height": runtime["viewport"]["height"]},
             device_scale_factor=runtime["viewport"]["devicePixelRatio"],
@@ -83,8 +121,11 @@ def main() -> int:
         page.on("request", lambda request: external_requests.append(request.url) if request.url.startswith(("http://", "https://")) else None)
         page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
         page.on("pageerror", lambda error: page_errors.append(str(error)))
+        escaped_font = html.escape(font_family, quote=True)
         page.set_content(
-            '<style>html,body,#viewer{width:100%;height:100%;margin:0;background:#fff}#viewer{min-height:600px}</style>'
+            '<style>html,body,#viewer{width:100%;height:100%;margin:0;background:#fff}'
+            '#viewer{min-height:600px}'
+            f'#viewer,#viewer *{{font-family:"{escaped_font}" !important}}</style>'
             '<div id="viewer" class="mxgraph" data-mxgraph="' + html.escape(payload, quote=True) + '"></div>'
         )
         page.add_script_tag(content=(args.bundle / "app.js").read_text(encoding="utf-8"))
@@ -97,24 +138,39 @@ def main() -> int:
         else:
             raise RuntimeError("official GraphViewer did not reach READY")
 
+        font_loaded = bool(page.evaluate("family => document.fonts.check(`12px \\\"${family}\\\"`)", font_family))
         observation = page.evaluate(
             """
-            () => {
+            config => {
               const graph = window.__compiledViewer.graph;
               const model = graph.getModel();
               const stable = value => JSON.stringify(value);
+              const valueSnapshot = value => {
+                if (value && value.nodeType === 1) return new XMLSerializer().serializeToString(value);
+                return value == null ? null : String(value);
+              };
               const snapshot = () => Object.keys(model.cells || {}).sort().map(id => {
                 const cell = model.getCell(id); const g = cell && cell.geometry;
-                return {id, value: cell && cell.value, style: cell && cell.style,
+                return {id, value: valueSnapshot(cell && cell.value), style: cell && cell.style,
                   parent: cell && cell.parent && cell.parent.id, source: cell && cell.source && cell.source.id,
                   target: cell && cell.target && cell.target.id,
-                  geometry: g ? [g.x,g.y,g.width,g.height,g.relative === true] : null};
+                  geometry: g ? [g.x,g.y,g.width,g.height,g.relative === true,
+                    (g.points || []).map(p => [p.x,p.y])] : null};
               });
               const before = stable(snapshot());
-              const cellMap = {scope:'group_scope', input:'node_input', output:'node_output'};
+              const semanticCells = new Map();
+              for (const id of Object.keys(model.cells || {}).sort()) {
+                const cell = model.getCell(id); const value = cell && cell.value;
+                const semanticId = value && value.getAttribute && value.getAttribute('jsonlId');
+                if (semanticId) {
+                  if (semanticCells.has(semanticId)) throw new Error(`duplicate semantic cell ${semanticId}`);
+                  semanticCells.set(semanticId, cell);
+                }
+              }
               const subjects = {};
+              const unsupported = [];
               const usableColor = value => Boolean(value && value !== 'none' && value !== 'transparent' && !value.includes('light-dark(') && !value.includes('rgba(0, 0, 0, 0)'));
-              const computedColor = (node, property, fallback) => {
+              const computedValue = (node, property, fallback) => {
                 if (!node) return fallback;
                 const selector = property === 'fill'
                   ? 'rect,ellipse,polygon,path[fill]:not([fill="none"])'
@@ -133,7 +189,7 @@ def main() -> int:
               const containsRect = (outer,inner) => outer && inner && inner.x >= outer.x && inner.y >= outer.y && inner.x+inner.width <= outer.x+outer.width && inner.y+inner.height <= outer.y+outer.height;
               const opaque = node => {
                 if (!node) return false; const style=getComputedStyle(node); const opacity=parseFloat(style.opacity || '1');
-                const fill=computedColor(node,'fill','transparent').toLowerCase();
+                const fill=computedValue(node,'fill','transparent').toLowerCase();
                 return opacity >= .99 && fill !== 'none' && fill !== 'transparent' && !fill.includes('rgba(0, 0, 0, 0)');
               };
               const allPainted = Object.keys(model.cells || {}).map(id => graph.view.getState(model.getCell(id))).filter(state => state && state.shape && state.shape.node);
@@ -145,30 +201,44 @@ def main() -> int:
                   return follows && opaque(candidate) && containsRect(rectOf(candidate),target);
                 });
               };
-              for (const [semanticId,cellId] of Object.entries(cellMap)) {
-                const cell = model.getCell(cellId); const state = graph.view.getState(cell);
+              for (const semanticId of config.subjectIds) {
+                const cell = semanticCells.get(semanticId); const state = cell && graph.view.getState(cell);
                 if (!state) { subjects[semanticId] = {present:false}; continue; }
                 const label = state.text && state.text.boundingBox;
+                const labelNode = state.text && state.text.node;
                 const fill = state.style && state.style.fillColor && state.style.fillColor !== 'none' ? state.style.fillColor : '#ffffff';
+                const rotation = Number(state.style && state.style.rotation || 0);
+                if (!Number.isFinite(rotation) || rotation !== 0) unsupported.push({subject:semanticId,rule:'rotation',exactness:'unsupported'});
                 subjects[semanticId] = {
-                  present:true, exactness:'renderer-exact',
+                  present:true, labelPresent:Boolean(label && label.width > 0 && label.height > 0), exactness:'renderer-exact',
                   bounds:[state.x,state.y,state.width,state.height],
                   labelBounds: label ? [label.x,label.y,label.width,label.height] : [state.x,state.y,0,0],
                   clipBounds:[state.x,state.y,state.width,state.height],
-                  labelOcclusionFraction: fullyOccluded(state.text && state.text.node) ? 1 : 0,
+                  labelOcclusionFraction: fullyOccluded(labelNode) ? 1 : 0,
                   subjectOcclusionFraction: fullyOccluded(state.shape && state.shape.node) ? 1 : 0,
-                  textColor: computedColor(state.text && state.text.node,'color',state.style && state.style.fontColor || '#000000'),
-                  backgroundColor: computedColor(state.shape && state.shape.node,'fill',fill)
+                  textColor: computedValue(labelNode,'color',state.style && state.style.fontColor || '#000000'),
+                  backgroundColor: computedValue(state.shape && state.shape.node,'fill',fill),
+                  fontFamily: labelNode ? getComputedStyle(labelNode).fontFamily : ''
                 };
               }
-              const edgeCell = model.getCell('edge_flow'); const edgeState = graph.view.getState(edgeCell);
-              const edges = {flow: edgeState ? {present:true,exactness:'renderer-exact',source:'input',target:'output',points:edgeState.absolutePoints.map(p=>[p.x,p.y])}:{present:false}};
+              const edges = {};
+              for (const semanticId of config.edgeIds) {
+                const cell = semanticCells.get(semanticId); const state = cell && graph.view.getState(cell);
+                const value = cell && cell.value;
+                edges[semanticId] = state ? {
+                  present:true, exactness:'renderer-exact',
+                  source:value && value.getAttribute && value.getAttribute('semanticSource'),
+                  target:value && value.getAttribute && value.getAttribute('semanticTarget'),
+                  points:(state.absolutePoints || []).map(p=>[p.x,p.y])
+                } : {present:false};
+              }
               graph.refresh();
               const after = stable(snapshot());
-              return {subjects, edges, before, after, svgCount:document.querySelectorAll('#viewer svg').length,
+              return {subjects, edges, unsupported, before, after, svgCount:document.querySelectorAll('#viewer svg').length,
                 initialized:window.__compiledViewerProof.officialGraphViewerInitialized === true};
             }
-            """
+            """,
+            probe_config,
         )
         args.screenshot.parent.mkdir(parents=True, exist_ok=True)
         page.screenshot(path=str(args.screenshot), full_page=True, animations="disabled")
@@ -176,19 +246,32 @@ def main() -> int:
 
     screenshot_bytes = args.screenshot.read_bytes()
     comparison = semantic_receipt.get("comparison", {})
+    before_sha = sha256(str(observation["before"]).encode("utf-8"))
+    after_sha = sha256(str(observation["after"]).encode("utf-8"))
     output = {
         "kind": "diagram.renderObservations.v1",
         "sourceMxfileSha256": source_sha,
         "semanticDigest": policy["source"]["semanticDigest"],
         "semanticStatus": comparison.get("status"),
-        "pageIds": policy["source"]["pageIds"],
+        "pageIds": actual_page_ids,
         "initialized": observation["initialized"],
         "svgCount": observation["svgCount"],
-        "sourceModelUnchanged": observation["before"] == observation["after"] and sha256(source_path.read_bytes()) == source_sha,
+        "modelBeforeSha256": before_sha,
+        "modelAfterSha256": after_sha,
+        "sourceModelUnchanged": before_sha == after_sha and sha256(source_path.read_bytes()) == source_sha,
+        "runtimeObserved": {
+            "browserVersion": browser_version,
+            "browserExecutableSha256": browser_sha,
+            "osReleaseSha256": os_release_sha,
+            "fontSha256": font_sha,
+            "fontLoaded": font_loaded,
+            "viewport": runtime["viewport"],
+            "theme": runtime["theme"],
+        },
         "externalRequests": sorted(set(external_requests)),
         "consoleErrors": console_errors,
         "pageErrors": page_errors,
-        "unsupported": [],
+        "unsupported": observation["unsupported"],
         "duplicateRenderStatePaths": duplicate_state_paths(args.repo_root),
         "subjects": observation["subjects"],
         "edges": observation["edges"],
