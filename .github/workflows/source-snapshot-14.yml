@@ -1,0 +1,30 @@
+name: Source snapshot 14
+
+on:
+  pull_request:
+    branches: [proposals]
+    paths:
+      - .github/workflows/source-snapshot-14.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Archive exact source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > SOURCE_COMMIT
+          zip -qr source.zip . -x '.git/*' 'source.zip'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diagrams-14-source-snapshot
+          path: source.zip
+          if-no-files-found: error
