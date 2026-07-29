@@ -1,0 +1,14 @@
+{
+  "adrsMergeCommit": "e2b2251160b4178f51fc00392d8e3a5dd686b4ad",
+  "authority": true,
+  "decisionId": "01KZV5A1C0RRECT10N00000200",
+  "kind": "diagram.renderAuditSourceContract.v1",
+  "mxfileSha256": "sha256:7c70ae9cf6827205c4c15e77f4eb21b2faf17d81417cae3da9f57a24e83521b9",
+  "pageIds": [
+    "semantic-contract-v1"
+  ],
+  "releaseId": "diagram-semantic-contract-v1.0.2",
+  "semanticDigest": "sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2",
+  "semanticReceiptAuthority": false,
+  "semanticReceiptRequiredStatus": "PASS"
+}
