@@ -1,0 +1,51 @@
+{
+  "asOf": "2026-07-29T08:00:00+09:00",
+  "edgeClearance": 0.0,
+  "fullyOccludedAt": 0.99,
+  "kind": "diagram.renderAuditPolicy.v1",
+  "labelTolerance": 0.5,
+  "minContrastRatio": 4.5,
+  "protectedLabels": [
+    "input",
+    "output",
+    "scope"
+  ],
+  "protectedSubjects": [
+    "input",
+    "output",
+    "scope"
+  ],
+  "requiredEdges": [
+    {
+      "id": "flow",
+      "relatedSubjects": [
+        "scope"
+      ]
+    }
+  ],
+  "requiredSubjects": [
+    {
+      "id": "scope",
+      "labelInsideSubject": true
+    },
+    {
+      "id": "input",
+      "labelInsideSubject": true
+    },
+    {
+      "id": "output",
+      "labelInsideSubject": true
+    }
+  ],
+  "source": {
+    "adrsMergeCommit": "e2b2251160b4178f51fc00392d8e3a5dd686b4ad",
+    "decisionId": "01KZV5A1C0RRECT10N00000200",
+    "mxfileSha256": "sha256:7c70ae9cf6827205c4c15e77f4eb21b2faf17d81417cae3da9f57a24e83521b9",
+    "pageIds": [
+      "semantic-contract-v1"
+    ],
+    "releaseId": "diagram-semantic-contract-v1.0.2",
+    "semanticDigest": "sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2"
+  },
+  "unsupportedExactness": "ERROR"
+}
