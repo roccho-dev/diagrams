@@ -1,6 +1,11 @@
 name: Apply render audit final payload
 
 on:
+  pull_request:
+    branches: [staging/14-apply-base]
+    paths:
+      - .github/workflows/apply-render-audit-final.yml
+      - .staging/render-audit-nonworkflow.tar.gz.b64
   push:
     branches: [staging/14-render-audit-final]
     paths:
@@ -17,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: true
       - name: Verify and apply exact payload
