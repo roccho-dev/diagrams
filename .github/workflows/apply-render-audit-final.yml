@@ -5,14 +5,16 @@ on:
     branches: [staging/14-apply-base]
     paths:
       - .github/workflows/apply-render-audit-final.yml
-      - .staging/render-audit-nonworkflow.part00
+      - .staging/render-audit-nonworkflow.part00a
+      - .staging/render-audit-nonworkflow.part00b
       - .staging/render-audit-nonworkflow.part01
       - .staging/render-audit-nonworkflow.part02
   push:
     branches: [staging/14-render-audit-final]
     paths:
       - .github/workflows/apply-render-audit-final.yml
-      - .staging/render-audit-nonworkflow.part00
+      - .staging/render-audit-nonworkflow.part00a
+      - .staging/render-audit-nonworkflow.part00b
       - .staging/render-audit-nonworkflow.part01
       - .staging/render-audit-nonworkflow.part02
   workflow_dispatch:
@@ -33,18 +35,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p proof
-          for part in 00 01 02; do
+          for part in 00a 00b 01 02; do
             file=".staging/render-audit-nonworkflow.part${part}"
             wc -c "$file" | tee -a proof/parts.bytes
             sha256sum "$file" | tee -a proof/parts.sha256
           done
-          test "$(wc -c < .staging/render-audit-nonworkflow.part00)" -eq 7600
+          test "$(wc -c < .staging/render-audit-nonworkflow.part00a)" -eq 3800
+          test "$(wc -c < .staging/render-audit-nonworkflow.part00b)" -eq 3800
           test "$(wc -c < .staging/render-audit-nonworkflow.part01)" -eq 7600
           test "$(wc -c < .staging/render-audit-nonworkflow.part02)" -eq 7584
-          test "$(sha256sum .staging/render-audit-nonworkflow.part00 | cut -d' ' -f1)" = 92e72f12312aa2d18e2d2bcf31019ed69422ec4461a7de6541bde79767517cca
+          test "$(sha256sum .staging/render-audit-nonworkflow.part00a | cut -d' ' -f1)" = b42816b3e63d6f4fb4bfbcc8d65b56da6e4a5d79aef53fbcd7ec21d754bc5aaf
+          test "$(sha256sum .staging/render-audit-nonworkflow.part00b | cut -d' ' -f1)" = 426b7f71c9bcd8f4932cfbc45bb19d82212c4bcd30aeddfddf66fc761d34c346
           test "$(sha256sum .staging/render-audit-nonworkflow.part01 | cut -d' ' -f1)" = c8a173cac9c94275879ee00a47d83ab1f1b6f71f50dc029c762fcffe95c4eea7
           test "$(sha256sum .staging/render-audit-nonworkflow.part02 | cut -d' ' -f1)" = 782d0f256a756121beaa4353ccaae38ce3e2f52ae521edf667a372a760e9f253
-          cat .staging/render-audit-nonworkflow.part00 \
+          cat .staging/render-audit-nonworkflow.part00a \
+              .staging/render-audit-nonworkflow.part00b \
               .staging/render-audit-nonworkflow.part01 \
               .staging/render-audit-nonworkflow.part02 \
               > /tmp/render-audit-nonworkflow.tar.gz.b64
