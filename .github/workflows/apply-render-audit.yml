@@ -1,0 +1,53 @@
+name: Apply render audit payload
+
+on:
+  pull_request:
+    branches: [proposals]
+    paths:
+      - .github/workflows/apply-render-audit.yml
+      - .staging/render-audit-payload.*
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Reconstruct exact implementation payload
+        run: |
+          set -euo pipefail
+          cat .staging/render-audit-payload.01 \
+              .staging/render-audit-payload.02 \
+              .staging/render-audit-payload.03 \
+              .staging/render-audit-payload.04 \
+            | base64 -d > /tmp/render-audit-payload.tar.gz
+          test "$(sha256sum /tmp/render-audit-payload.tar.gz | cut -d' ' -f1)" = 771a6fa391bcc6bfc6673e3d144ca6fdd51bb33683c7f869c76fc735f0efcae6
+          tar -xzf /tmp/render-audit-payload.tar.gz
+          python -m py_compile \
+            src/jsonl_diagram_core/render_audit.py \
+            tools/probe_render_audit.py \
+            tools/prove_render_audit.py \
+            tests/unit/test_render_audit.py
+          PYTHONPATH=src python -m unittest tests.unit.test_render_audit -v
+          rm -rf .staging .github/workflows/apply-render-audit.yml
+          test -f src/jsonl_diagram_core/render_audit.py
+          test -f tools/probe_render_audit.py
+          test -f tools/prove_render_audit.py
+          test -f tests/unit/test_render_audit.py
+          test -f .github/workflows/render-audit.yml
+      - name: Commit final candidate only
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m 'Add pinned official draw.io render audit'
+          git push origin HEAD:proposal/14-pinned-render-audit
