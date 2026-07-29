@@ -120,7 +120,7 @@ jobs:
                 --out ci-artifacts/render-audit/observations-${run}.json
             "
           done
-      - name: Build deterministic receipt and prove 21 destructive cases
+      - name: Build deterministic receipt and prove 23 destructive cases
         working-directory: diagrams
         run: |
           set -euo pipefail
@@ -162,7 +162,7 @@ jobs:
           assert receipt['renderQualityAuditComplete'] is True
           assert receipt['semantic_channel_unchanged'] is True
           assert receipt['source_model_unchanged'] is True
-          assert proof['status']=='PASS' and proof['destructiveCaseCount']==21
+          assert proof['status']=='PASS' and proof['destructiveCaseCount']==23
           PY
       - name: Reject duplicate current-state or render-state artifacts
         working-directory: diagrams
