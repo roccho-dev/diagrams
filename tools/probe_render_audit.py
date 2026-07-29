@@ -111,11 +111,18 @@ def main() -> int:
               const before = stable(snapshot());
               const cellMap = {scope:'group_scope', input:'node_input', output:'node_output'};
               const subjects = {};
-              const cssColor = (node, property, fallback) => {
+              const usableColor = value => Boolean(value && value !== 'none' && value !== 'transparent' && !value.includes('light-dark(') && !value.includes('rgba(0, 0, 0, 0)'));
+              const computedColor = (node, property, fallback) => {
                 if (!node) return fallback;
-                const target = node.querySelector && (node.querySelector('div,span,text') || node);
-                const value = getComputedStyle(target || node)[property];
-                return (!value || value.includes('light-dark(') || value === 'none') ? fallback : value;
+                const selector = property === 'fill'
+                  ? 'rect,ellipse,polygon,path[fill]:not([fill="none"])'
+                  : 'div,span,text,tspan';
+                const target = (node.matches && node.matches(selector) ? node : null) || (node.querySelector && node.querySelector(selector)) || node;
+                const styleValue = getComputedStyle(target)[property];
+                if (usableColor(styleValue)) return styleValue;
+                const attributeValue = target.getAttribute && target.getAttribute(property);
+                if (usableColor(attributeValue)) return attributeValue;
+                return fallback;
               };
               const rectOf = node => {
                 if (!node || !node.getBoundingClientRect) return null;
@@ -124,7 +131,7 @@ def main() -> int:
               const containsRect = (outer,inner) => outer && inner && inner.x >= outer.x && inner.y >= outer.y && inner.x+inner.width <= outer.x+outer.width && inner.y+inner.height <= outer.y+outer.height;
               const opaque = node => {
                 if (!node) return false; const style=getComputedStyle(node); const opacity=parseFloat(style.opacity || '1');
-                const fill=(style.fill || style.backgroundColor || '').toLowerCase();
+                const fill=computedColor(node,'fill','transparent').toLowerCase();
                 return opacity >= .99 && fill !== 'none' && fill !== 'transparent' && !fill.includes('rgba(0, 0, 0, 0)');
               };
               const allPainted = Object.keys(model.cells || {}).map(id => graph.view.getState(model.getCell(id))).filter(state => state && state.shape && state.shape.node);
@@ -148,8 +155,8 @@ def main() -> int:
                   clipBounds:[state.x,state.y,state.width,state.height],
                   labelOcclusionFraction: fullyOccluded(state.text && state.text.node) ? 1 : 0,
                   subjectOcclusionFraction: fullyOccluded(state.shape && state.shape.node) ? 1 : 0,
-                  textColor: cssColor(state.text && state.text.node,'color',state.style && state.style.fontColor || '#000000'),
-                  backgroundColor: cssColor(state.shape && state.shape.node,'fill',fill)
+                  textColor: computedColor(state.text && state.text.node,'color',state.style && state.style.fontColor || '#000000'),
+                  backgroundColor: computedColor(state.shape && state.shape.node,'fill',fill)
                 };
               }
               const edgeCell = model.getCell('edge_flow'); const edgeState = graph.view.getState(edgeCell);
