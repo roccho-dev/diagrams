@@ -29,7 +29,9 @@ def load(path: Path) -> dict[str, Any]:
 
 
 def duplicate_state_paths(root: Path) -> list[str]:
-    patterns = ("dvm.json", "comparison-ir", "semantic-state.json", "render-state", "rendering-ir", "render_ast.py", "drawio_render_ast.py")
+    # Retired source-module references are owned by the canonical-cutover gate.
+    # This render probe checks only persisted duplicate state artifacts.
+    patterns = ("dvm.json", "comparison-ir", "semantic-state.json", "render-state", "rendering-ir")
     result: list[str] = []
     for path in root.rglob("*"):
         if not path.is_file() or ".git" in path.parts:
