@@ -1,0 +1,81 @@
+name: Apply render audit final payload
+
+on:
+  push:
+    branches: [staging/14-render-audit-final]
+    paths:
+      - .github/workflows/apply-render-audit-final.yml
+      - .staging/render-audit-nonworkflow.tar.gz.b64
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify and apply exact payload
+        run: |
+          set -euo pipefail
+          mkdir -p proof
+          test "$(sha256sum .staging/render-audit-nonworkflow.tar.gz.b64 | cut -d' ' -f1)" = 498e64e49d5e0e072a6a7a73b74a78c808128dc53ba4d235844e7311c5a3f243
+          base64 -d .staging/render-audit-nonworkflow.tar.gz.b64 > /tmp/render-audit-nonworkflow.tar.gz
+          test "$(sha256sum /tmp/render-audit-nonworkflow.tar.gz | cut -d' ' -f1)" = b1d89b50d441b753c2eb6ba353041718d2592ba8a16c3ff547a788d6c472ae1d
+          tar -xzf /tmp/render-audit-nonworkflow.tar.gz
+          python -m py_compile \
+            src/jsonl_diagram_core/render_audit.py \
+            tools/probe_render_audit.py \
+            tools/prove_render_audit.py
+          PYTHONPATH=src python -m unittest tests.unit.test_render_audit -v |& tee proof/unit.log
+          test "$(PYTHONPATH=src python -m unittest tests.unit.test_render_audit 2>&1 | grep -c '^OK$')" -eq 1
+          git diff -- \
+            contracts/render_audit/v1/policy.json \
+            contracts/render_audit/v1/runtime-lock.json \
+            src/jsonl_diagram_core/render_audit.py \
+            tests/fixtures/render_audit/source-contract.json \
+            tests/unit/test_render_audit.py \
+            tools/probe_render_audit.py \
+            tools/prove_render_audit.py > proof/final.patch
+      - name: Commit non-workflow implementation only
+        id: commit
+        run: |
+          set -euo pipefail
+          git config user.name 'roccho-dev'
+          git config user.email '40359643+roccho-dev@users.noreply.github.com'
+          git add \
+            contracts/render_audit/v1/policy.json \
+            contracts/render_audit/v1/runtime-lock.json \
+            src/jsonl_diagram_core/render_audit.py \
+            tests/fixtures/render_audit/source-contract.json \
+            tests/unit/test_render_audit.py \
+            tools/probe_render_audit.py \
+            tools/prove_render_audit.py
+          cat > /tmp/expected-files <<'EOF'
+          contracts/render_audit/v1/policy.json
+          contracts/render_audit/v1/runtime-lock.json
+          src/jsonl_diagram_core/render_audit.py
+          tests/fixtures/render_audit/source-contract.json
+          tests/unit/test_render_audit.py
+          tools/probe_render_audit.py
+          tools/prove_render_audit.py
+          EOF
+          git diff --cached --name-only | sort > /tmp/actual-files
+          sort /tmp/expected-files > /tmp/expected-files.sorted
+          diff -u /tmp/expected-files.sorted /tmp/actual-files
+          git commit -m 'Harden pinned render audit against false Green'
+          sha=$(git rev-parse HEAD)
+          echo "$sha" | tee proof/APPLIED_COMMIT
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          git push origin HEAD:staging/14-render-audit-final
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: render-audit-final-apply-proof
+          path: proof
+          if-no-files-found: error
