@@ -1,0 +1,35 @@
+<mxfile host="app.diagrams.net" agent="human-accepted-semantic-fixture" version="30.0.4" compressed="false" pages="1">
+  <diagram id="semantic-contract-v1" name="Base">
+    <mxGraphModel page="1" pageWidth="1000" pageHeight="720">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <object id="diagram_semantic_contract" label="Semantic Contract V1" jsonlType="diagram" jsonlId="semantic-contract-v1" semanticKind="flow" metaJson="{}">
+          <mxCell vertex="1" parent="1" style="text;html=1;opacity=0;">
+            <mxGeometry x="0" y="0" width="1" height="1" as="geometry"/>
+          </mxCell>
+        </object>
+        <object id="group_scope" label="Scope" jsonlType="group" jsonlId="scope" semanticKind="scope" semanticOrder="1" eventSeq="1" metaJson="{}">
+          <mxCell vertex="1" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;">
+            <mxGeometry x="80" y="80" width="760" height="260" as="geometry"/>
+          </mxCell>
+        </object>
+        <object id="node_input" label="Input" jsonlType="node" jsonlId="input" semanticKind="process" semanticGroup="scope" semanticOrder="1" eventSeq="2" sourceOp="node.upsert" metaJson="{}">
+          <mxCell vertex="1" parent="group_scope" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;">
+            <mxGeometry x="100" y="100" width="150" height="60" as="geometry"/>
+          </mxCell>
+        </object>
+        <object id="node_output" label="Output" jsonlType="node" jsonlId="output" semanticKind="process" semanticGroup="scope" semanticOrder="2" eventSeq="3" sourceOp="node.upsert" metaJson="{}">
+          <mxCell vertex="1" parent="group_scope" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;">
+            <mxGeometry x="440" y="100" width="150" height="60" as="geometry"/>
+          </mxCell>
+        </object>
+        <object id="edge_flow" label="produces" jsonlType="edge" jsonlId="flow" semanticKind="produces" semanticSource="input" semanticTarget="output" semanticOrder="1" eventSeq="4" metaJson="{}">
+          <mxCell edge="1" parent="1" source="node_input" target="node_output" style="endArrow=block;html=1;">
+            <mxGeometry relative="1" as="geometry"/>
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

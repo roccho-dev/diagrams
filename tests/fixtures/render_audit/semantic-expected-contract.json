@@ -1,0 +1,39 @@
+{
+  "acceptedArtifactSha256": "sha256:7c70ae9cf6827205c4c15e77f4eb21b2faf17d81417cae3da9f57a24e83521b9",
+  "acceptedAt": "2026-07-29T08:00:00+09:00",
+  "acceptedDecisionCanonicalDigest": "sha256:63397836ff258b95793f4c75f4149561ee830b2e43977d4952363505f55912e4",
+  "adrsMergeCommit": "e2b2251160b4178f51fc00392d8e3a5dd686b4ad",
+  "decisionId": "01KZV5A1C0RRECT10N00000200",
+  "decisionRef": "roccho-dev/adrs#272",
+  "expectedContractCanonicalDigest": "sha256:5fb97cc00d21675c2f64e4ee003abbead3acf0b036e659316e97dc390fc5c4b9",
+  "expectedSemanticSha256": "sha256:7ff59dcb4e4652df9ba3f9b2d8830bb811a17dfdcb84c571da5f67854c2daba2",
+  "kind": "diagram.expectedSemanticContract.v1.0.2",
+  "pageIds": [
+    "semantic-contract-v1"
+  ],
+  "policy": {
+    "implicitToleranceAllowed": false,
+    "kind": "diagram.semanticComparisonPolicy.v1",
+    "pageIds": [
+      "semantic-contract-v1"
+    ],
+    "pageOrderSemantic": false,
+    "semanticChannels": [
+      "identity",
+      "tree",
+      "graph",
+      "overlay"
+    ],
+    "spatialRules": [],
+    "visualIsolation": true
+  },
+  "policyCanonicalDigest": "sha256:ac2b7f8cd537d158c37206241924c68f3da75af0ab70813431f6c5ec6db45509",
+  "releaseId": "diagram-semantic-contract-v1.0.2",
+  "stableSubjectIds": [
+    "semantic-contract-v1:flow",
+    "semantic-contract-v1:input",
+    "semantic-contract-v1:output",
+    "semantic-contract-v1:scope",
+    "semantic-contract-v1:semantic-contract-v1"
+  ]
+}
